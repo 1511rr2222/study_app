@@ -23,6 +23,15 @@ function navigate(page) {
         app.innerHTML = header + CompetencyPageView();
         initCompetencyPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
     }
+
+    // 헤더는 항상 렌더링되므로, '홈' 링크도 매번 새로 이벤트를 걸어줌
+    const homeBtn = document.getElementById('nav-home-btn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigate('dashboard');
+        });
+    }
 }
 
 // 처음 실행
