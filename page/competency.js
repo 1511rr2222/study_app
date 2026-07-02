@@ -107,30 +107,39 @@ function renderOverview(onBack) {
     root.innerHTML = `
         <div class="hero-box competency-hero">
             <h2>학습 역량 진단</h2>
+
+            <img src="competency.png" alt="학습 역량 KPI 표" class="competency-ref-image">
+
+            <h3 class="competency-section-title">특성별 설명</h3>
+            ${renderTraitDescriptions()}
+
             <p class="competency-intro">
-                학습 우수자들의 특성과 본인의 공부 특성을 비교해볼 수 있어요.
-                <br>아래 버튼을 눌러 진단을 진행해주세요
-                <br>(11개의 특성, 총${QUESTIONS.length}문항, 특성당 3문항).
+                학습 우수자들의 특성을 100으로 두고, 예린이의 특성과 비교해볼 수 있어요.
+                아래 버튼을 눌러 진단을 진행해주세요 (총 ${QUESTIONS.length}문항, 특성당 3문항).
             </p>
             <button type="button" id="start-diagnosis-btn" class="pink-button competency-start-btn">
                 ${history.length === 0 ? '역량진단하기' : '새로 진단하기'}
             </button>
-        </div>
 
-        ${history.length === 0 ? '' : `
-            <div class="hero-box competency-hero">
-                <h2>비교 표</h2>
+            ${history.length === 0 ? '' : `
+                <div class="competency-divider"></div>
+                <h3 class="competency-section-title">비교 표</h3>
                 ${renderComparisonTable(history)}
-            </div>
 
-            <div class="hero-box competency-hero">
-                <h2>강점 &amp; 보완 포인트</h2>
+                <div class="competency-divider"></div>
+                <h3 class="competency-section-title">한눈에 보는 그래프</h3>
+                <div class="competency-chart-wrap">
+                    <canvas id="competency-chart"></canvas>
+                </div>
+
+                <div class="competency-divider"></div>
+                <h3 class="competency-section-title">강점 &amp; 보완 포인트</h3>
                 ${renderStrengthWeakness(latest)}
                 <div id="ai-tip-content" class="ai-tip-box">
                     <p class="ai-tip-loading">AI가 보완 tip을 생각하고 있어요...</p>
                 </div>
-            </div>
-        `}
+            `}
+        </div>
     `;
 
     document.getElementById('start-diagnosis-btn').addEventListener('click', () => {
@@ -141,9 +150,81 @@ function renderOverview(onBack) {
     });
 
     if (latest) {
+        renderChart(latest);
         const ranked = getRanked(latest);
         loadAiTips(ranked.weakest, ranked.strongest);
     }
+}
+
+let chartInstance = null;
+
+function renderChart(latest) {
+    const canvas = document.getElementById('competency-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(canvas, {
+        type: 'radar',
+        data: {
+            labels: TRAITS.map(t => t.name),
+            datasets: [
+                {
+                    label: '학습 우수자',
+                    data: TRAITS.map(() => 100),
+                    backgroundColor: 'rgba(200, 200, 200, 0.2)',
+                    borderColor: 'rgba(150, 150, 150, 0.8)',
+                    borderWidth: 1,
+                    pointRadius: 0
+                },
+                {
+                    label: '예린이',
+                    data: TRAITS.map(t => latest.scores[t.id] ?? 0),
+                    backgroundColor: 'rgba(255, 107, 154, 0.25)',
+                    borderColor: '#ff6b9a',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ff6b9a'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 100,
+                    ticks: { stepSize: 20 },
+                    pointLabels: { font: { size: 11 } }
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+function renderTraitDescriptions() {
+    const groups = CATEGORY_ORDER.map(category => {
+        const catTraits = TRAITS.filter(t => t.category === category);
+        const items = catTraits.map(t => `
+            <li>
+                <strong>${t.name}</strong>
+                <span>${t.def}</span>
+            </li>
+        `).join('');
+
+        return `
+            <div class="competency-desc-group">
+                <div class="competency-desc-header ${CATEGORY_CLASS[category]}">${category}</div>
+                <ul class="competency-desc-list">${items}</ul>
+            </div>
+        `;
+    }).join('');
+
+    return `<div class="competency-desc-wrap">${groups}</div>`;
 }
 
 function renderComparisonTable(history) {

@@ -3,6 +3,87 @@
     margin-top: 15px;
 }
 
+.competency-section-title {
+    font-size: 15px;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.competency-ref-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 12px 0 20px;
+    border: 1px solid #eee;
+}
+
+.competency-desc-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.competency-desc-header {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.competency-desc-header.cat-cognitive {
+    background-color: #eaf1fc;
+    color: #2f5fa8;
+}
+
+.competency-desc-header.cat-emotional {
+    background-color: #f3ecfa;
+    color: #7a4fae;
+}
+
+.competency-desc-header.cat-behavioral {
+    background-color: #eaf7ec;
+    color: #2f8a4c;
+}
+
+.competency-desc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.competency-desc-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    padding: 6px 4px;
+    border-bottom: 1px dashed #eee;
+}
+
+.competency-desc-list li strong {
+    color: #333;
+    min-width: 90px;
+}
+
+.competency-divider {
+    height: 1px;
+    background-color: #f0d5dd;
+    margin: 20px 0;
+}
+
+.competency-chart-wrap {
+    max-width: 480px;
+    margin: 0 auto 8px;
+}
+
 .competency-intro {
     font-size: 14px;
     color: #666;
