@@ -2,6 +2,7 @@ import { HeaderView } from './page/header.js';
 import { LoginView, initLogin } from './page/login.js';
 import { DashboardView } from './page/dashboard.js';
 import { initHomeworkSummary, HomeworkPageView, initHomeworkPage } from './page/homework.js';
+import { CompetencyPageView, initCompetencyPage } from './page/competency.js';
 
 const app = document.getElementById('app');
 
@@ -14,9 +15,13 @@ function navigate(page) {
     } else if (page === 'dashboard') {
         app.innerHTML = header + DashboardView();
         initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
+        document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
     } else if (page === 'homework') {
         app.innerHTML = header + HomeworkPageView();
         initHomeworkPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
+    } else if (page === 'competency') {
+        app.innerHTML = header + CompetencyPageView();
+        initCompetencyPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
     }
 }
 
