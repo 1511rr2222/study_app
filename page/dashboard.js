@@ -11,3 +11,15 @@ export function DashboardView() {
         </div>
     `;
 }
+
+export function initDashboard() {
+    const attendBtn = document.getElementById('attendance-btn');
+    const attendText = document.getElementById('attendance-text');
+
+    attendBtn.addEventListener('click', () => {
+    attendBtn.disabled = true; // 버튼 비활성화
+        attendBtn.innerText = "출석 완료!";
+        attendText.innerText = "멋져요! 오늘도 화이팅!";
+        document.getElementById('attendance-box').classList.add('checked');
+    });        
+    }
