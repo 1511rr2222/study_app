@@ -1,6 +1,5 @@
 import { HeaderView } from './page/header.js';
 import { LoginView, initLogin } from './page/login.js';
-import { DashboardView } from './page/dashboard.js';
 import { initHomeworkSummary, HomeworkPageView, initHomeworkPage } from './page/homework.js';
 import { CompetencyPageView, initCompetencyPage } from './page/competency.js';
 import { DashboardView, initDashboardEvents } from './page/dashboard.js';
@@ -15,6 +14,7 @@ function navigate(page) {
         initLogin(() => navigate('dashboard')); // 로그인 성공 시 대시보드로 이동
     } else if (page === 'dashboard') {
         app.innerHTML = header + DashboardView();
+        initDashboardEvents();
         initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
         document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
     } else if (page === 'homework') {
