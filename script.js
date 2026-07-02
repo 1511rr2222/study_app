@@ -3,6 +3,7 @@ import { LoginView, initLogin } from './page/login.js';
 import { DashboardView } from './page/dashboard.js';
 import { initHomeworkSummary, HomeworkPageView, initHomeworkPage } from './page/homework.js';
 import { CompetencyPageView, initCompetencyPage } from './page/competency.js';
+import { DashboardView, initDashboardEvents } from './page/dashboard.js';
 
 const app = document.getElementById('app');
 

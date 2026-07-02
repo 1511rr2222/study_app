@@ -12,7 +12,7 @@ export function DashboardView() {
     `;
 }
 
-export function initDashboard() {
+export function initDashboardEvents() {
     const attendBtn = document.getElementById('attendance-btn');
     const attendText = document.getElementById('attendance-text');
 
