@@ -1,0 +1,9 @@
+.login-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 300px;
+    margin: 60px auto 0; /* 화면 안에서 좌우 가운데 정렬 */
+}

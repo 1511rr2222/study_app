@@ -1,0 +1,35 @@
+body {
+    background-color: #ffffff;
+    margin: 0;
+    font-family: sans-serif;
+    min-height: 100vh;
+}
+
+/* header를 제외한 나머지 영역(로그인/대시보드) */
+#app {
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* 공용 입력창 */
+input {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* 패딩 포함 크기 조절 */
+}
+
+/* 공용 버튼 */
+.pink-button {
+    background-color: #ff6b9a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+}

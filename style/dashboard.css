@@ -1,0 +1,41 @@
+/* 기본 (모바일용) */
+.dashboard-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 20px 80px;
+    box-sizing: border-box;
+}
+
+/* PC용 (화면이 넓어지면 적용됨) */
+@media (min-width: 768px) {
+    .dashboard-container {
+        max-width: 900px; /* 더 넓게 */
+    }
+    .hero-box {
+        height: 400px; /* PC에서는 더 크게 */
+    }
+}
+
+/* 메인 큰 블록 */
+.hero-box {
+    background-color: #fff;
+    height: 300px; /* 세로가 김 */
+    border-radius: 20px;
+    border: 2px solid #ff6b9a;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 나머지 막대기 형태 블록 */
+.list-box {
+    background-color: #fff;
+    height: 80px; /* 세로가 짧음 */
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    cursor: pointer;
+    margin-top: 15px;
+}

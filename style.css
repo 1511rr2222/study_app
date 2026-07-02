@@ -1,0 +1,371 @@
+body {
+    background-color: #ffffff;
+    margin: 0;
+    font-family: sans-serif;
+    min-height: 100vh;
+}
+
+/* 헤더 스타일 */
+.main-header {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 50px;
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.main-header nav {
+    display: flex;
+    gap: 24px;
+}
+
+.main-header nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.main-header nav a:hover {
+    color: #ff6b9a;
+}
+
+.header-mascot {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    animation: mascot-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes mascot-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* header를 제외한 나머지 영역(로그인/대시보드) */
+#app {
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.login-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 300px;
+    margin: 60px auto 0; /* 화면 안에서 좌우 가운데 정렬 */
+}
+
+input {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* 패딩 포함 크기 조절 */
+}
+
+.pink-button {
+    background-color: #ff6b9a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* 기본 (모바일용) */
+.dashboard-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 20px 80px;
+    box-sizing: border-box;
+}
+
+/* PC용 (화면이 넓어지면 적용됨) */
+@media (min-width: 768px) {
+    .dashboard-container {
+        max-width: 900px; /* 더 넓게 */
+    }
+    .hero-box {
+        height: 400px; /* PC에서는 더 크게 */
+    }
+}
+
+/* 메인 큰 블록 */
+.hero-box {
+    background-color: #fff;
+    height: 300px; /* 세로가 김 */
+    border-radius: 20px;
+    border: 2px solid #ff6b9a;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 나머지 막대기 형태 블록 */
+.list-box {
+    background-color: #fff;
+    height: 80px; /* 세로가 짧음 */
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* 숙제 체크 영역 */
+.homework-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0 16px;
+    font-size: 14px;
+    color: #555;
+}
+
+.homework-rate {
+    background-color: #ff6b9a;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.homework-open-btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: none;
+    border: 1px dashed #ff6b9a;
+    border-radius: 10px;
+    color: #ff6b9a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.homework-back-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 0 16px;
+}
+
+.homework-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.homework-form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.homework-form-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    color: #777;
+    gap: 4px;
+}
+
+.homework-form-label input {
+    margin: 0;
+}
+
+.homework-add-form input#homework-input {
+    margin: 0;
+}
+
+.homework-add-form .pink-button {
+    width: auto;
+    align-self: flex-start;
+    padding: 10px 24px;
+}
+
+.homework-list {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.homework-empty {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.homework-item {
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.homework-item label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.homework-item input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    accent-color: #ff6b9a;
+}
+
+.homework-dates {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    color: #999;
+    min-width: 100px;
+    line-height: 1.4;
+}
+
+.homework-content {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+}
+
+.homework-status-tag {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+.homework-status-tag.pending {
+    background-color: #fff1d6;
+    color: #a06b00;
+}
+
+.homework-status-tag.done {
+    background-color: #dff5e6;
+    color: #1e8a4c;
+}
+
+.homework-status-tag.overdue {
+    background-color: #eee;
+    color: #888;
+}
+
+.homework-item.done {
+    background-color: #f2fbf5;
+    border-color: #cdeed9;
+}
+
+.homework-item.done .homework-content {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* 기한이 지났는데 미완료 = 자동 회색 처리 */
+.homework-item.overdue {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+}
+
+.homework-item.overdue .homework-content,
+.homework-item.overdue .homework-dates {
+    color: #999;
+}
+
+/* 수정/삭제 버튼 */
+.homework-item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e5e5e5;
+}
+
+.homework-edit-btn,
+.homework-delete-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+}
+
+.homework-edit-btn:hover {
+    border-color: #ff6b9a;
+    color: #ff6b9a;
+}
+
+.homework-delete-btn:hover {
+    border-color: #e04b6a;
+    color: #e04b6a;
+}
+
+/* 수정 모드 */
+.homework-item.editing {
+    background-color: #fff7fa;
+    border-color: #ff6b9a;
+}
+
+.homework-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.homework-edit-form input {
+    margin: 0;
+}
+
+.homework-edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.homework-save-btn {
+    width: auto;
+    padding: 8px 16px;
+}
+
+.homework-cancel-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #666;
+}

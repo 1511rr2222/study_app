@@ -1,0 +1,236 @@
+/* 숙제 체크 영역 */
+.homework-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0 16px;
+    font-size: 14px;
+    color: #555;
+}
+
+.homework-rate {
+    background-color: #ff6b9a;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.homework-open-btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: none;
+    border: 1px dashed #ff6b9a;
+    border-radius: 10px;
+    color: #ff6b9a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.homework-back-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 0 16px;
+}
+
+.homework-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.homework-form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.homework-form-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    color: #777;
+    gap: 4px;
+}
+
+.homework-form-label input {
+    margin: 0;
+}
+
+.homework-add-form input#homework-input {
+    margin: 0;
+}
+
+.homework-add-form .pink-button {
+    width: auto;
+    align-self: flex-start;
+    padding: 10px 24px;
+}
+
+.homework-list {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.homework-empty {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.homework-item {
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.homework-item label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.homework-item input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    accent-color: #ff6b9a;
+}
+
+.homework-dates {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    color: #999;
+    min-width: 100px;
+    line-height: 1.4;
+}
+
+.homework-content {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+}
+
+.homework-status-tag {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+.homework-status-tag.pending {
+    background-color: #fff1d6;
+    color: #a06b00;
+}
+
+.homework-status-tag.done {
+    background-color: #dff5e6;
+    color: #1e8a4c;
+}
+
+.homework-status-tag.overdue {
+    background-color: #eee;
+    color: #888;
+}
+
+.homework-item.done {
+    background-color: #f2fbf5;
+    border-color: #cdeed9;
+}
+
+.homework-item.done .homework-content {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* 기한이 지났는데 미완료 = 자동 회색 처리 */
+.homework-item.overdue {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+}
+
+.homework-item.overdue .homework-content,
+.homework-item.overdue .homework-dates {
+    color: #999;
+}
+
+/* 수정/삭제 버튼 */
+.homework-item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e5e5e5;
+}
+
+.homework-edit-btn,
+.homework-delete-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+}
+
+.homework-edit-btn:hover {
+    border-color: #ff6b9a;
+    color: #ff6b9a;
+}
+
+.homework-delete-btn:hover {
+    border-color: #e04b6a;
+    color: #e04b6a;
+}
+
+/* 수정 모드 */
+.homework-item.editing {
+    background-color: #fff7fa;
+    border-color: #ff6b9a;
+}
+
+.homework-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.homework-edit-form input {
+    margin: 0;
+}
+
+.homework-edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.homework-save-btn {
+    width: auto;
+    padding: 8px 16px;
+}
+
+.homework-cancel-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #666;
+}
