@@ -46,3 +46,46 @@
     font-weight: 600;
     color: #333;
 }
+
+/* 출석 체크 박스 스타일 */
+.attendance-box {
+    background-color: #fff;
+    height: 80px;
+    border-radius: 18px;
+    border: 2px solid #ff6b9a; /* 기존 list-box와 동일 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 20px; /* 아래 요소들과 간격 */
+    font-weight: 600;
+    color: #333;
+}
+
+.attendance-calendar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 18px;
+    border: 2px solid #ff6b9a;
+    margin-bottom: 20px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7일씩 한 줄 */
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.day {
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.day.checked {
+    background-color: #ff6b9a;
+    color: white;
+}
