@@ -106,7 +106,7 @@ function renderOverview(onBack) {
 
     root.innerHTML = `
         <div class="hero-box competency-hero">
-            <h2>학습 역량</h2>
+            <h2>학습에 도움이 되는 학습 특성</h2>
 
             <img src="competency.png" alt="학습 역량 KPI 표" class="competency-ref-image">
 
@@ -114,7 +114,7 @@ function renderOverview(onBack) {
             ${renderTraitDescriptions()}
 
             <p class="competency-intro">
-                학습 우수자들의 특성과 보인의 학습 특성을 비교해볼 수 있어요.
+                학습에 도움이 되는 특성과 내가 가진 학습 특성을 비교해볼 수 있어요.
                 <br> 아래 버튼을 눌러 진단을 진행해보세요 (총 ${QUESTIONS.length}문항, 특성당 3문항).
             </p>
             <button type="button" id="start-diagnosis-btn" class="pink-button competency-start-btn">
