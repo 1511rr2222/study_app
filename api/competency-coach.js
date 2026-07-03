@@ -61,12 +61,14 @@ export default async function handler(req, res) {
 
         const data = await response.json();
         const rawText = data.choices?.[0]?.message?.content || '[]';
-
+        const cleaned = rawText.replace(/```json|```/g, '').trim();
+        
         let questions;
         try {
-            questions = JSON.parse(rawText);
+        questions = JSON.parse(cleaned);
         } catch (e) {
-            questions = [rawText];
+        console.error('JSON 파싱 실패:', rawText);
+        questions = ['AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.'];
         }
 
         return res.status(200).json({ questions });

@@ -59,18 +59,19 @@ ${weakList}
             })
         });
 
-        const data = await response.json();
-        const rawText = data.choices?.[0]?.message?.content || '[]';
+    const data = await response.json();
+    const rawText = data.choices?.[0]?.message?.content || '[]';
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
 
-        let tips;
-        try {
-            tips = JSON.parse(rawText);
-        } catch (e) {
-            // 모델이 JSON이 아닌 텍스트로 응답한 경우를 대비한 안전장치
-            tips = [rawText];
-        }
+    let tips;   
+    try {
+    tips = JSON.parse(cleaned);
+    } catch (e) {
+    console.error('JSON 파싱 실패:', rawText);
+    tips = ['AI 응답을 처리하는 중 문제가 발생했어요.'];
+    }
 
-        return res.status(200).json({ tips });
+    return res.status(200).json({ tips });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'AI 응답 생성 중 오류가 발생했습니다.' });
