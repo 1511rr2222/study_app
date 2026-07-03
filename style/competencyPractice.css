@@ -112,6 +112,66 @@
     display: flex; align-items: center; gap: 14px;
     border-bottom: 1px solid #eee; padding-bottom: 16px; margin-bottom: 16px;
 }
+/* 🆕 "생각 정리 노트" 배지 */
+.practice-note-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #a06b00;
+    background: #fff1d6;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}
+
+.practice-analysis-header h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #3A2E39;
+    margin: 0 0 6px;
+}
+
+.practice-analysis-header p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* 🆕 질문 박스를 '메모지'처럼: 살짝 기울고, 종이 느낌의 노란 톤 */
+.practice-question-box {
+    background: #fffdf3;
+    border: 1.5px solid #ffe8a3;
+    border-left: 4px solid #ffc94d;
+    border-radius: 4px 14px 14px 4px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+.practice-question-text {
+    font-weight: 700;
+    color: #a06b00;
+    margin: 0 0 10px;
+}
+
+.practice-answer-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px dashed #ffd98a;
+    border-radius: 0;
+    padding: 6px 2px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.practice-answer-input:focus {
+    outline: none;
+    border-bottom-color: #ffb100;
+}
 .practice-image-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid #ddd; }
 
 .practice-question-box {
@@ -140,3 +200,4 @@
 .practice-retry-actions button { flex: 1; }
 
 .practice-soon { text-align: center; color: #999; padding: 40px 0; }
+

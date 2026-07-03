@@ -299,3 +299,38 @@
     cursor: pointer;
     color: #666;
 }
+
+@media (max-width: 480px) {
+    .homework-form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .homework-add-form .pink-button {
+        width: 100%;
+    }
+
+    .homework-item label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .homework-dates {
+        flex-direction: row;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .homework-content {
+        width: 100%;
+    }
+
+    .homework-status-tag {
+        align-self: flex-start;
+    }
+
+    .homework-item-actions {
+        flex-wrap: wrap;
+    }
+}

@@ -134,15 +134,17 @@ function renderAnalysisStage(el) {
         return;
     }
 
-    el.innerHTML = `
-        <div class="practice-analysis">
-            <div class="practice-analysis-header">
-                ${state.imagePreview ? `<img src="${state.imagePreview}" class="practice-image-preview" alt="문제 사진">` : ''}
-                <div>
-                    <h3>AI 코치의 생각 노트</h3>
-                    <p>정답을 적는 곳이 아니에요. 스스로에게 질문을 던져보세요.</p>
-                </div>
+    // ✅ 수정
+el.innerHTML = `
+    <div class="practice-analysis">
+        <div class="practice-analysis-header">
+            ${state.imagePreview ? `<img src="${state.imagePreview}" class="practice-image-preview" alt="문제 사진">` : ''}
+            <div>
+                <span class="practice-note-badge">✏️ 생각 정리 노트</span>
+                <h3> 편하게 문제에 대한 생각을 적어볼까요?</h3>
+                <p>AI 코치가 던진 질문에 떠오르는 대로 편하게 끄적여보세요. 틀린 답은 없습니다!</p>
             </div>
+        </div>
             ${state.aiQuestions.map((q, i) => `
                 <div class="practice-question-box">
                     <p class="practice-question-text">Q${i + 1}. ${q}</p>

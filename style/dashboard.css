@@ -333,3 +333,30 @@ body {
         align-self: flex-start;
     }
 }
+
+@media (max-width: 400px) {
+    .fairy-question-text {
+        font-size: 13px;
+    }
+
+    .card-header-row h3,
+    .card-homework h2,
+    .card-homework h3,
+    .card-homework h4 {
+        font-size: 15px;
+    }
+
+    .day {
+        font-size: 10px;
+        padding: 6px 0;
+    }
+
+    .list-box {
+        height: 78px;
+        font-size: 12px;
+    }
+
+    .list-box-emoji {
+        font-size: 18px;
+    }
+}

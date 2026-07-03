@@ -332,3 +332,34 @@
         padding: 6px 8px;
     }
 }
+
+@media (max-width: 480px) {
+    .competency-table-wrap {
+        border: 1px solid #ffd7e4;
+        border-radius: 10px;
+        position: relative;
+    }
+
+    .competency-table-wrap::after {
+        content: '👉 옆으로 밀어보세요';
+        display: block;
+        text-align: center;
+        font-size: 11px;
+        color: #ff6b9a;
+        padding: 4px 0;
+        background: #fff5f8;
+    }
+
+    .competency-instruction-image {
+        width: 95%;
+    }
+
+    .competency-fairy-message p {
+        font-size: 0.95rem;
+    }
+
+    .competency-sw-grid {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
