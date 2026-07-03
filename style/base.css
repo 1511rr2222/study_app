@@ -1,3 +1,7 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     background-color: #ffffff;
     margin: 0;
@@ -9,6 +13,12 @@ body {
 #app {
     padding: 40px 20px;
     box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    #app {
+        padding: 20px 12px;
+    }
 }
 
 /* 공용 입력창 */
