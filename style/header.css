@@ -1,48 +1,98 @@
-/* 헤더 스타일 */
+/* 대시보드와 동일한 폰트 (헤더가 다른 페이지보다 먼저 그려질 수 있어 자체 로드) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+
+/* 헤더 바깥 영역: 배경 없이, dashboard-container와 동일한 폭 기준을 제공 */
 .main-header {
     width: 100%;
     box-sizing: border-box;
     margin: 0;
+    padding: 20px 20px 0;
+    background: transparent;
+}
+
+/* 실제 보이는 헤더 카드: 아래 dashboard-card와 같은 최대 900px + 동일한 카드 스타일 */
+.header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1.5px solid #FFDDE8;
+    border-radius: 24px;
+    box-shadow: 0 14px 32px rgba(91, 134, 229, 0.16);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 25px 50px;
-    background: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 16px 24px;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: bold;
-    font-size: 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.logo-text {
+    font-weight: 800;
+    font-size: 18px;
+    color: #222222;
+    letter-spacing: -0.2px;
+}
+
+.header-mascot {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    background: #FFE3EC;
+    border-radius: 50%;
+    padding: 5px;
+    box-sizing: border-box;
+    animation: mascot-bounce 1.6s ease-in-out infinite;
 }
 
 .main-header nav {
     display: flex;
-    gap: 24px;
+    align-items: center;
+    gap: 4px;
 }
 
 .main-header nav a {
     text-decoration: none;
-    color: #333;
-    font-weight: 500;
+    color: #222222;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .main-header nav a:hover {
-    color: #ff6b9a;
-}
-
-.header-mascot {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    animation: mascot-bounce 1.6s ease-in-out infinite;
+    background-color: #FFE3EC;
+    color: #E14C7C;
 }
 
 @keyframes mascot-bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        padding: 16px 16px 0;
+    }
+
+    .header-inner {
+        padding: 14px 16px;
+    }
+
+    .logo-text {
+        font-size: 16px;
+    }
+
+    .main-header nav a {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
 }

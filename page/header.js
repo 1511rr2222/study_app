@@ -1,15 +1,17 @@
 export function HeaderView() {
     return `
         <header class="main-header">
-            <div class="logo">
-                <img src="logo.png" alt="캐릭터 로고" class="header-mascot">
-                예린's Education App
+            <div class="header-inner">
+                <div class="logo">
+                    <img src="logo.png" alt="캐릭터 로고" class="header-mascot">
+                    <span class="logo-text">예린's Education App</span>
+                </div>
+                <nav>
+                    <a href="#" id="nav-home-btn">홈</a>
+                    <a href="#">내 수업</a>
+                    <a href="#">로그아웃</a>
+                </nav>
             </div>
-            <nav>
-                <a href="#" id="nav-home-btn">홈</a>
-                <a href="#">내 수업</a>
-                <a href="#">로그아웃</a>
-            </nav>
         </header>
     `;
 }

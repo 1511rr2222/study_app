@@ -1,0 +1,334 @@
+/* competencyMain.css
+   학습역량 확인 메인(개요) 페이지 전용 스타일 */
+
+.competency-section-title {
+    font-size: 15px;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.competency-ref-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 12px 0 20px;
+    border: 1px solid #eee;
+}
+
+.competency-divider {
+    height: 1px;
+    background-color: #f0d5dd;
+    margin: 20px 0;
+}
+
+.competency-chart-wrap {
+    max-width: 480px;
+    margin: 0 auto 8px;
+}
+
+.competency-intro {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 8px 0 16px;
+}
+
+.competency-start-btn {
+    width: auto;
+    padding: 12px 28px;
+}
+
+/* ---------- 비교 표 ---------- */
+.competency-table-wrap {
+    overflow-x: auto;
+}
+
+.competency-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 480px;
+}
+
+.competency-table th,
+.competency-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.competency-table thead th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-size: 12px;
+}
+
+.competency-trait-name {
+    text-align: left !important;
+    font-weight: bold;
+    color: #333;
+}
+
+.competency-benchmark {
+    color: #ff6b9a;
+    font-weight: bold;
+}
+
+.competency-cat-row td {
+    text-align: left !important;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+.competency-cat-row.cat-cognitive td {
+    background-color: #eaf1fc;
+    color: #2f5fa8;
+}
+
+.competency-cat-row.cat-emotional td {
+    background-color: #f3ecfa;
+    color: #7a4fae;
+}
+
+.competency-cat-row.cat-behavioral td {
+    background-color: #eaf7ec;
+    color: #2f8a4c;
+}
+
+/* ---------- 강점 / 약점 ---------- */
+.competency-sw-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 12px 0 20px;
+}
+
+.competency-sw-grid > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+.competency-sw-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.competency-sw-title.strong { color: #2f8a4c; }
+.competency-sw-title.weak { color: #c65b3a; }
+
+.competency-sw-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.competency-sw-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.competency-score-badge {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.competency-score-badge.strong {
+    background-color: #dff5e6;
+    color: #1e8a4c;
+}
+
+.competency-score-badge.weak {
+    background-color: #fbe6e0;
+    color: #c65b3a;
+}
+
+/* ---------- AI 팁 ---------- */
+.ai-tip-box {
+    margin-top: 8px;
+    padding: 14px 16px;
+    background-color: #fff7fa;
+    border: 1px solid #ffd7e4;
+    border-radius: 10px;
+}
+
+.ai-tip-loading {
+    color: #999;
+    font-size: 13px;
+    margin: 0;
+}
+
+.ai-tip-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.ai-tip-error {
+    font-size: 13px;
+    color: #999;
+    line-height: 1.5;
+    margin: 0 0 10px;
+}
+
+.ai-tip-error code {
+    background: #eee;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+/* ===== 학습 요정 안내 이미지 & 메시지 ===== */
+.competency-instruction-image {
+    display: block;
+    max-width: 720px;
+    width: 80%;
+    height: auto;
+    margin: 0 auto 12px;
+}
+
+.competency-fairy-message {
+    text-align: center;
+    background: linear-gradient(135deg, #fff0f6, #fdf3ff);
+    border: 2px dashed #ffb3d1;
+    border-radius: 20px;
+    padding: 16px 18px;
+    margin: 0 auto 20px;
+    max-width: 470px;
+}
+
+.competency-fairy-message p {
+    margin: 0;
+    font-size: 1.07rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #d6336c;
+}
+
+/* ===== 역량 이모지 블록 (3x3, 마지막 줄 2개) ===== */
+.competency-trait-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 0 auto 8px;
+    max-width: 560px;
+}
+
+.competency-trait-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 8px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
+    transition: transform 0.15s ease;
+}
+
+.competency-trait-block:hover {
+    transform: translateY(-3px);
+}
+
+.competency-trait-emoji {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.competency-trait-block-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #444;
+}
+
+/* 카테고리별 색상 (CATEGORY_CLASS 재사용) */
+.competency-trait-block.cat-cognitive {
+    background: #eaf3ff;
+    border: 2px solid #b8d9ff;
+}
+
+.competency-trait-block.cat-emotional {
+    background: #fff0f0;
+    border: 2px solid #ffc9c9;
+}
+
+.competency-trait-block.cat-behavioral {
+    background: #eafff2;
+    border: 2px solid #b7f0cd;
+}
+
+/* ===== 역량별 정의표 (4열: 역량|정의|역량|정의) ===== */
+.competency-def-table-wrap {
+    overflow-x: auto;
+    margin: 12px auto 24px;
+}
+
+.competency-def-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    font-size: 0.9rem;
+}
+
+.competency-def-table td {
+    padding: 10px 12px;
+    vertical-align: top;
+}
+
+.competency-def-table .competency-def-name {
+    font-weight: 700;
+    color: #ff6b9a;
+    white-space: nowrap;
+    width: 1%;
+}
+
+.competency-def-table .competency-def-text {
+    color: #555;
+    line-height: 1.4;
+}
+
+.competency-def-table tr {
+    background: #fafafa;
+    border-radius: 12px;
+}
+
+@media (max-width: 480px) {
+    .competency-trait-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .competency-def-table,
+    .competency-def-table tbody,
+    .competency-def-table tr {
+        display: block;
+    }
+
+    .competency-def-table td {
+        display: block;
+        width: 100% !important;
+    }
+
+    .competency-def-table .competency-def-name {
+        color: #ff6b9a;
+    }
+
+    .competency-def-table tr {
+        margin-bottom: 10px;
+        padding: 6px 8px;
+    }
+}

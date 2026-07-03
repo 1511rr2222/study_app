@@ -1,91 +1,335 @@
-/* 기본 (모바일용) */
+/* 가독성 좋은 본문/제목 폰트 (Jua는 두꺼워서 깨져 보이는 문제로 제거) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+
+/* 페이지 전체 배경 (살짝 누리끼리한 크림톤) */
+body {
+    background-color: #FFF8EC;
+}
+
+/* 기본 레이아웃 */
 .dashboard-container {
-    max-width: 600px;
+    max-width: 900px;
     width: 100%;
     margin: 0 auto;
-    padding: 20px 20px 80px;
-    box-sizing: border-box;
-}
-
-/* PC용 (화면이 넓어지면 적용됨) */
-@media (min-width: 768px) {
-    .dashboard-container {
-        max-width: 900px; /* 더 넓게 */
-    }
-    .hero-box {
-        height: 400px; /* PC에서는 더 크게 */
-    }
-}
-
-/* 메인 큰 블록 */
-.hero-box {
-    background-color: #fff;
-    height: 300px; /* 세로가 김 */
-    border-radius: 18px;
-    border: 2px solid #ff6b9a;
     padding: 20px;
     box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #3A2E39;
+
+    --edu-pink: #FF6B9A;
+    --edu-pink-dark: #E14C7C;
+    --edu-pink-bg: #FFF5F8;
+    --edu-blue: #5B86E5;
+    --edu-blue-bg: #EEF3FF;
+    --edu-yellow: #FFD469;
+    --edu-lavender: #9B8CFF;
+    --edu-mint: #7ED9A8;
 }
 
-.hero-box h2 {
-    font-weight: 600;
-    margin-top: 0;
+/* ===== 전체를 감싸는 카드 (여기에만 그림자) ===== */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 28px;
+    border: 1.5px solid #FFDDE8;
+    box-shadow: 0 14px 32px rgba(91, 134, 229, 0.16);
+    padding: 24px;
+    box-sizing: border-box;
 }
 
-/* 나머지 막대기 형태 블록 (테두리/굵기는 hero-box와 동일, 크기만 작음) */
-.list-box {
-    background-color: #fff;
-    height: 80px; /* 세로가 짧음 */
-    border-radius: 18px;
-    border: 2px solid #ff6b9a;
+/* ===== 요정 질문 박스 ===== */
+.fairy-question-box {
+    position: relative;
     display: flex;
     align-items: center;
-    padding: 0 20px;
-    cursor: pointer;
-    margin-top: 15px;
-    font-weight: 600;
-    color: #333;
+    background: linear-gradient(135deg, #ffffff 55%, var(--edu-pink-bg) 100%);
+    border: 2px solid var(--edu-pink);
+    border-radius: 22px;
+    padding: 18px 22px 18px 72px;
+    margin-bottom: 24px;
+    box-sizing: border-box;
 }
 
-/* 출석 체크 박스 스타일 */
-.attendance-box {
-    background-color: #fff;
-    height: 80px;
-    border-radius: 18px;
-    border: 2px solid #ff6b9a; /* 기존 list-box와 동일 */
+.fairy-question-img {
+    position: absolute;
+    left: -15px;
+    top: -18px;
+    width: 120px;
+    height: auto;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.12));
+}
+
+.fairy-question-content {
+    flex: 1;
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fairy-question-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--edu-pink-dark);
+    letter-spacing: -0.2px;
+}
+
+.fairy-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fairy-answer-input {
+    flex: 1;
+    min-width: 160px;
+    height: 38px;
+    border: 1.5px solid #FFD9E4;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #FFFDFE;
+    box-sizing: border-box;
+}
+
+.fairy-answer-input:focus {
+    outline: none;
+    border-color: var(--edu-pink);
+}
+
+.fairy-save-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--edu-mint);
+    padding: 4px 10px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.fairy-save-badge.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== 상단 섹션 (5:5 배치) ===== */
+.top-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.card-attendance,
+.card-homework {
+    flex: 1;
+    padding: 20px;
+    border-radius: 22px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #ffffff 0%, var(--edu-blue-bg) 100%);
+    border: 2px solid var(--edu-blue);
+}
+
+.card-header-row {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    margin-bottom: 20px; /* 아래 요소들과 간격 */
-    font-weight: 600;
-    color: #333;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 
-.attendance-calendar {
-    background: #fff;
-    padding: 20px;
-    border-radius: 18px;
-    border: 2px solid #ff6b9a;
-    margin-bottom: 20px;
+.card-header-row h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    color: #2B3A67;
 }
 
+/* 숙제 카드 제목 크기를 출석 카드 제목과 동일하게 맞춤
+   (homework.js/css의 정확한 태그를 몰라 h2~h4에 공통 적용) */
+.card-homework h2,
+.card-homework h3,
+.card-homework h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #2B3A67;
+}
+
+.streak-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--edu-yellow);
+    color: #7A5200;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* ===== 달력 ===== */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7일씩 한 줄 */
-    gap: 5px;
-    margin-top: 10px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin: 15px 0;
 }
 
 .day {
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 5px;
+    position: relative;
+    padding: 8px 0;
+    border: 1px solid #E4EBFF;
+    border-radius: 10px;
     text-align: center;
-    cursor: pointer;
+    font-size: 12px;
+    background: #fff;
+    color: #6B7690;
+}
+
+.day.today {
+    border: 2px solid var(--edu-pink);
+    font-weight: 700;
+    color: var(--edu-pink-dark);
 }
 
 .day.checked {
-    background-color: #ff6b9a;
+    background-color: var(--edu-pink);
     color: white;
+    border-color: var(--edu-pink);
+}
+
+.day.checked::after {
+    content: '💗';
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    font-size: 10px;
+}
+
+#today-attend-btn {
+    width: 100%;
+    background-color: var(--edu-pink);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 4px;
+    box-shadow: 0 4px 0 var(--edu-pink-dark);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+#today-attend-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--edu-pink-dark);
+}
+
+.attendance-rate-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.rate-bar-track {
+    flex: 1;
+    height: 10px;
+    border-radius: 6px;
+    background: #E4EBFF;
+    overflow: hidden;
+}
+
+.rate-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--edu-pink), var(--edu-yellow));
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+#attendance-rate {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edu-pink-dark);
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* ===== 하단 섹션 (스티커형 카드) ===== */
+.bottom-section {
+    display: flex;
+    gap: 16px;
+}
+
+.list-box {
+    flex: 1;
+    height: 90px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.list-box:hover {
+    transform: translateY(-3px) rotate(-1deg);
+}
+
+.list-box:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08);
+}
+
+.list-box-emoji {
+    font-size: 22px;
+}
+
+.list-competency {
+    background-color: var(--edu-pink);
+}
+
+.list-vocab {
+    background-color: var(--edu-lavender);
+}
+
+.list-grades {
+    background-color: var(--edu-mint);
+}
+
+/* 모바일 대응 (화면이 좁아지면 위아래로 정렬) */
+@media (max-width: 768px) {
+    .top-section,
+    .bottom-section {
+        flex-direction: column;
+    }
+
+    .fairy-question-box {
+        padding-top: 50px;
+        padding-left: 22px;
+    }
+
+    .fairy-question-img {
+        left: 10px;
+        top: -20px;
+    }
+
+    .fairy-input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fairy-save-badge {
+        align-self: flex-start;
+    }
 }

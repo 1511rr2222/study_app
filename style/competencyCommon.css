@@ -1,0 +1,7 @@
+/* competencyCommon.css
+   메인 페이지 / 설문 페이지가 함께 쓰는 기본 레이아웃 */
+
+.competency-hero {
+    height: auto;
+    margin-top: 15px;
+}
