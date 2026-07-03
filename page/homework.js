@@ -71,6 +71,16 @@ function statusLabel(status) {
     return '미완료';
 }
 
+// 🆕 기한초과 → 미완료(마감 임박순) → 완료 순으로 정렬
+function sortForDisplay(data) {
+    const statusOrder = { overdue: 0, pending: 1, done: 2 };
+    return data.slice().sort((a, b) => {
+        const statusDiff = statusOrder[getStatus(a)] - statusOrder[getStatus(b)];
+        if (statusDiff !== 0) return statusDiff;
+        return (a.dueDate || '').localeCompare(b.dueDate || ''); // 같은 상태면 마감일 빠른 순
+    });
+}
+
 let editingId = null;
 
 function renderItem(item, options = {}) {
@@ -169,6 +179,12 @@ function attachItemActionEvents(container, onChange) {
             const content = form.content.value.trim();
             if (!content || !lessonDate || !dueDate) return;
 
+            // 🆕 마감일이 수업일보다 빠르면 안내
+            if (dueDate < lessonDate) {
+                alert('마감일은 수업일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
+                return;
+            }
+
             const newData = loadData().map(item =>
                 item.id === id ? { ...item, lessonDate, dueDate, content } : item
             );
@@ -204,13 +220,11 @@ function renderSummary(onOpenFull) {
     const doneCount = data.filter(item => item.done).length;
     const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);
 
-    const incomplete = data
-        .filter(item => !item.done)
-        .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+    const incomplete = sortForDisplay(data.filter(item => !item.done));
 
     const listHtml = incomplete.length === 0
         ? `<p class="homework-empty">미완료된 숙제가 없어요! 🎉</p>`
-        : incomplete.map(renderItem).join('');
+        : incomplete.map(item => renderItem(item)).join('');
 
     container.innerHTML = `
         <div class="homework-stats">
@@ -262,7 +276,7 @@ function renderPage(onBack) {
     const data = loadData();
     const weeklyRate = getWeeklyAverageRate(data);
 
-    const sorted = data.slice().sort((a, b) => (b.dueDate || '').localeCompare(a.dueDate || ''));
+    const sorted = sortForDisplay(data);
     const listHtml = sorted.length === 0
         ? `<p class="homework-empty">아직 등록된 숙제가 없어요.</p>`
         : sorted.map(item => renderItem(item, { editable: true })).join('');
@@ -274,17 +288,17 @@ function renderPage(onBack) {
         </div>
 
         <form id="homework-add-form" class="homework-add-form">
+            <input type="text" id="homework-input" placeholder="숙제 내용을 입력하세요" required>
             <div class="homework-form-row">
                 <label class="homework-form-label">
                     수업일
-                    <input type="date" id="homework-lesson-date" required>
+                    <input type="date" id="homework-lesson-date" value="${todayStr()}" required>
                 </label>
                 <label class="homework-form-label">
-                    마감일(숙제 기간)
+                    마감일
                     <input type="date" id="homework-due-date" required>
                 </label>
             </div>
-            <input type="text" id="homework-input" placeholder="숙제 내용을 입력하세요" required>
             <button type="submit" class="pink-button">추가</button>
         </form>
 
@@ -303,6 +317,12 @@ function renderPage(onBack) {
         const content = contentInput.value.trim();
         if (!content || !lessonDateInput.value || !dueDateInput.value) return;
 
+        // 🆕 마감일이 수업일보다 빠르면 안내
+        if (dueDateInput.value < lessonDateInput.value) {
+            alert('마감일은 수업일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
+            return;
+        }
+
         const newData = loadData();
         newData.push({
             id: Date.now().toString(),
@@ -312,6 +332,7 @@ function renderPage(onBack) {
             done: false
         });
         saveData(newData);
+        contentInput.value = ''; // 🆕 등록 후 내용창만 비움 (날짜는 유지 - 연달아 등록할 때 편함)
         renderPage(onBack);
     });
 
