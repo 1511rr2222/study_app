@@ -34,14 +34,13 @@ export function CompetencyMainView() {
 }
 
 // onBack: 대시보드로 돌아가기, onStartSurvey: 진단 페이지로 이동
-export function initCompetencyMainPage(onBack, onStartSurvey) {
-    renderOverview(onBack, onStartSurvey);
+// ✅ 이렇게 수정
+export function initCompetencyMainPage(onBack, onStartSurvey, onOpenPractice) {
+    renderOverview(onBack, onStartSurvey, onOpenPractice);
     document.getElementById('competency-back-btn').addEventListener('click', onBack);
 }
 
-/* -------------------- 개요 화면 (비교 표 + 강점/약점 + AI 팁) -------------------- */
-
-function renderOverview(onBack, onStartSurvey) {
+function renderOverview(onBack, onStartSurvey, onOpenPractice) {
     const root = document.getElementById('competency-root');
     if (!root) return;
 
@@ -101,11 +100,28 @@ function renderOverview(onBack, onStartSurvey) {
         onStartSurvey();
     });
 
+    root.querySelector('.competency-trait-grid').addEventListener('click', (e) => {
+        const block = e.target.closest('.competency-trait-block');
+        if (!block) return;
+        onOpenPractice(block.dataset.traitId);
+    });
+
     if (latest) {
         renderChart(latest);
         const ranked = getRanked(latest);
         loadAiTips(ranked.weakest, ranked.strongest);
     }
+}
+
+function renderTraitGrid() {
+    const items = TRAITS.map(t => `
+        <div class="competency-trait-block ${CATEGORY_CLASS[t.category]}" data-trait-id="${t.id}" role="button" tabindex="0">
+            <span class="competency-trait-emoji">${TRAIT_EMOJI[t.id] || '⭐'}</span>
+            <span class="competency-trait-block-name">${t.name}</span>
+        </div>
+    `).join('');
+
+    return `<div class="competency-trait-grid">${items}</div>`;
 }
 
 let chartInstance = null;
@@ -156,17 +172,6 @@ function renderChart(latest) {
             }
         }
     });
-}
-
-function renderTraitGrid() {
-    const items = TRAITS.map(t => `
-        <div class="competency-trait-block ${CATEGORY_CLASS[t.category]}">
-            <span class="competency-trait-emoji">${TRAIT_EMOJI[t.id] || '⭐'}</span>
-            <span class="competency-trait-block-name">${t.name}</span>
-        </div>
-    `).join('');
-
-    return `<div class="competency-trait-grid">${items}</div>`;
 }
 
 function renderTraitDefTable() {

@@ -4,10 +4,11 @@ import { initHomeworkSummary, HomeworkPageView, initHomeworkPage } from './page/
 import { CompetencyMainView, initCompetencyMainPage } from './page/competencyMain.js';
 import { CompetencySurveyView, initCompetencySurveyPage } from './page/competencySurvey.js';
 import { DashboardView, initDashboardEvents } from './page/dashboard.js';
+import { CompetencyPracticeView, initCompetencyPracticePage } from './page/competencyPractice.js';
 
 const app = document.getElementById('app');
 
-function navigate(page) {
+function navigate(page, param) {
     const header = HeaderView(); // 헤더는 항상 표시하고, 내용만 갈아끼우기
 
     if (page === 'login') {
@@ -25,7 +26,8 @@ function navigate(page) {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
             () => navigate('dashboard'),       // 뒤로가기 시 대시보드로 복귀
-            () => navigate('competency-survey') // 진단하기 클릭 시 설문 페이지로 이동
+            () => navigate('competency-survey'),
+            (traitId) => navigate('competency-practice' , traitId) 
         );
     } else if (page === 'competency-survey') {
         app.innerHTML = header + CompetencySurveyView();
@@ -33,6 +35,9 @@ function navigate(page) {
             () => navigate('competency'), // 설문 완료 시 메인 페이지로 (결과 반영됨)
             () => navigate('competency')  // 진단 취소 시 메인 페이지로
         );
+    } else if (page === 'competency-practice') {
+        app.innerHTML = header + CompetencyPracticeView(param);
+        initCompetencyPracticePage(param, () => navigate('competency'));
     }
 
     // 헤더는 항상 렌더링되므로, '홈' 링크도 매번 새로 이벤트를 걸어줌
