@@ -1,40 +1,84 @@
 // Vercel Serverless Function
 //
-// 프론트엔드(page/competencyPractice.js)에서 아래 형식으로 요청을 보냅니다:
+// 프론트엔드에서 아래 형식으로 요청을 보냅니다:
 // POST /api/competency-coach
-// body: {
-//   traitId: 'meta',
-//   mode: 'retry',
-//   image: '<base64 문자열, data: 접두사 제외>',
-//   context: { subjectUnit, mistakeType, priorKnowledge },  // 학생이 적은 고정 질문 3개 답변
-//   history: [ { role: 'ai' | 'student', text: string }, ... ],  // 지금까지의 대화 기록
-//   studentInput: string | null   // 이번 턴에 학생이 새로 입력한 내용 (첫 요청이면 null)
-// }
+// body: { traitId, mode, ...역량별 추가 필드 }
 //
-// 이 함수는 상태를 저장하지 않습니다(stateless). 매 요청마다 프론트가
-// 전체 대화 기록(history)을 함께 보내주면, 그 기록을 바탕으로 매번
-// OpenAI 대화 메시지 배열을 새로 구성해서 다음 스텝을 생성합니다.
+// 지원하는 조합:
+//   traitId: 'meta', mode: 'retry'      → 메타인지 단계별 재풀이 (기존과 동일)
+//   traitId: 'deep', mode: 'summarize'  → 심층학습: 내 요약 vs AI 요약 비교
+//   traitId: 'deep', mode: 'mindmap'    → 심층학습: 마인드맵 피드백
+//   traitId: 'deep', mode: 'explain'    → 심층학습: 소리 내어 설명한 내용 피드백
 //
-// 응답 형식: { stepMessage: string, isFinal: boolean }
+// 이 함수는 상태를 저장하지 않습니다(stateless).
 
 const MAX_RETRY_TURNS = 5;
+const OPENAI_MODEL = 'gpt-4o-mini';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'POST 요청만 허용됩니다.' });
     }
 
-    const { traitId, mode, image, context, history = [], studentInput = null } = req.body || {};
+    const { traitId, mode } = req.body || {};
+
+    try {
+        if (traitId === 'meta' && mode === 'retry') {
+            return await handleMetaRetry(req.body, res);
+        }
+        if (traitId === 'deep' && mode === 'summarize') {
+            return await handleDeepSummarize(req.body, res);
+        }
+        if (traitId === 'deep' && mode === 'mindmap') {
+            return await handleDeepMindmap(req.body, res);
+        }
+        if (traitId === 'deep' && mode === 'explain') {
+            return await handleDeepExplain(req.body, res);
+        }
+        return res.status(400).json({ error: '지원하지 않는 traitId/mode 조합입니다.' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'AI 응답 생성 중 오류가 발생했습니다.' });
+    }
+}
+
+/* ==================== 공통: OpenAI 호출 + JSON 파싱 ==================== */
+
+async function callOpenAiJson(messages, fallback) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+            model: OPENAI_MODEL,
+            messages,
+            temperature: 0.7
+        })
+    });
+
+    const data = await response.json();
+    const rawText = data.choices?.[0]?.message?.content || '{}';
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
+
+    try {
+        return JSON.parse(cleaned);
+    } catch (e) {
+        console.error('JSON 파싱 실패:', rawText);
+        return fallback;
+    }
+}
+
+/* ==================== 메타인지: 단계별 재풀이 (기존 로직 그대로) ==================== */
+
+async function handleMetaRetry(body, res) {
+    const { image, context, history = [], studentInput = null } = body;
 
     if (!image) {
         return res.status(400).json({ error: '이미지가 필요합니다.' });
     }
 
-    if (mode !== 'retry') {
-        return res.status(400).json({ error: '지원하지 않는 mode 입니다.' });
-    }
-
-    // 지금까지 AI가 진행한 스텝 수(=현재 요청으로 만들어질 턴 번호)
     const aiTurnsSoFar = history.filter(h => h.role === 'ai').length;
     const currentTurn = aiTurnsSoFar + 1;
     const shouldWrapUp = currentTurn >= MAX_RETRY_TURNS;
@@ -75,7 +119,6 @@ ${shouldWrapUp
 {"stepMessage": "...", "isFinal": true 또는 false}
 `.trim();
 
-    // 대화 히스토리를 OpenAI 메시지 형식으로 변환
     const historyMessages = history.map(item => ({
         role: item.role === 'ai' ? 'assistant' : 'user',
         content: item.text
@@ -97,41 +140,171 @@ ${shouldWrapUp
         messages.push({ role: 'user', content: studentInput });
     }
 
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages,
-                temperature: 0.7
-            })
-        });
+    const parsed = await callOpenAiJson(messages, {
+        stepMessage: 'AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.',
+        isFinal: true
+    });
 
-        const data = await response.json();
-        const rawText = data.choices?.[0]?.message?.content || '{}';
-        const cleaned = rawText.replace(/```json|```/g, '').trim();
+    const stepMessage = parsed.stepMessage || '다음 단계를 불러오지 못했어요. 다시 시도해주세요.';
+    const isFinal = Boolean(parsed.isFinal) || shouldWrapUp;
 
-        let parsed;
-        try {
-            parsed = JSON.parse(cleaned);
-        } catch (e) {
-            console.error('JSON 파싱 실패:', rawText);
-            parsed = {
-                stepMessage: 'AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.',
-                isFinal: true
-            };
-        }
+    return res.status(200).json({ stepMessage, isFinal });
+}
 
-        const stepMessage = parsed.stepMessage || '다음 단계를 불러오지 못했어요. 다시 시도해주세요.';
-        const isFinal = Boolean(parsed.isFinal) || shouldWrapUp;
+/* ==================== 심층학습: 내 요약 vs AI 요약 ==================== */
 
-        return res.status(200).json({ stepMessage, isFinal });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'AI 응답 생성 중 오류가 발생했습니다.' });
+async function handleDeepSummarize(body, res) {
+    const { image, videoUrl, studentSummary } = body;
+
+    if (!image && !videoUrl) {
+        return res.status(400).json({ error: '이미지 또는 동영상 URL이 필요합니다.' });
     }
+    if (!studentSummary) {
+        return res.status(400).json({ error: '학생의 요약이 필요합니다.' });
+    }
+
+    const commonRules = `
+말투는 친근하고 다정한 한국어 존댓말로 작성하되, "학생님"처럼 딱딱한 호칭은 쓰지 마세요.
+가독성을 위해 문장을 한 줄에 몰아 쓰지 말고 줄바꿈(\n)으로 구분하세요.
+다른 설명 없이 아래 JSON 형식으로만 응답하세요. 줄바꿈은 반드시 \n으로 이스케이프하세요:
+{"aiSummary": "...", "feedback": "..."}
+`.trim();
+
+    let messages;
+    let fallbackAiSummary;
+
+    if (image) {
+        // ✅ 사진: 실제로 내용을 보고 정확한 참고 요약을 만들 수 있음
+        const systemPrompt = `
+당신은 중고등학생의 요약 능력을 길러주는 학습 코치입니다.
+학생이 공부한 자료(사진)와, 그것을 본인 언어로 요약한 내용을 보냅니다.
+
+1. 사진 속 내용을 바탕으로 정확하고 간결한 참고 요약을 aiSummary에 작성하세요.
+2. 학생의 요약(studentSummary)과 비교해서, 잘 짚은 부분을 먼저 인정해주고
+   빠뜨리거나 부정확한 부분이 있다면 부드럽게 짚어주는 feedback을 작성하세요.
+   정답을 그대로 알려주기보다는, 무엇을 더 채우면 좋을지 스스로 생각해보게 유도하세요.
+
+${commonRules}
+`.trim();
+
+        messages = [
+            { role: 'system', content: systemPrompt },
+            {
+                role: 'user',
+                content: [
+                    { type: 'text', text: `학생의 요약: "${studentSummary}"\n\n이 사진 속 내용을 바탕으로 위 지침대로 응답해주세요.` },
+                    { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${image}` } }
+                ]
+            }
+        ];
+        fallbackAiSummary = '요약을 불러오지 못했어요. 다시 시도해주세요.';
+    } else {
+        // ⚠️ 동영상 URL: 실제 영상을 볼 수 없으므로, 내용의 사실 여부를 판단하지 않고
+        // 학생 요약 자체의 구조/완성도만 봐주도록 제한 (허위 정보 생성 방지)
+        const systemPrompt = `
+당신은 중고등학생의 요약 능력을 길러주는 학습 코치입니다.
+학생이 동영상(${videoUrl})을 보고 스스로 요약한 내용을 보냅니다.
+당신은 이 동영상을 직접 볼 수 없으므로, 영상의 실제 내용이 맞는지는 절대 판단하거나
+지어내지 마세요.
+
+1. aiSummary에는 실제 요약 대신, "동영상 내용은 직접 확인할 수 없어 내용의 사실 여부는
+   판단하지 않았어요"라는 취지의 짧은 안내 문장만 넣으세요.
+2. feedback에는 학생의 요약(studentSummary)이 구조적으로 잘 되어 있는지
+   (핵심어 위주로 정리했는지, 흐름이 논리적인지, 너무 짧거나 문장을 그대로 베낀 것 같지는 않은지)
+   에 대해서만 다정하게 코멘트하고, 스스로 다시 확인해볼 만한 질문을 1개 던져주세요.
+
+${commonRules}
+`.trim();
+
+        messages = [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `학생의 요약: "${studentSummary}"\n\n위 지침대로 응답해주세요.` }
+        ];
+        fallbackAiSummary = '동영상 내용은 직접 확인할 수 없어요.';
+    }
+
+    const parsed = await callOpenAiJson(messages, {
+        aiSummary: fallbackAiSummary,
+        feedback: 'AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.'
+    });
+
+    return res.status(200).json({
+        aiSummary: parsed.aiSummary || fallbackAiSummary,
+        feedback: parsed.feedback || '피드백을 불러오지 못했어요. 다시 시도해주세요.'
+    });
+}
+
+/* ==================== 심층학습: 마인드맵 피드백 ==================== */
+
+async function handleDeepMindmap(body, res) {
+    const { mindmap, context } = body;
+
+    if (!mindmap?.topic) {
+        return res.status(400).json({ error: '마인드맵 주제가 필요합니다.' });
+    }
+
+    const branchList = (mindmap.branches || [])
+        .filter(b => b.title?.trim())
+        .map(b => `- ${b.title}${b.detail ? `: ${b.detail}` : ''}`)
+        .join('\n') || '(작성된 가지 없음)';
+
+    const systemPrompt = `
+당신은 중고등학생의 심층 학습(구조화 능력)을 길러주는 학습 코치입니다.
+학생이 아래처럼 마인드맵을 정리했습니다.
+
+중심 주제: ${mindmap.topic}
+가지 목록:
+${branchList}
+
+참고로 학생이 이전에 작성한 요약: "${context?.studentSummary || '(없음)'}"
+
+1. 가지들이 중심 주제와 논리적으로 잘 연결되어 있는지, 빠진 핵심 개념은 없는지 살펴보세요.
+2. 잘한 부분을 먼저 인정하고, 보완하면 좋을 점을 다정한 존댓말로 1~2가지 제안하세요.
+   "학생님" 같은 딱딱한 호칭은 쓰지 마세요.
+3. 가독성을 위해 줄바꿈(\n)으로 문단을 구분하세요.
+
+다른 설명 없이 아래 JSON 형식으로만 응답하세요. 줄바꿈은 \n으로 이스케이프하세요:
+{"feedback": "..."}
+`.trim();
+
+    const parsed = await callOpenAiJson(
+        [{ role: 'system', content: systemPrompt }, { role: 'user', content: '위 마인드맵에 대한 피드백을 작성해주세요.' }],
+        { feedback: 'AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.' }
+    );
+
+    return res.status(200).json({ feedback: parsed.feedback || '피드백을 불러오지 못했어요. 다시 시도해주세요.' });
+}
+
+/* ==================== 심층학습: 소리 내어 설명한 내용 피드백 ==================== */
+
+async function handleDeepExplain(body, res) {
+    const { transcript, context } = body;
+
+    if (!transcript?.trim()) {
+        return res.status(400).json({ error: '설명 내용이 필요합니다.' });
+    }
+
+    const systemPrompt = `
+당신은 중고등학생의 심층 학습(설명 능력)을 길러주는 학습 코치입니다.
+학생이 마이크로 소리 내어 설명한 내용이 텍스트로 변환되어 아래에 주어집니다
+(음성 인식 과정에서 오타나 부정확한 부분이 있을 수 있다는 점을 감안하세요).
+
+학생의 설명: "${transcript}"
+참고로 학생이 이전에 작성한 요약: "${context?.studentSummary || '(없음)'}"
+
+1. 마치 친구가 설명을 들어준 것처럼, 이해하기 쉬웠는지, 논리적 순서가 있었는지,
+   빠뜨린 핵심 내용은 없는지를 다정한 존댓말로 코멘트하세요. "학생님" 같은 딱딱한 호칭은 쓰지 마세요.
+2. 잘한 부분을 먼저 인정한 뒤, 보완하면 좋을 점을 1~2가지 제안하세요.
+3. 가독성을 위해 줄바꿈(\n)으로 문단을 구분하세요.
+
+다른 설명 없이 아래 JSON 형식으로만 응답하세요. 줄바꿈은 \n으로 이스케이프하세요:
+{"feedback": "..."}
+`.trim();
+
+    const parsed = await callOpenAiJson(
+        [{ role: 'system', content: systemPrompt }, { role: 'user', content: '위 설명에 대한 피드백을 작성해주세요.' }],
+        { feedback: 'AI 응답을 처리하는 중 문제가 발생했어요. 다시 시도해주세요.' }
+    );
+
+    return res.status(200).json({ feedback: parsed.feedback || '피드백을 불러오지 못했어요. 다시 시도해주세요.' });
 }
