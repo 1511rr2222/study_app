@@ -1,10 +1,13 @@
+import { supabase } from '../supabaseClient.js';
+
 export function LoginView() {
     return `
         <div id="login-section">
             <h1>Login</h1>
-            <input type="text" id="login-id" placeholder="아이디를 입력하세요">
+            <input type="email" id="login-email" placeholder="이메일을 입력하세요">
             <input type="password" id="login-pw" placeholder="비밀번호를 입력하세요">
             <button class="pink-button" id="login-btn">로그인</button>
+            <p id="login-error" class="login-error"></p>
         </div>
     `;
 }
@@ -13,21 +16,46 @@ export function LoginView() {
 // onLoginSuccess: 로그인 성공 시 실행할 콜백 (예: 대시보드로 이동)
 export function initLogin(onLoginSuccess) {
     const loginBtn = document.getElementById('login-btn');
+    const emailInput = document.getElementById('login-email');
+    const pwInput = document.getElementById('login-pw');
+    const errorEl = document.getElementById('login-error');
 
-    loginBtn.addEventListener('click', () => {
-        console.log("로그인 버튼이 눌렸습니다!");
+    loginBtn.addEventListener('click', () => handleLogin());
 
-        const idInput = document.getElementById('login-id');
-        const pwInput = document.getElementById('login-pw');
+    // 엔터키로도 로그인되게
+    pwInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
 
-        const id = idInput.value.trim();
-        const pw = pwInput.value.trim();
+    async function handleLogin() {
+        const email = emailInput.value.trim();
+        const password = pwInput.value.trim();
 
-        if (!id || !pw) {
-            alert('아이디와 비밀번호를 입력해주세요.');
+        if (!email || !password) {
+            showError('이메일과 비밀번호를 입력해주세요.');
             return;
         }
 
-        onLoginSuccess();
-    });
+        loginBtn.disabled = true;
+        loginBtn.innerText = '로그인 중...';
+        showError('');
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        loginBtn.disabled = false;
+        loginBtn.innerText = '로그인';
+
+        if (error) {
+            showError('이메일 또는 비밀번호가 올바르지 않아요.');
+            return;
+        }
+
+        if (data.session) {
+            onLoginSuccess();
+        }
+    }
+
+    function showError(msg) {
+        if (errorEl) errorEl.innerText = msg;
+    }
 }

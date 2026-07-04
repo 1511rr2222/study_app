@@ -1,0 +1,36 @@
+/* ✅ Q2 실수유형 선택 칩 (메타인지 전용) */
+.practice-mistake-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.practice-mistake-chip {
+    background: #fff;
+    border: 1.5px solid #ffe0a3;
+    color: #a06b00;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.practice-mistake-chip:hover {
+    background: #fff8e8;
+}
+
+.practice-mistake-chip.selected {
+    background: #ffc94d;
+    border-color: #ffb100;
+    color: #5a3d00;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 480px) {
+    .practice-mistake-options {
+        justify-content: center;
+    }
+}

@@ -5,6 +5,7 @@ import { CompetencyMainView, initCompetencyMainPage } from './page/competencyMai
 import { CompetencySurveyView, initCompetencySurveyPage } from './page/competencySurvey.js';
 import { DashboardView, initDashboardEvents } from './page/dashboard.js';
 import { CompetencyPracticeView, initCompetencyPracticePage } from './page/competencyPractice.js';
+import { supabase } from './supabaseClient.js';
 
 const app = document.getElementById('app');
 
@@ -48,7 +49,29 @@ function navigate(page, param) {
             navigate('dashboard');
         });
     }
+
+    // 로그아웃 버튼이 헤더에 있다면 연결 (없으면 무시됨)
+    const logoutBtn = document.getElementById('nav-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabase.auth.signOut();
+            navigate('login');
+        });
+    }
 }
 
-// 처음 실행
-navigate('login');
+// 처음 실행: 이미 로그인된 세션이 있으면 대시보드로, 없으면 로그인 화면으로
+async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    navigate(session ? 'dashboard' : 'login');
+}
+
+// 로그인/로그아웃 등 인증 상태가 바뀔 때도 반응 (예: 토큰 만료로 자동 로그아웃된 경우)
+supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') {
+        navigate('login');
+    }
+});
+
+init();

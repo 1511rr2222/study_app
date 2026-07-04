@@ -1,6 +1,5 @@
 import { HomeworkSummaryView } from './homework.js';
-
-const FAIRY_REASON_KEY = 'yerin_fairy_reason';
+import { supabase } from '../supabaseClient.js';
 
 export function DashboardView() {
     return `
@@ -52,7 +51,7 @@ export function DashboardView() {
     `;
 }
 
-export function initDashboardEvents() {
+export async function initDashboardEvents() {
     const grid = document.getElementById('calendar-grid');
     const rateText = document.getElementById('attendance-rate');
     const rateFill = document.getElementById('rate-bar-fill');
@@ -64,57 +63,55 @@ export function initDashboardEvents() {
 
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth();
+    const month = now.getMonth(); // 0~11
     const today = now.getDate();
-    const storageKey = `attendance_${year}_${month}`;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     if (title) title.innerText = `📅 ${month + 1}월 출석 현황`;
 
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    if (grid) grid.innerHTML = '';
-
-    for (let i = 1; i <= daysInMonth; i++) {
-        const day = document.createElement('div');
-        day.className = 'day';
-        if (i === today) day.classList.add('today');
-        day.innerText = i;
-        grid.appendChild(day);
+    // 현재 로그인된 사용자 확인
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        // 세션이 없으면(만료 등) 더 진행하지 않음 - 라우팅 쪽에서 로그인 화면으로 보내는 걸 권장
+        console.warn('로그인된 사용자가 없어 대시보드 데이터를 불러올 수 없습니다.');
+        return;
     }
 
-    if (attendBtn) {
-        attendBtn.addEventListener('click', () => {
-            const todayEl = document.querySelector(`.day:nth-child(${today})`);
-            if (todayEl) {
-                todayEl.classList.add('checked');
-                saveAttendance();
-                updateRate();
-            }
-        });
+    let checkedDays = new Set();
+
+    // ---------- 출석 데이터 불러오기 ----------
+    async function loadAttendance() {
+        const { data, error } = await supabase
+            .from('attendance')
+            .select('day')
+            .eq('user_id', user.id)
+            .eq('year', year)
+            .eq('month', month);
+
+        if (error) {
+            console.error('출석 데이터 로드 실패:', error);
+            return;
+        }
+        checkedDays = new Set((data || []).map(row => row.day));
     }
 
-    function saveAttendance() {
-        const checkedDays = Array.from(document.querySelectorAll('.day.checked'))
-                                 .map(d => d.innerText);
-        localStorage.setItem(storageKey, JSON.stringify(checkedDays));
+    function renderCalendar() {
+        if (!grid) return;
+        grid.innerHTML = '';
+        for (let i = 1; i <= daysInMonth; i++) {
+            const day = document.createElement('div');
+            day.className = 'day';
+            if (i === today) day.classList.add('today');
+            if (checkedDays.has(i)) day.classList.add('checked');
+            day.innerText = i;
+            grid.appendChild(day);
+        }
     }
 
-    function loadAttendance() {
-        const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        saved.forEach(dayNum => {
-            const dayEl = document.querySelector(`.day:nth-child(${dayNum})`);
-            if (dayEl) dayEl.classList.add('checked');
-        });
-    }
-
-    // 오늘 기준 역방향으로 연속 출석일을 센다 (스트릭)
     function calcStreak() {
-        const checkedSet = new Set(
-            Array.from(document.querySelectorAll('.day.checked')).map(d => Number(d.innerText))
-        );
         let streak = 0;
         let day = today;
-        while (checkedSet.has(day)) {
+        while (checkedDays.has(day)) {
             streak += 1;
             day -= 1;
         }
@@ -122,7 +119,7 @@ export function initDashboardEvents() {
     }
 
     function updateRate() {
-        const checkedCount = document.querySelectorAll('.day.checked').length;
+        const checkedCount = checkedDays.size;
         const rate = Math.round((checkedCount / daysInMonth) * 100);
         if (rateText) rateText.innerText = `출석률 ${rate}%`;
         if (rateFill) rateFill.style.width = `${rate}%`;
@@ -133,20 +130,72 @@ export function initDashboardEvents() {
         }
     }
 
-    // 요정 질문 답변: 페이지를 이동해도 유지되도록 localStorage에서 불러오고, 입력할 때마다 저장 + 저장 뱃지 반응
-    if (fairyInput) {
-        fairyInput.value = localStorage.getItem(FAIRY_REASON_KEY) || '';
-        let saveTimer = null;
-        fairyInput.addEventListener('input', () => {
-            localStorage.setItem(FAIRY_REASON_KEY, fairyInput.value);
-            if (fairySaveBadge) {
-                fairySaveBadge.classList.add('show');
-                clearTimeout(saveTimer);
-                saveTimer = setTimeout(() => fairySaveBadge.classList.remove('show'), 1200);
+    if (attendBtn) {
+        attendBtn.addEventListener('click', async () => {
+            if (checkedDays.has(today)) return; // 이미 오늘 출석함
+
+            attendBtn.disabled = true;
+            const { error } = await supabase
+                .from('attendance')
+                .upsert(
+                    { user_id: user.id, year, month, day: today },
+                    { onConflict: 'user_id,year,month,day' }
+                );
+            attendBtn.disabled = false;
+
+            if (error) {
+                console.error('출석 저장 실패:', error);
+                alert('출석 저장 중 문제가 생겼어요. 다시 시도해주세요.');
+                return;
             }
+
+            checkedDays.add(today);
+            renderCalendar();
+            updateRate();
         });
     }
 
-    loadAttendance();
+    // ---------- 공부 요정 답변 ----------
+    async function loadFairyAnswer() {
+        const { data, error } = await supabase
+            .from('fairy_answers')
+            .select('answer')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (error) {
+            console.error('요정 답변 로드 실패:', error);
+            return;
+        }
+        if (fairyInput) fairyInput.value = data?.answer || '';
+    }
+
+    if (fairyInput) {
+        let saveTimer = null;
+        fairyInput.addEventListener('input', () => {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(async () => {
+                const { error } = await supabase
+                    .from('fairy_answers')
+                    .upsert(
+                        { user_id: user.id, answer: fairyInput.value, updated_at: new Date().toISOString() },
+                        { onConflict: 'user_id' }
+                    );
+
+                if (error) {
+                    console.error('요정 답변 저장 실패:', error);
+                    return;
+                }
+
+                if (fairySaveBadge) {
+                    fairySaveBadge.classList.add('show');
+                    setTimeout(() => fairySaveBadge.classList.remove('show'), 1200);
+                }
+            }, 600); // 입력이 멈추고 0.6초 후 저장 (매 타이핑마다 DB 호출하지 않도록)
+        });
+    }
+
+    await Promise.all([loadAttendance(), loadFairyAnswer()]);
+    renderCalendar();
     updateRate();
 }

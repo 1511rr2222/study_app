@@ -1,0 +1,362 @@
+.practice-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #fff0f6, #fdf3ff);
+    border: 2px dashed #ffb3d1;
+    border-radius: 20px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+}
+
+.practice-hero-emoji {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
+}
+
+.practice-hero-text {
+    flex: 1;
+}
+
+.practice-hero-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #d6336c;
+    background: #ffe3ee;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+}
+
+.practice-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #d6336c;
+    margin: 0 0 6px;
+}
+
+.practice-def {
+    font-size: 13.5px;
+    color: #7a5a68;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* 카테고리별 원 배경 색상 (competencyMain.css의 CATEGORY_CLASS 재사용) */
+.practice-hero.cat-cognitive .practice-hero-emoji { background: #eaf3ff; }
+.practice-hero.cat-emotional .practice-hero-emoji { background: #fff0f0; }
+.practice-hero.cat-behavioral .practice-hero-emoji { background: #eafff2; }
+
+.practice-loading { text-align: center; padding: 40px 0; color: #999; }
+.practice-soon { text-align: center; color: #999; padding: 40px 0; }
+
+/* ==================== 업로드 박스 (사진/동영상 공용) ==================== */
+
+.practice-upload-box {
+    text-align: center;
+    background: #fff;
+    border: 3px dashed #ffc9c9;
+    border-radius: 20px;
+    padding: 40px 20px;
+}
+
+.practice-upload-emoji { font-size: 2.5rem; margin: 0 0 10px; }
+.practice-upload-desc { color: #777; font-size: 14px; margin-bottom: 18px; }
+
+.practice-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.practice-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: var(--edu-pink, #ff6b9a);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 0 var(--edu-pink-dark, #e14c7c);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.practice-upload-label:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--edu-pink-dark, #e14c7c);
+}
+
+.practice-upload-icon {
+    font-size: 1.3rem;
+}
+
+/* ==================== 자료 미리보기 헤더 (분석/요약 단계 공용) ==================== */
+
+.practice-analysis-header {
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid #eee; padding-bottom: 16px; margin-bottom: 16px;
+}
+
+.practice-note-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #a06b00;
+    background: #fff1d6;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}
+
+.practice-analysis-header h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #3A2E39;
+    margin: 0 0 6px;
+}
+
+.practice-analysis-header p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.practice-image-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid #ddd; flex-shrink: 0; }
+
+/* ==================== 질문 박스: '메모지' 느낌 (공용) ==================== */
+
+.practice-question-box {
+    background: #fffdf3;
+    border: 1.5px solid #ffe8a3;
+    border-left: 4px solid #ffc94d;
+    border-radius: 4px 14px 14px 4px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+.practice-question-text {
+    font-weight: 700;
+    color: #a06b00;
+    margin: 0 0 10px;
+}
+
+.practice-answer-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px dashed #ffd98a;
+    border-radius: 0;
+    padding: 6px 2px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.practice-answer-input:focus {
+    outline: none;
+    border-bottom-color: #ffb100;
+}
+
+.practice-submit-btn { width: 100%; margin-top: 6px; }
+.practice-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none !important;
+}
+
+/* ==================== 안내 배너 (공용) ==================== */
+
+.practice-retry-notice {
+    background: #fff9db; border-left: 4px solid #ffd43b; border-radius: 0 12px 12px 0;
+    padding: 14px 16px; margin-bottom: 16px;
+}
+.practice-retry-notice p { margin: 0 0 4px; font-size: 13.5px; color: #5c4a00; }
+.practice-retry-notice p:last-child { margin-bottom: 0; }
+
+.practice-retry-error {
+    color: #d6336c;
+    font-size: 13px;
+    margin: 0 0 12px;
+}
+
+.practice-retry-complete {
+    text-align: center;
+    background: #fff0f6;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.practice-retry-complete p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: #5c3a4a;
+}
+
+/* ==================== 채팅형 UI (AI 대화, 공용) ==================== */
+
+.practice-chat-log {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 440px;
+    overflow-y: auto;
+    padding: 4px 2px 12px;
+    margin-bottom: 14px;
+}
+
+.practice-chat-bubble {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 88%;
+}
+
+.practice-chat-bubble.ai {
+    align-self: flex-start;
+}
+
+.practice-chat-bubble.student {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.practice-chat-avatar {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background: #fff0f6;
+    border-radius: 50%;
+}
+
+.practice-chat-text {
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 10px 14px;
+    border-radius: 16px;
+}
+
+.practice-chat-bubble.ai .practice-chat-text {
+    background: #fff5f8;
+    border: 1px solid #ffd7e4;
+    color: #3A2E39;
+    border-top-left-radius: 4px;
+}
+
+.practice-chat-bubble.student .practice-chat-text {
+    background: var(--edu-pink, #ff6b9a);
+    color: #fff;
+    border-top-right-radius: 4px;
+}
+
+.practice-chat-bubble.loading .practice-chat-text {
+    color: #b98fa0;
+    font-style: italic;
+}
+
+.practice-chat-input-row {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.practice-chat-input-row textarea {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.practice-chat-input-row textarea:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.practice-chat-input-row button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .practice-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 18px 16px;
+    }
+
+    .practice-hero-badge {
+        margin: 0 auto 6px;
+    }
+
+    .practice-upload-box {
+        padding: 28px 14px;
+    }
+
+    .practice-upload-label {
+        max-width: 100%;
+        font-size: 14px;
+        padding: 14px 16px;
+    }
+
+    .practice-analysis-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .practice-image-preview {
+        width: 100%;
+        height: auto;
+        max-height: 160px;
+    }
+
+    .practice-question-box {
+        padding: 14px;
+    }
+
+    .practice-chat-bubble {
+        max-width: 96%;
+    }
+
+    .practice-chat-input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

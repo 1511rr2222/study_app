@@ -1,0 +1,217 @@
+/* ==================== 업로드: 사진/동영상 탭 ==================== */
+
+.practice-source-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    justify-content: center;
+}
+
+.practice-source-tab {
+    background: #fff;
+    border: 1.5px solid #ffc9c9;
+    color: #b6474f;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.practice-source-tab.selected {
+    background: var(--edu-pink, #ff6b9a);
+    border-color: var(--edu-pink-dark, #e14c7c);
+    color: #fff;
+}
+
+.practice-video-url-box {
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.practice-video-url-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid #ffc9c9;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.practice-video-url-input:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.practice-material-preview-link {
+    display: inline-block;
+    font-size: 13px;
+    color: #d6336c;
+    word-break: break-all;
+}
+
+/* ==================== 비교 패널 (내 요약 vs AI 요약) ==================== */
+
+.practice-compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.practice-compare-col {
+    background: #fff;
+    border: 1.5px solid #eee;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.practice-compare-col.mine {
+    border-color: #ffd7e4;
+    background: #fff9fb;
+}
+
+.practice-compare-col.ai {
+    border-color: #ffe8a3;
+    background: #fffdf3;
+}
+
+.practice-compare-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.practice-compare-col.mine .practice-compare-label { color: #d6336c; }
+.practice-compare-col.ai .practice-compare-label { color: #a06b00; }
+
+.practice-compare-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #3A2E39;
+    white-space: pre-wrap;
+}
+
+/* ==================== 선택 카드 (마인드맵 / 설명하기) ==================== */
+
+.practice-choose-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.practice-choose-card {
+    background: #fff;
+    border: 2px solid #ffd7e4;
+    border-radius: 18px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.practice-choose-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.04);
+}
+
+.practice-choose-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+.practice-choose-title { font-weight: 800; color: #3A2E39; margin: 0 0 6px; }
+.practice-choose-desc { font-size: 12.5px; color: #888; margin: 0; line-height: 1.5; }
+
+/* ==================== 마인드맵 ==================== */
+
+.practice-mindmap-branch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.practice-mindmap-branch textarea { margin-bottom: 8px; }
+.practice-mindmap-branch textarea:last-child { margin-bottom: 0; }
+
+.practice-mindmap-remove-btn {
+    background: none;
+    border: none;
+    color: #d6336c;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+
+.practice-mindmap-add-btn {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+/* ==================== 마이크 녹음 ==================== */
+
+.practice-record-box {
+    text-align: center;
+    padding: 20px 0 10px;
+}
+
+.practice-record-btn {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: none;
+    background: var(--edu-pink, #ff6b9a);
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--edu-pink-dark, #e14c7c);
+    transition: transform 0.1s ease;
+}
+
+.practice-record-btn:active {
+    transform: translateY(2px);
+}
+
+.practice-record-btn.recording {
+    background: #d6336c;
+    animation: practice-record-pulse 1.2s infinite;
+}
+
+@keyframes practice-record-pulse {
+    0% { box-shadow: 0 4px 0 var(--edu-pink-dark, #e14c7c), 0 0 0 0 rgba(214, 51, 108, 0.4); }
+    70% { box-shadow: 0 4px 0 var(--edu-pink-dark, #e14c7c), 0 0 0 14px rgba(214, 51, 108, 0); }
+    100% { box-shadow: 0 4px 0 var(--edu-pink-dark, #e14c7c), 0 0 0 0 rgba(214, 51, 108, 0); }
+}
+
+.practice-record-label {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #888;
+}
+
+.practice-explain-transcript {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px dashed #ffd7e4;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    margin: 16px 0;
+}
+
+.practice-explain-transcript:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+@media (max-width: 480px) {
+    .practice-compare-grid,
+    .practice-choose-grid {
+        grid-template-columns: 1fr;
+    }
+}
