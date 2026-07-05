@@ -13,5 +13,15 @@ self.addEventListener('activate', (event) => {
 
 // 네트워크를 그대로 통과시킴 (오프라인 캐싱 없음 - 최신 버전을 항상 받아오도록)
 self.addEventListener('fetch', (event) => {
-    event.respondWith(fetch(event.request));
+    // 확장 프로그램 요청 등 http/https가 아닌 요청은 건드리지 않음
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
+    event.respondWith(
+        fetch(event.request).catch((err) => {
+            console.log('Fetch failed (아마 페이지 이동/취소):', event.request.url);
+            return new Response('', { status: 408, statusText: 'Network error' });
+        })
+    );
 });
