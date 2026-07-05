@@ -2,7 +2,18 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- ✅ PWA: 홈 화면에 추가했을 때 앱 이름/아이콘/실행 방식을 정의 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FF6B9A">
+
+    <!-- ✅ iOS Safari는 manifest.json을 완전히 지원하지 않아서 별도 메타태그가 필요 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="예린 학습앱">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
     <link rel="stylesheet" href="style/base.css">
     <link rel="stylesheet" href="style/header.css">
     <link rel="stylesheet" href="style/login.css">
@@ -18,5 +29,15 @@
     <main id="app"></main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script type="module" src="script.js"></script>
+    <script>
+        // ✅ 서비스워커 등록 (PWA 설치 조건 충족용)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch((err) => {
+                    console.error('서비스워커 등록 실패:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
