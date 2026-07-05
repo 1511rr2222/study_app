@@ -5,6 +5,7 @@ import { CompetencyMainView, initCompetencyMainPage } from './page/competencyMai
 import { CompetencySurveyView, initCompetencySurveyPage } from './page/competencySurvey.js';
 import { DashboardView, initDashboardEvents } from './page/dashboard.js';
 import { CompetencyPracticeView, initCompetencyPracticePage } from './page/competencyPractice.js';
+import { CompetencyResultView, initCompetencyResultPage } from './page/competencyResult.js';
 import { supabase } from './supabaseClient.js';
 
 const app = document.getElementById('app');
@@ -33,15 +34,14 @@ function navigate(page, param) {
     } else if (page === 'competency-survey') {
         app.innerHTML = header + CompetencySurveyView();
         initCompetencySurveyPage(
-            () => navigate('competency'), // 설문 완료 시 메인 페이지로 (결과 반영됨)
-            () => navigate('competency')  // 진단 취소 시 메인 페이지로
+            () => navigate('competency-result'), 
+            () => navigate('competency')  
         );
-    } else if (page === 'competency-practice') {
-        app.innerHTML = header + CompetencyPracticeView(param);
-        initCompetencyPracticePage(param, () => navigate('competency'));
+    } else if (page === 'competency-result') {
+        app.innerHTML = header + CompetencyResultView();
+        initCompetencyResultPage(() => navigate('competency'));
     }
 
-    // 헤더는 항상 렌더링되므로, '홈' 링크도 매번 새로 이벤트를 걸어줌
     const homeBtn = document.getElementById('nav-home-btn');
     if (homeBtn) {
         homeBtn.addEventListener('click', (e) => {

@@ -1,5 +1,3 @@
-/* competencyMain.css
-   학습역량 확인 메인(개요) 페이지 전용 스타일 */
 
 .competency-section-title {
     font-size: 15px;
@@ -195,8 +193,8 @@
 /* ===== 학습 요정 안내 이미지 & 메시지 ===== */
 .competency-instruction-image {
     display: block;
-    max-width: 720px;
-    width: 80%;
+    max-width: 900px;
+    width: 100%;
     height: auto;
     margin: 0 auto 12px;
 }
@@ -272,39 +270,33 @@
     border: 2px solid #b7f0cd;
 }
 
-/* ===== 역량별 정의표 (4열: 역량|정의|역량|정의) ===== */
-.competency-def-table-wrap {
-    overflow-x: auto;
+/* ===== 역량별 정의 (카드형) ===== */
+.competency-def-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
     margin: 12px auto 24px;
 }
 
-.competency-def-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-    font-size: 0.9rem;
-}
-
-.competency-def-table td {
-    padding: 10px 12px;
-    vertical-align: top;
-}
-
-.competency-def-table .competency-def-name {
-    font-weight: 700;
-    color: #ff6b9a;
-    white-space: nowrap;
-    width: 1%;
-}
-
-.competency-def-table .competency-def-text {
-    color: #555;
-    line-height: 1.4;
-}
-
-.competency-def-table tr {
+.competency-def-card {
     background: #fafafa;
-    border-radius: 12px;
+    border: 1px solid #f3d9e2;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.competency-def-card .competency-def-name {
+    margin: 0 0 6px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #ff6b9a;
+}
+
+.competency-def-card .competency-def-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.5;
 }
 
 @media (max-width: 480px) {
@@ -351,7 +343,7 @@
     }
 
     .competency-instruction-image {
-        width: 95%;
+        width: 100%;
     }
 
     .competency-fairy-message p {
