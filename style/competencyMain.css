@@ -327,7 +327,7 @@
     }
 
     .competency-instruction-image {
-        width: 120%;
+        width: 100%;
     }
 
     .competency-fairy-message p {
@@ -338,4 +338,53 @@
         flex-direction: column;
         gap: 12px;
     }
+}
+
+/* ===== 학습 도움 역량 보기 (고정 타이틀) ===== */
+.competency-help-title {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #d6336c;
+    margin: 4px 0 16px;
+}
+
+/* ===== 요정 토스트 (뾰로롱 팝업) ===== */
+.fairy-toast {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px) scale(0.9);
+    opacity: 0;
+    z-index: 999;
+    background: linear-gradient(135deg, #fff0f6, #fdf3ff);
+    border: 2px dashed #ffb3d1;
+    border-radius: 20px;
+    padding: 14px 20px;
+    max-width: 90%;
+    width: 360px;
+    box-shadow: 0 8px 24px rgba(214, 51, 108, 0.18);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.fairy-toast p {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #d6336c;
+    text-align: center;
+}
+
+.fairy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fairy-toast.hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-14px) scale(0.92);
 }

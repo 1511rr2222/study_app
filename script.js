@@ -37,6 +37,9 @@ function navigate(page, param) {
             () => navigate('competency-result'), 
             () => navigate('competency')  
         );
+    } else if (page === 'competency-practice') {
+        app.innerHTML = header + CompetencyPracticeView(param);
+        initCompetencyPracticePage(param, () => navigate('competency'));
     } else if (page === 'competency-result') {
         app.innerHTML = header + CompetencyResultView();
         initCompetencyResultPage(() => navigate('competency'));

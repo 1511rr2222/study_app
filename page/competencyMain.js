@@ -42,34 +42,34 @@ function renderOverview(onBack, onStartSurvey, onOpenPractice) {
 
     const history = loadHistory();
 
-    root.innerHTML = `
-        <div class="hero-box competency-hero">
-            <img src="instruction.png" alt="학습 요정 안내" class="competency-instruction-image">
+root.innerHTML = `
+    <div class="hero-box competency-hero">
+        <img src="instruction.png" alt="학습 요정 안내" class="competency-instruction-image">
 
-            <div class="competency-fairy-message">
-                <p>🧚‍♀️ 성적이 늘지 않아 지친 당신!
-                <br> 학업에 도움이 되는 특성을 기른다면 도움을 받을 수 있을 거예요
-                <br> 학습 요정과 함께 학습에 도움이 되는 특성을 알아볼까요? ✨</p>
-            </div>
+        <h3 class="competency-help-title">✨ 학습 도움 역량 보기</h3>
 
-            ${renderTraitGrid()}
+        ${renderTraitGrid()}
 
-            <div class="competency-divider"></div>
+        <div class="competency-divider"></div>
 
-            <h3 class="competency-section-title">역량별 정의</h3>
-            ${renderTraitDefTable()}
+        <h3 class="competency-section-title">역량별 정의</h3>
+        ${renderTraitDefTable()}
 
-            <img src="competency.png" alt="학습 역량 KPI 표" class="competency-ref-image">
+        <img src="competency.png" alt="학습 역량 KPI 표" class="competency-ref-image">
 
-            <p class="competency-intro">
-                학습에 도움이 되는 특성과 내가 가진 학습 특성을 비교해볼 수 있어요.
-                <br> 아래 버튼을 눌러 진단을 진행해보세요 (총 ${QUESTIONS.length}문항, 특성당 3문항).
-            </p>
-            <button type="button" id="start-diagnosis-btn" class="pink-button competency-start-btn">
-                ${history.length === 0 ? '역량 진단하기' : '새로 진단하기'}
-            </button>
-        </div>
-    `;
+        <p class="competency-intro">
+            학습에 도움이 되는 특성과 내가 가진 학습 특성을 비교해볼 수 있어요.
+            <br> 아래 버튼을 눌러 진단을 진행해보세요 (총 ${QUESTIONS.length}문항, 특성당 3문항).
+        </p>
+        <button type="button" id="start-diagnosis-btn" class="pink-button competency-start-btn">
+            ${history.length === 0 ? '역량 진단하기' : '새로 진단하기'}
+        </button>
+    </div>
+
+    <div id="fairy-toast" class="fairy-toast">
+        <p>🧚‍♀️ 성적이 늘지 않아 지친 당신!<br>학습 요정과 함께 도움이 되는 특성을 알아볼까요? ✨</p>
+    </div>
+`;
 
     document.getElementById('start-diagnosis-btn').addEventListener('click', () => {
         onStartSurvey();
@@ -80,6 +80,7 @@ function renderOverview(onBack, onStartSurvey, onOpenPractice) {
         if (!block) return;
         onOpenPractice(block.dataset.traitId);
     });
+    showFairyToast();
 }
 
 function renderTraitGrid() {
@@ -102,4 +103,19 @@ function renderTraitDefTable() {
     `).join('');
 
     return `<div class="competency-def-grid">${items}</div>`;
+}
+function showFairyToast() {
+    const toast = document.getElementById('fairy-toast');
+    if (!toast) return;
+
+    // 뾰로롱 나타나기
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    // 3.5초 후 사라지기
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+    }, 3500);
 }

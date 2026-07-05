@@ -54,19 +54,32 @@ async function callOpenAiJson(messages, fallback) {
         body: JSON.stringify({
             model: OPENAI_MODEL,
             messages,
-            temperature: 0.7
+            temperature: 0.7,
+            response_format: { type: 'json_object' }
         })
     });
 
+    if (!response.ok) {
+        const errText = await response.text();
+        console.error('OpenAI API 에러:', response.status, errText);
+        return fallback;
+    }
+
     const data = await response.json();
     const rawText = data.choices?.[0]?.message?.content || '{}';
+    
+    if (!rawText) {
+        console.error('OpenAI 응답에 content가 없음:', JSON.stringify(data));
+        return fallback;
+    }    
+    
     const cleaned = rawText.replace(/```json|```/g, '').trim();
 
     try {
         return JSON.parse(cleaned);
     } catch (e) {
         console.error('JSON 파싱 실패:', rawText);
-        return fallback;
+        return { ...fallback, stepMessage: rawText, feedback: rawText };
     }
 }
 
