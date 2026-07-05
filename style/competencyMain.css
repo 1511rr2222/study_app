@@ -245,7 +245,8 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 16px 8px;
+    height: 100px;
+    padding: 12px 8px;
     border-radius: 18px;
     text-align: center;
     box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
@@ -262,7 +263,7 @@
 }
 
 .competency-trait-block-name {
-    font-size: 0.85rem;
+    font-size: 0.80rem;
     font-weight: 700;
     color: #444;
     word-break: keep-all;
