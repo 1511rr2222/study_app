@@ -48,7 +48,11 @@ root.innerHTML = `
         <img src="instruction.png" alt="학습 요정 안내" class="competency-instruction-image">
 
         <h3 class="competency-help-title">✨ 학습 도움 역량 보기</h3>
-
+        <p class="competency-why-text">
+    공부를 잘하는 친구들에게는 공통적으로 나타나는 학습 습관과 태도가 있어요.
+    아래 11가지 역량을 하나씩 길러가면, 막연히 오래 앉아있는 공부가 아니라
+    <strong>스스로 점검하고 계획하며 끝까지 해내는 힘</strong>을 기를 수 있을 거예요.
+</p>
         ${renderTraitGrid()}
 
         <div class="competency-divider"></div>
