@@ -40,29 +40,32 @@ body {
 .fairy-question-box {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     background: linear-gradient(135deg, #ffffff 55%, var(--edu-pink-bg) 100%);
     border: 2px solid var(--edu-pink);
     border-radius: 22px;
-    padding: 18px 22px 18px 72px;
+    padding: 22px 22px 18px 90px;
     margin-bottom: 24px;
+    margin-top: 10px;
     box-sizing: border-box;
+    overflow: visible; /* ✅ 캐릭터가 테두리 밖으로 나가도 잘리지 않게 */
 }
 
 .fairy-question-img {
     position: absolute;
-    left: -15px;
-    top: -18px;
-    width: 120px;
+    left: -28px;
+    top: -30px;
+    width: 130px;
     height: auto;
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.12));
+    z-index: 2; /* ✅ 박스 테두리 위로 확실히 걸치도록 */
 }
 
 .fairy-question-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px; /* ✅ 문구-입력칸 사이 여백 최소화 */
 }
 
 .fairy-question-text {
@@ -70,13 +73,14 @@ body {
     font-weight: 700;
     color: var(--edu-pink-dark);
     letter-spacing: -0.2px;
+    white-space: normal; /* ✅ 줄바꿈 허용 */
 }
 
 .fairy-input-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
+    width: 100%;
 }
 
 .fairy-answer-input {
@@ -320,47 +324,48 @@ body {
     background-color: var(--edu-mint);
 }
 
-/* 모바일 대응 (화면이 좁아지면 위아래로 정렬) */
 @media (max-width: 768px) {
     .top-section {
         flex-direction: column;
     }
 
-    /* ✅ 공부 요정 질문 박스: 모바일에서는 세로로 크게 차지하지 않고
-       아이콘을 줄이고 한 줄(가로)로 압축 */
+    /* ✅ 캐릭터를 박스 밖 왼쪽 위로 빼고, 문구+입력칸은 세로로 붙임 */
     .fairy-question-box {
-        flex-direction: row;
-        align-items: center;
-        padding: 10px 14px 10px 54px;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 16px 16px 16px;
+        margin-top: 34px; /* 캐릭터가 위로 튀어나갈 공간 확보 */
         margin-bottom: 16px;
+        overflow: visible;
     }
 
     .fairy-question-img {
-        width: 52px;
-        left: 4px;
-        top: 50%;
-        transform: translateY(-50%);
+        width: 64px;
+        left: -10px;
+        top: -34px;
+        transform: none;
     }
 
     .fairy-question-content {
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
         flex-wrap: nowrap;
+        width: 100%;
     }
 
     .fairy-question-text {
-        font-size: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;   /* 공간이 부족하면 "..." 으로 줄임 */
-        max-width: 42%;            /* 라벨이 입력칸 공간을 다 차지하지 않도록 상한선 */
-        flex-shrink: 1;            /* ✅ 전에 0이라 라벨이 절대 안 줄어들어 입력칸이 눌렸던 버그 수정 */
+        font-size: 13px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        max-width: 100%;
     }
 
     .fairy-input-row {
         flex: 1 1 auto;
-        min-width: 90px;           /* ✅ 입력칸이 최소한 이 정도 너비는 항상 확보 */
+        min-width: 0;
+        width: 100%;
     }
 
     .fairy-answer-input {
@@ -372,7 +377,7 @@ body {
     }
 
     .fairy-save-badge {
-        align-self: center;
+        align-self: flex-start;
     }
 
     /* ✅ 하단 역량확인/영단어/성적기록: 모바일에서는 하단 탭바처럼 화면에 고정 */
