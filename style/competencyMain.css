@@ -11,7 +11,7 @@
     max-width: 100%;
     height: auto;
     border-radius: 10px;
-    margin: 12px 0 20px;
+    margin: 12px 0 12px;
     border: 1px solid #eee;
 }
 
@@ -196,7 +196,7 @@
     max-width: 900px;
     width: 100%;
     height: auto;
-    margin: 0 auto 12px;
+    margin: 0 auto 6px;
 }
 
 .competency-fairy-message {
@@ -204,9 +204,9 @@
     background: linear-gradient(135deg, #fff0f6, #fdf3ff);
     border: 2px dashed #ffb3d1;
     border-radius: 20px;
-    padding: 16px 18px;
-    margin: 0 auto 20px;
-    max-width: 470px;
+    padding: 6px 12px;
+    margin: 0 auto 12px;
+    max-width: 500px;
 }
 
 .competency-fairy-message p {
@@ -304,24 +304,8 @@
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .competency-def-table,
-    .competency-def-table tbody,
-    .competency-def-table tr {
-        display: block;
-    }
-
-    .competency-def-table td {
-        display: block;
-        width: 100% !important;
-    }
-
-    .competency-def-table .competency-def-name {
-        color: #ff6b9a;
-    }
-
-    .competency-def-table tr {
-        margin-bottom: 10px;
-        padding: 6px 8px;
+    .competency-def-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -343,7 +327,7 @@
     }
 
     .competency-instruction-image {
-        width: 100%;
+        width: 120%;
     }
 
     .competency-fairy-message p {
