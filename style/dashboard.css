@@ -1,4 +1,4 @@
-/* 가독성 좋은 본문/제목 폰트 (Jua는 두꺼워서 깨져 보이는 문제로 제거) */
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
 
 /* 페이지 전체 배경 (살짝 누리끼리한 크림톤) */
@@ -11,7 +11,7 @@ body {
     max-width: 900px;
     width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 12px;
     box-sizing: border-box;
     font-family: 'Noto Sans KR', sans-serif;
     color: #3A2E39;
@@ -32,7 +32,7 @@ body {
     border-radius: 28px;
     border: 1.5px solid #FFDDE8;
     box-shadow: 0 14px 32px rgba(91, 134, 229, 0.16);
-    padding: 24px;
+    padding: 16px;
     box-sizing: border-box;
 }
 
@@ -374,7 +374,7 @@ body {
         flex: 1 1 auto;
         height: 38px; 
         font-size: 13px;
-        padding: 0 12px;
+        padding: 0 6px;
     }
 
     .fairy-save-badge {
@@ -390,7 +390,7 @@ body {
         z-index: 500;
         margin: 0;
         gap: 8px;
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 10px calc(10px + env(safe-area-inset-bottom, 0px));
         background: #fff;
         border-radius: 20px 20px 0 0;
         box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.1);
@@ -407,7 +407,7 @@ body {
 
     /* 하단 고정바에 콘텐츠가 가려지지 않도록 여유 공간 확보 */
     .dashboard-container {
-        padding-bottom: 110px;
+        padding-bottom: 100px;
     }
 }
 
