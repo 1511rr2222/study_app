@@ -30,6 +30,13 @@ export function CompetencyPracticeView(traitId) {
     const emoji = trait ? (TRAIT_EMOJI[trait.id] || '⭐') : '⭐';
     const catClass = trait ? CATEGORY_CLASS[trait.category] : '';
 
+    const kpiListHtml = trait && trait.kpi ? `
+    <p class="practice-kpi-label">특성과 관련된 행동</p>
+    <ul class="practice-kpi-list">
+            ${trait.kpi.map(kpi => `<li class="practice-kpi-item">${kpi}</li>`).join('')}
+        </ul>
+    ` : '';
+
     return `
         <div class="dashboard-container">
             <button type="button" id="practice-back-btn" class="homework-back-btn">← 역량 페이지로 돌아가기</button>
@@ -39,6 +46,7 @@ export function CompetencyPracticeView(traitId) {
                     <span class="practice-hero-badge">지금 연습 중인 역량</span>
                     <h2 class="practice-title">${trait ? trait.name : ''}</h2>
                     <p class="practice-def">${trait ? trait.def : ''}</p>
+                    ${kpiListHtml}
                 </div>
             </div>
             <div id="practice-content"></div>

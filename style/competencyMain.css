@@ -263,7 +263,7 @@
 }
 
 .competency-trait-block-name {
-    font-size: 0.80rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #444;
     word-break: keep-all;
@@ -364,7 +364,7 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .competency-table-wrap {
         border: 1px solid #ffd7e4;
         border-radius: 10px;
