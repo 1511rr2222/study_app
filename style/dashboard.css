@@ -329,12 +329,12 @@ body {
         flex-direction: column;
     }
 
-    /* ✅ 캐릭터를 박스 밖 왼쪽 위로 빼고, 문구+입력칸은 세로로 붙임 */
+    /* ✅ 캐릭터 공간을 줄이고, 박스 자체를 위로 바짝 붙임 */
     .fairy-question-box {
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px 16px 16px 16px;
-        margin-top: 34px; /* 캐릭터가 위로 튀어나갈 공간 확보 */
+        padding: 14px 16px 16px 16px; /* padding-top 20px → 14px */
+        margin-top: 22px; /* 34px → 22px, 캐릭터 겹침 최소화하면서 여백 줄임 */
         margin-bottom: 16px;
         overflow: visible;
     }
@@ -342,7 +342,7 @@ body {
     .fairy-question-img {
         width: 64px;
         left: -10px;
-        top: -34px;
+        top: -26px; /* -34px → -26px, 캐릭터를 좀 더 박스 쪽으로 붙임 */
         transform: none;
     }
 
@@ -369,11 +369,11 @@ body {
     }
 
     .fairy-answer-input {
-        width: 100%;
+        width: 100%;      /* ✅ 블록 가로 꽉 채움 */
         min-width: 0;
         flex: 1 1 auto;
-        height: 32px;
-        font-size: 12px;
+        height: 38px;     /* 살짝 키워서 터치하기 편하게 */
+        font-size: 13px;
     }
 
     .fairy-save-badge {
