@@ -270,40 +270,79 @@
     border: 2px solid #b7f0cd;
 }
 
-/* ===== 역량별 정의 (카드형) ===== */
+/* ===== 역량별 정의 (카테고리 그룹 + 카드) ===== */
+.competency-def-category {
+    margin-bottom: 20px;
+}
+
+.competency-def-cat-title {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin: 0 0 10px;
+}
+
+.competency-def-cat-title.cat-cognitive {
+    background: #eaf3ff;
+    color: #2f5fa8;
+}
+
+.competency-def-cat-title.cat-emotional {
+    background: #fff0f0;
+    color: #c65b3a;
+}
+
+.competency-def-cat-title.cat-behavioral {
+    background: #eafff2;
+    color: #2f8a4c;
+}
+
 .competency-def-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin: 12px auto 24px;
+    gap: 10px;
 }
 
 .competency-def-card {
     background: #fafafa;
-    border: 1px solid #f3d9e2;
+    border: 1.5px solid #eee;
     border-radius: 14px;
-    padding: 14px 16px;
+    padding: 12px 14px;
+}
+
+.competency-def-card.cat-cognitive { border-color: #b8d9ff; }
+.competency-def-card.cat-emotional { border-color: #ffc9c9; }
+.competency-def-card.cat-behavioral { border-color: #b7f0cd; }
+
+.competency-def-card-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.competency-def-emoji {
+    font-size: 1.1rem;
+    line-height: 1;
 }
 
 .competency-def-card .competency-def-name {
-    margin: 0 0 6px;
+    margin: 0;
     font-weight: 800;
-    font-size: 0.95rem;
-    color: #ff6b9a;
+    font-size: 0.9rem;
+    color: #333;
 }
 
 .competency-def-card .competency-def-text {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #555;
     line-height: 1.5;
 }
 
 @media (max-width: 480px) {
-    .competency-trait-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .competency-def-grid {
         grid-template-columns: 1fr;
     }

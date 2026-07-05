@@ -1,5 +1,6 @@
 import {
     TRAITS,
+    CATEGORY_ORDER,    
     CATEGORY_CLASS,
     QUESTIONS,
     loadHistory
@@ -95,14 +96,27 @@ function renderTraitGrid() {
 }
 
 function renderTraitDefTable() {
-    const items = TRAITS.map(t => `
-        <div class="competency-def-card">
-            <p class="competency-def-name">${t.name}</p>
-            <p class="competency-def-text">${t.def}</p>
-        </div>
-    `).join('');
+    const groups = CATEGORY_ORDER.map(category => {
+        const traitsInCat = TRAITS.filter(t => t.category === category);
+        const cards = traitsInCat.map(t => `
+            <div class="competency-def-card ${CATEGORY_CLASS[category]}">
+                <div class="competency-def-card-head">
+                    <span class="competency-def-emoji">${TRAIT_EMOJI[t.id] || '⭐'}</span>
+                    <p class="competency-def-name">${t.name}</p>
+                </div>
+                <p class="competency-def-text">${t.def}</p>
+            </div>
+        `).join('');
 
-    return `<div class="competency-def-grid">${items}</div>`;
+        return `
+            <div class="competency-def-category">
+                <h4 class="competency-def-cat-title ${CATEGORY_CLASS[category]}">${category} 역량</h4>
+                <div class="competency-def-grid">${cards}</div>
+            </div>
+        `;
+    }).join('');
+
+    return groups;
 }
 function showFairyToast() {
     const toast = document.getElementById('fairy-toast');
