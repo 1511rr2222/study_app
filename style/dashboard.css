@@ -126,6 +126,7 @@ body {
 .card-attendance,
 .card-homework {
     flex: 1;
+    min-width: 0; /* ✅ flex item이 내용 때문에 줄어들지 않아 제목이 밀리는 문제 방지 */
     padding: 20px;
     border-radius: 22px;
     box-sizing: border-box;
@@ -137,7 +138,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    flex-wrap: wrap;         /* ✅ 공간이 부족하면 배지가 다음 줄로, 제목은 안 깨지게 */
+    gap: 6px 8px;
     margin-bottom: 6px;
 }
 
@@ -146,6 +148,8 @@ body {
     font-weight: 700;
     margin: 0;
     color: #2B3A67;
+    white-space: nowrap;     /* ✅ "7월 출석 현황"이 중간에 줄바꿈되지 않도록 */
+    flex-shrink: 0;
 }
 
 /* 숙제 카드 제목 크기를 출석 카드 제목과 동일하게 맞춤
@@ -157,6 +161,7 @@ body {
     font-weight: 700;
     margin: 0 0 6px;
     color: #2B3A67;
+    white-space: nowrap;
 }
 
 .streak-badge {
@@ -167,6 +172,7 @@ body {
     padding: 4px 10px;
     border-radius: 20px;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* ===== 달력 ===== */
@@ -309,41 +315,96 @@ body {
 
 /* 모바일 대응 (화면이 좁아지면 위아래로 정렬) */
 @media (max-width: 768px) {
-    .top-section,
-    .bottom-section {
+    .top-section {
         flex-direction: column;
     }
 
+    /* ✅ 공부 요정 질문 박스: 모바일에서는 세로로 크게 차지하지 않고
+       아이콘을 줄이고 한 줄(가로)로 압축 */
     .fairy-question-box {
-        padding-top: 50px;
-        padding-left: 22px;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 14px 10px 54px;
+        margin-bottom: 16px;
     }
 
     .fairy-question-img {
-        left: 10px;
-        top: -20px;
+        width: 52px;
+        left: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .fairy-question-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .fairy-question-text {
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .fairy-input-row {
-        flex-direction: column;
-        align-items: stretch;
+        flex: 1;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        min-width: 0;
+    }
+
+    .fairy-answer-input {
+        height: 32px;
+        font-size: 12px;
+        min-width: 0;
     }
 
     .fairy-save-badge {
-        align-self: flex-start;
+        align-self: center;
+    }
+
+    /* ✅ 하단 역량확인/영단어/성적기록: 모바일에서는 하단 탭바처럼 화면에 고정 */
+    .bottom-section {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 500;
+        margin: 0;
+        gap: 8px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+        background: #fff;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-box {
+        height: 62px;
+        box-shadow: none;
+    }
+
+    .list-box:hover {
+        transform: none;
+    }
+
+    /* 하단 고정바에 콘텐츠가 가려지지 않도록 여유 공간 확보 */
+    .dashboard-container {
+        padding-bottom: 110px;
     }
 }
 
 @media (max-width: 400px) {
     .fairy-question-text {
-        font-size: 13px;
+        font-size: 11px;
     }
 
     .card-header-row h3,
     .card-homework h2,
     .card-homework h3,
     .card-homework h4 {
-        font-size: 15px;
+        font-size: 14px;
     }
 
     .day {
@@ -352,11 +413,11 @@ body {
     }
 
     .list-box {
-        height: 78px;
-        font-size: 12px;
+        height: 58px;
+        font-size: 11px;
     }
 
     .list-box-emoji {
-        font-size: 18px;
+        font-size: 16px;
     }
 }
