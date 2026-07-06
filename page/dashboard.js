@@ -37,7 +37,7 @@ export function DashboardView() {
                         <span class="list-box-emoji">🧠</span>
                         <span class="list-box-label">학습 역량 확인</span>
                     </div>
-                    <div class="list-box list-vocab">
+                    <div class="list-box list-vocab" id="open-vocab-btn">
                         <span class="list-box-emoji">🔤</span>
                         <span class="list-box-label">영단어 퀴즈</span>
                     </div>
