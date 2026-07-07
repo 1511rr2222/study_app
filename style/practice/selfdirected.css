@@ -1,0 +1,293 @@
+/* ===== 4개 블록 메뉴 ===== */
+.selfdir-menu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.selfdir-menu-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid #ffd6e3;
+    background: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    box-shadow: 0 4px 14px rgba(255, 107, 154, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.selfdir-menu-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 107, 154, 0.16);
+}
+
+.selfdir-menu-emoji {
+    font-size: 22px;
+}
+
+.selfdir-menu-label {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+}
+
+.selfdir-menu-desc {
+    font-size: 12px;
+    color: #999;
+}
+
+/* ===== 서브 화면 공통 ===== */
+.selfdir-sub-back-btn {
+    background: none;
+    border: none;
+    color: #ff6b9a;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 10px;
+}
+
+.selfdir-sub-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 6px;
+}
+
+.selfdir-sub-desc {
+    font-size: 13px;
+    color: #999;
+    margin: 0 0 16px;
+}
+
+.selfdir-save-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff6b9a;
+    color: #fff;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.selfdir-save-btn:hover {
+    background-color: #e0397a;
+}
+
+.selfdir-save-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.selfdir-status {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff6b9a;
+    min-height: 18px;
+    margin: 8px 0 0;
+}
+
+.selfdir-empty {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 16px;
+    margin: 0;
+}
+
+/* ===== 계획표 사진 업로드 ===== */
+.selfdir-photo-upload {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.selfdir-file-input {
+    flex: 1;
+    min-width: 160px;
+    font-size: 13px;
+}
+
+.selfdir-label-input {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.selfdir-label-input:focus {
+    outline: none;
+    border-color: #ff6b9a;
+}
+
+.selfdir-photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.selfdir-photo-card {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    text-align: center;
+}
+
+.selfdir-photo-thumb {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+    background: #fafafa;
+}
+
+.selfdir-photo-thumb-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.selfdir-photo-meta {
+    font-size: 11px;
+    color: #999;
+    margin: 6px 4px 4px;
+}
+
+.selfdir-photo-delete {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0 0 8px;
+}
+
+.selfdir-photo-delete:hover {
+    color: #e57373;
+}
+
+/* ===== 시간 활용 진단 ===== */
+.selfdir-timediag-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.selfdir-timediag-tab {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.selfdir-timediag-tab:hover {
+    border-color: #ff6b9a;
+    color: #ff6b9a;
+}
+
+.selfdir-timediag-tab.active {
+    border-color: #ff6b9a;
+    background: #ffe3ec;
+    color: #ff6b9a;
+}
+
+.selfdir-timediag-tab-progress {
+    font-size: 10px;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 2px;
+}
+
+.selfdir-timediag-panel {
+    background: #fff;
+    border: 1px solid #ffd6e3;
+    border-radius: 16px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.selfdir-timediag-q {
+    margin-bottom: 14px;
+}
+
+.selfdir-timediag-qtext {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.selfdir-timediag-qinput {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.selfdir-timediag-qinput:focus {
+    outline: none;
+    border-color: #ff6b9a;
+}
+
+/* ===================================== */
+/* 모바일 최적화 */
+/* ===================================== */
+@media (max-width: 768px) {
+    .selfdir-menu {
+        grid-template-columns: 1fr;
+    }
+
+    .selfdir-photo-upload {
+        flex-direction: column;
+    }
+
+    .selfdir-photo-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .selfdir-timediag-tabs {
+        gap: 6px;
+    }
+
+    .selfdir-timediag-tab {
+        flex: 1;
+        min-width: 0;
+        font-size: 11px;
+        padding: 8px 6px;
+        text-align: center;
+    }
+
+    .selfdir-timediag-panel {
+        padding: 14px;
+    }
+}
