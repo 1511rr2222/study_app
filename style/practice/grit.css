@@ -1,0 +1,217 @@
+/* ===== 그릿 챌린지 (practice/grit.js) ===== */
+
+.grit-loading {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 20px 0;
+}
+
+/* ---------- 설정 화면 ---------- */
+.grit-setup {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.grit-setup-lead {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 18px;
+    text-align: center;
+}
+
+.grit-field-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    margin: 0 0 8px;
+}
+
+.grit-period-select {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.grit-period-btn {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 12px;
+    border: 2px solid #ffd7e4;
+    background: #fff7fa;
+    color: #666;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.grit-period-btn.selected {
+    border-color: #ff6b9a;
+    background: #ffe3ee;
+    color: #d6336c;
+}
+
+.grit-goal-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #eee;
+    margin-bottom: 20px;
+    font-size: 14px;
+    background: #fafafa;
+}
+
+.grit-goal-input:focus {
+    outline: none;
+    border-color: #ffb3d1;
+}
+
+.grit-start-btn {
+    width: 100%;
+}
+
+.grit-start-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ---------- 진행 화면 ---------- */
+.grit-tracker {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.grit-goal-display {
+    font-size: 14px;
+    color: #555;
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    background: #fff7fa;
+    border: 1px solid #ffd7e4;
+    border-radius: 10px;
+}
+
+.grit-goal-display strong {
+    color: #d6336c;
+}
+
+.grit-day-dots {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.grit-day-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    background: #f7f7f7;
+    color: #bbb;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.grit-day-dot.done {
+    background: #ff6b9a;
+    color: white;
+}
+
+.grit-day-dot.today {
+    border-color: #ff6b9a;
+    color: #d6336c;
+}
+
+.grit-progress-text {
+    text-align: center;
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: #666;
+    font-weight: 700;
+}
+
+.grit-today-box {
+    background: #fff7fa;
+    border: 1px solid #ffd7e4;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.grit-today-lead {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #444;
+    font-weight: 700;
+    text-align: center;
+}
+
+.grit-finish-box .grit-today-lead {
+    color: #d6336c;
+}
+
+.grit-reflection-input {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 60px;
+    resize: vertical;
+    border-radius: 10px;
+    border: 1.5px solid #eee;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    font-family: inherit;
+    background: #fafafa;
+}
+
+.grit-reflection-input:focus {
+    outline: none;
+    border-color: #ffb3d1;
+}
+
+.grit-history-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grit-history-list li {
+    font-size: 12.5px;
+    color: #555;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 12px;
+    line-height: 1.4;
+}
+
+.grit-history-day {
+    font-weight: 700;
+    color: #d6336c;
+    margin-right: 6px;
+}
+
+.grit-history-empty {
+    font-size: 12.5px;
+    color: #999;
+}
+
+@media (max-width: 600px) {
+    .grit-day-dot {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+    }
+}

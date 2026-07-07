@@ -2,6 +2,7 @@ import { TRAITS, CATEGORY_CLASS } from './competencyData.js';
 import { initMetaPractice } from './practice/metaPractice.js';
 import { initDeepPractice } from './practice/deepPractice.js';
 import { initSelfdirectedPractice } from './practice/selfdirectedPractice.js';
+import { initGritPractice } from './practice/gritPractice.js';
 // 새 역량 추가 시: 아래처럼 import 한 줄 추가
 // import { initGritPractice } from './practice/gritPractice.js';
 
@@ -23,8 +24,8 @@ const TRAIT_EMOJI = {
 const PRACTICE_MODULES = {
     meta: initMetaPractice,
     deep: initDeepPractice,
-    selfdirected: initSelfdirectedPractice
-    // grit: initGritPractice,
+    selfdirected: initSelfdirectedPractice,
+    grit: initGritPractice
 };
 
 export function CompetencyPracticeView(traitId) {
