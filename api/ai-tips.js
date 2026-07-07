@@ -1,20 +1,3 @@
-// Vercel Serverless Function 예제입니다.
-// 실제 프로젝트에서는 이 파일을 프로젝트 루트의 `api/ai-tips.js` 경로에 넣으면
-// 자동으로 https://[프로젝트].vercel.app/api/ai-tips 로 배포됩니다.
-//
-// 사용 전 준비물:
-// 1. OpenAI API 키 발급 (https://platform.openai.com/api-keys)
-// 2. Vercel 프로젝트 설정 > Environment Variables 에 OPENAI_API_KEY 등록
-//
-// 프론트엔드(page/aiTips.js)에서 아래와 같은 형식으로 요청을 보냅니다:
-// POST /api/ai-tips
-// body: {
-//   weakTraits: [{ name, score, def }, ...],   // 보완이 필요한 특성 3개
-//   strongTraits: [{ name, score, def }, ...]  // 강한 특성 3개
-// }
-//
-// 응답 형식: { tips: ["...", "...", "..."] }
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'POST 요청만 허용됩니다.' });
