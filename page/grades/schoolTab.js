@@ -1,5 +1,5 @@
 import { supabase } from '../../supabaseClient.js';
-import { QUICK_SUBJECTS, escapeHtml, gradeOptionsHtml } from './subjects.js';
+import { gradeOptionsHtml, subjectOptionsHtml, yearOptionsHtml } from './subjects.js';
 
 // ---------- View ----------
 export function SchoolTabView() {
@@ -7,19 +7,11 @@ export function SchoolTabView() {
         <div class="grades-tab-panel" data-panel="school">
             <div class="grades-card">
                 <div class="grades-select-row">
-                    <select id="grades-year-select" class="grades-select">
-                        <option value="1">고1</option>
-                        <option value="2">고2</option>
-                        <option value="3">고3</option>
-                    </select>
+                    <select id="grades-year-select" class="grades-select">${yearOptionsHtml(1)}</select>
                     <select id="grades-term-select" class="grades-select">
                         <option value="1">1학기</option>
                         <option value="2">2학기</option>
                     </select>
-                </div>
-
-                <div class="grades-quickadd" id="grades-quickadd">
-                    ${QUICK_SUBJECTS.map(s => `<button type="button" class="grades-chip" data-subject="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('')}
                 </div>
 
                 <div class="grades-table" id="grades-school-table"></div>
@@ -45,7 +37,7 @@ export async function initSchoolTab(user) {
     function renderSchoolTable() {
         if (!schoolTableEl) return;
         if (schoolRows.length === 0) {
-            schoolTableEl.innerHTML = '<p class="grades-empty">아직 입력한 과목이 없어요. 아래 칩을 누르거나 "+ 과목 추가"를 눌러보세요.</p>';
+            schoolTableEl.innerHTML = '<p class="grades-empty">아직 입력한 과목이 없어요. "+ 과목 추가"를 눌러보세요.</p>';
             return;
         }
         schoolTableEl.innerHTML = `
@@ -54,7 +46,7 @@ export async function initSchoolTab(user) {
             </div>
             ${schoolRows.map((row, idx) => `
                 <div class="grades-row" data-idx="${idx}">
-                    <input type="text" class="grades-input grades-input-subject" data-field="subject" value="${escapeHtml(row.subject)}" placeholder="과목명">
+                    <select class="grades-input grades-input-subject" data-field="subject">${subjectOptionsHtml(row.subject)}</select>
                     <input type="number" class="grades-input grades-input-score" data-field="raw_score" value="${row.raw_score ?? ''}" min="0" max="100" placeholder="점수">
                     <select class="grades-input grades-select-grade" data-field="grade">${gradeOptionsHtml(row.grade)}</select>
                     <button type="button" class="grades-row-delete" title="삭제">✕</button>
@@ -65,7 +57,8 @@ export async function initSchoolTab(user) {
         schoolTableEl.querySelectorAll('.grades-row[data-idx]').forEach(rowEl => {
             const idx = Number(rowEl.dataset.idx);
             rowEl.querySelectorAll('[data-field]').forEach(input => {
-                input.addEventListener('input', () => {
+                const eventName = input.tagName === 'SELECT' ? 'change' : 'input';
+                input.addEventListener(eventName, () => {
                     const field = input.dataset.field;
                     schoolRows[idx][field] = field === 'raw_score' || field === 'grade'
                         ? (input.value === '' ? null : Number(input.value))
@@ -102,16 +95,21 @@ export async function initSchoolTab(user) {
         renderSchoolTable();
     }
 
-    function addSchoolRow(prefillSubject = '') {
-        if (prefillSubject && schoolRows.some(r => r.subject === prefillSubject)) return; // 중복 방지
-        schoolRows.push({ subject: prefillSubject, raw_score: null, grade: null });
+    function addSchoolRow() {
+        schoolRows.push({ subject: '', raw_score: null, grade: null });
         renderSchoolTable();
     }
 
     async function saveSchoolRows() {
-        const validRows = schoolRows.filter(r => r.subject && r.subject.trim());
+        // 같은 과목이 여러 행에 있으면 마지막 입력만 저장 (upsert 충돌 방지)
+        const dedupMap = new Map();
+        schoolRows
+            .filter(r => r.subject && r.subject.trim())
+            .forEach(r => dedupMap.set(r.subject, r));
+        const validRows = [...dedupMap.values()];
+
         if (validRows.length === 0) {
-            schoolStatusEl.textContent = '저장할 과목을 입력해주세요.';
+            schoolStatusEl.textContent = '저장할 과목을 선택해주세요.';
             return;
         }
 
@@ -125,10 +123,9 @@ export async function initSchoolTab(user) {
             updated_at: new Date().toISOString(),
         }));
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('grades_school')
-            .upsert(payload, { onConflict: 'user_id,grade_year,semester,subject' })
-            .select('id, subject, raw_score, grade');
+            .upsert(payload, { onConflict: 'user_id,grade_year,semester,subject' });
 
         if (error) {
             console.error('내신 성적 저장 실패:', error);
@@ -136,18 +133,13 @@ export async function initSchoolTab(user) {
             return;
         }
 
-        schoolRows = data || [];
-        renderSchoolTable();
+        // upsert 응답을 믿지 않고 DB에서 최신 상태를 다시 불러와 화면에 반영
+        await loadSchoolRows();
         schoolStatusEl.textContent = '저장완료 ✨';
         setTimeout(() => { schoolStatusEl.textContent = ''; }, 1500);
     }
 
-    document.getElementById('grades-quickadd').addEventListener('click', (e) => {
-        const btn = e.target.closest('.grades-chip');
-        if (!btn) return;
-        addSchoolRow(btn.dataset.subject);
-    });
-    document.getElementById('grades-school-add-row-btn').addEventListener('click', () => addSchoolRow());
+    document.getElementById('grades-school-add-row-btn').addEventListener('click', addSchoolRow);
     document.getElementById('grades-school-save-btn').addEventListener('click', saveSchoolRows);
     yearSelect.addEventListener('change', loadSchoolRows);
     termSelect.addEventListener('change', loadSchoolRows);

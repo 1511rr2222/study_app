@@ -73,7 +73,7 @@ export function initAnalysisTab(user) {
             },
             options: {
                 scales: {
-                    y: { reverse: true, min: 1, max: 9, ticks: { stepSize: 1 } },
+                    y: { reverse: true, min: 1, max: 5, ticks: { stepSize: 1 } },
                 },
                 plugins: { legend: { display: false } },
             },
@@ -106,14 +106,14 @@ export function initAnalysisTab(user) {
                     datasets: [{
                         label: '평균 등급',
                         data: subjectStats.map(s => Number(s.avg.toFixed(2))),
-                        backgroundColor: subjectStats.map(s => s.avg <= 3 ? '#ff6b9a' : s.avg >= 6 ? '#e57373' : '#dddddd'),
+                        backgroundColor: subjectStats.map(s => s.avg <= 2 ? '#ff6b9a' : s.avg >= 4 ? '#e57373' : '#dddddd'),
                         borderRadius: 6,
                     }],
                 },
                 options: {
                     indexAxis: 'y',
                     scales: {
-                        x: { min: 1, max: 9, ticks: { stepSize: 1 } },
+                        x: { min: 1, max: 5, ticks: { stepSize: 1 } },
                     },
                     plugins: {
                         legend: { display: false },

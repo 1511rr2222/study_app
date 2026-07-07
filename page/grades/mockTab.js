@@ -1,14 +1,20 @@
 import { supabase } from '../../supabaseClient.js';
-import { escapeHtml, gradeOptionsHtml } from './subjects.js';
+import { escapeHtml, gradeOptionsHtml, subjectOptionsHtml, yearOptionsHtml, monthOptionsHtml } from './subjects.js';
 
 // ---------- View ----------
 export function MockTabView() {
     return `
         <div class="grades-tab-panel" data-panel="mock" style="display:none;">
             <div class="grades-card">
+                <div class="grades-select-row grades-mock-new-row">
+                    <select id="grades-mock-new-year" class="grades-select">${yearOptionsHtml(1)}</select>
+                    <select id="grades-mock-new-month" class="grades-select">${monthOptionsHtml(3)}</select>
+                    <input type="text" id="grades-mock-new-office" class="grades-input" placeholder="OO교육청 (선택)">
+                    <button id="grades-mock-new-exam-btn" class="grades-secondary-btn">+ 추가</button>
+                </div>
+
                 <div class="grades-select-row">
                     <select id="grades-mock-exam-select" class="grades-select grades-select-wide"></select>
-                    <button id="grades-mock-new-exam-btn" class="grades-secondary-btn">+ 새 모의고사</button>
                 </div>
 
                 <div class="grades-table" id="grades-mock-table"></div>
@@ -18,25 +24,97 @@ export function MockTabView() {
                 </div>
                 <p id="grades-mock-status" class="grades-status"></p>
             </div>
+
+            <h3 class="grades-mock-list-title">저장된 모의고사</h3>
+            <div class="grades-mock-list" id="grades-mock-list"></div>
         </div>
     `;
 }
 
 // ---------- Init ----------
 export async function initMockTab(user) {
+    const newYearSelect = document.getElementById('grades-mock-new-year');
+    const newMonthSelect = document.getElementById('grades-mock-new-month');
+    const newOfficeInput = document.getElementById('grades-mock-new-office');
+    const newExamBtn = document.getElementById('grades-mock-new-exam-btn');
     const mockExamSelect = document.getElementById('grades-mock-exam-select');
     const mockTableEl = document.getElementById('grades-mock-table');
     const mockStatusEl = document.getElementById('grades-mock-status');
+    const mockListEl = document.getElementById('grades-mock-list');
 
-    let mockRows = []; // { id?, subject, grade }
-    let examLabels = [];
+    let mockRows = []; // 편집 중인(위쪽 카드) 과목/등급 행
+    let examMap = new Map(); // exam_label -> [{ id, subject, grade }]  (전체 캐시)
 
-    function renderMockExamOptions() {
-        mockExamSelect.innerHTML = examLabels.length
-            ? examLabels.map(label => `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`).join('')
-            : '<option value="">모의고사를 추가해주세요</option>';
+    function buildExamLabel(year, month, office) {
+        const base = `고${year} ${month}월`;
+        const trimmedOffice = (office || '').trim();
+        return trimmedOffice ? `${base} ${trimmedOffice}` : base;
     }
 
+    // "고1 3월 ..." 형태에서 연도/월을 뽑아 정렬용 키로 사용. 형식이 다르면 맨 뒤로.
+    function parseSortKey(label) {
+        const m = label.match(/^고(\d+)\s+(\d+)월/);
+        if (!m) return [-1, -1];
+        return [Number(m[1]), Number(m[2])];
+    }
+
+    function sortedLabels() {
+        return [...examMap.keys()].sort((a, b) => {
+            const [ay, am] = parseSortKey(a);
+            const [by, bm] = parseSortKey(b);
+            if (ay !== by) return by - ay;   // 학년 내림차순 (최신 학년 먼저)
+            return bm - am;                  // 월 내림차순 (최신 달 먼저)
+        });
+    }
+
+    function renderMockExamOptions() {
+        const labels = sortedLabels();
+        mockExamSelect.innerHTML = labels.length
+            ? labels.map(label => `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`).join('')
+            : '<option value="">추가된 모의고사가 없어요</option>';
+    }
+
+    // ---- 아래쪽: 저장된 모의고사 블록 리스트 (읽기 전용 + 수정 버튼) ----
+    function renderMockList() {
+        if (!mockListEl) return;
+        const labels = sortedLabels();
+        if (labels.length === 0) {
+            mockListEl.innerHTML = '<p class="grades-empty">아직 저장된 모의고사가 없어요.</p>';
+            return;
+        }
+
+        mockListEl.innerHTML = labels.map(label => {
+            const rows = examMap.get(label) || [];
+            const rowsHtml = rows.length
+                ? rows.map(r => `
+                    <div class="grades-mock-block-row">
+                        <span class="grades-mock-block-subject">${escapeHtml(r.subject)}</span>
+                        <span class="grades-mock-block-grade">${r.grade != null ? `${r.grade}등급` : '-'}</span>
+                    </div>
+                `).join('')
+                : '<p class="grades-empty">입력된 과목이 없어요.</p>';
+
+            return `
+                <div class="grades-mock-block">
+                    <div class="grades-mock-block-header">
+                        <h4 class="grades-mock-block-title">${escapeHtml(label)}</h4>
+                        <button type="button" class="grades-mock-block-edit" data-label="${escapeHtml(label)}">수정</button>
+                    </div>
+                    <div class="grades-mock-block-body">${rowsHtml}</div>
+                </div>
+            `;
+        }).join('');
+
+        mockListEl.querySelectorAll('.grades-mock-block-edit').forEach(btn => {
+            btn.addEventListener('click', () => {
+                mockExamSelect.value = btn.dataset.label;
+                loadEditorRows(btn.dataset.label);
+                document.querySelector('.grades-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    }
+
+    // ---- 위쪽: 편집용 표 ----
     function renderMockTable() {
         if (!mockTableEl) return;
         if (mockRows.length === 0) {
@@ -49,7 +127,7 @@ export async function initMockTab(user) {
             </div>
             ${mockRows.map((row, idx) => `
                 <div class="grades-row grades-row-mock" data-idx="${idx}">
-                    <input type="text" class="grades-input grades-input-subject" data-field="subject" value="${escapeHtml(row.subject)}" placeholder="과목명">
+                    <select class="grades-input grades-input-subject" data-field="subject">${subjectOptionsHtml(row.subject)}</select>
                     <select class="grades-input grades-select-grade" data-field="grade">${gradeOptionsHtml(row.grade)}</select>
                     <button type="button" class="grades-row-delete" title="삭제">✕</button>
                 </div>
@@ -59,7 +137,7 @@ export async function initMockTab(user) {
         mockTableEl.querySelectorAll('.grades-row[data-idx]').forEach(rowEl => {
             const idx = Number(rowEl.dataset.idx);
             rowEl.querySelectorAll('[data-field]').forEach(input => {
-                input.addEventListener('input', () => {
+                input.addEventListener('change', () => {
                     const field = input.dataset.field;
                     mockRows[idx][field] = field === 'grade'
                         ? (input.value === '' ? null : Number(input.value))
@@ -70,6 +148,7 @@ export async function initMockTab(user) {
                 const row = mockRows[idx];
                 if (row.id) {
                     await supabase.from('grades_mock').delete().eq('id', row.id);
+                    await refreshMockData();
                 }
                 mockRows.splice(idx, 1);
                 renderMockTable();
@@ -77,42 +156,30 @@ export async function initMockTab(user) {
         });
     }
 
-    async function loadMockExamLabels() {
+    // ---- 전체 데이터 새로고침 (편집 표 + 저장 목록이 같은 캐시를 공유) ----
+    async function refreshMockData() {
         const { data, error } = await supabase
             .from('grades_mock')
-            .select('exam_label')
-            .eq('user_id', user.id);
-
-        if (error) {
-            console.error('모의고사 목록 로드 실패:', error);
-            examLabels = [];
-        } else {
-            examLabels = [...new Set((data || []).map(r => r.exam_label))];
-        }
-        renderMockExamOptions();
-    }
-
-    async function loadMockRows() {
-        mockStatusEl.textContent = '';
-        const label = mockExamSelect.value;
-        if (!label) {
-            mockRows = [];
-            renderMockTable();
-            return;
-        }
-        const { data, error } = await supabase
-            .from('grades_mock')
-            .select('id, subject, grade')
+            .select('id, exam_label, subject, grade')
             .eq('user_id', user.id)
-            .eq('exam_label', label)
             .order('id', { ascending: true });
 
+        examMap = new Map();
         if (error) {
-            console.error('모의고사 성적 로드 실패:', error);
-            mockRows = [];
+            console.error('모의고사 데이터 로드 실패:', error);
         } else {
-            mockRows = data || [];
+            (data || []).forEach(row => {
+                if (!examMap.has(row.exam_label)) examMap.set(row.exam_label, []);
+                examMap.get(row.exam_label).push(row);
+            });
         }
+        renderMockExamOptions();
+        renderMockList();
+    }
+
+    function loadEditorRows(label) {
+        mockStatusEl.textContent = '';
+        mockRows = label ? (examMap.get(label) || []).map(r => ({ ...r })) : [];
         renderMockTable();
     }
 
@@ -127,9 +194,15 @@ export async function initMockTab(user) {
             mockStatusEl.textContent = '먼저 모의고사를 추가해주세요.';
             return;
         }
-        const validRows = mockRows.filter(r => r.subject && r.subject.trim());
+        // 같은 과목이 여러 행에 있으면 마지막 입력만 저장 (upsert 충돌 방지)
+        const dedupMap = new Map();
+        mockRows
+            .filter(r => r.subject && r.subject.trim())
+            .forEach(r => dedupMap.set(r.subject, r));
+        const validRows = [...dedupMap.values()];
+
         if (validRows.length === 0) {
-            mockStatusEl.textContent = '저장할 과목을 입력해주세요.';
+            mockStatusEl.textContent = '저장할 과목을 선택해주세요.';
             return;
         }
 
@@ -141,10 +214,9 @@ export async function initMockTab(user) {
             updated_at: new Date().toISOString(),
         }));
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('grades_mock')
-            .upsert(payload, { onConflict: 'user_id,exam_label,subject' })
-            .select('id, subject, grade');
+            .upsert(payload, { onConflict: 'user_id,exam_label,subject' });
 
         if (error) {
             console.error('모의고사 성적 저장 실패:', error);
@@ -152,27 +224,28 @@ export async function initMockTab(user) {
             return;
         }
 
-        mockRows = data || [];
-        renderMockTable();
+        // DB에서 최신 상태를 다시 불러와 편집 표 + 저장 목록에 함께 반영
+        await refreshMockData();
+        loadEditorRows(label);
         mockStatusEl.textContent = '저장완료 ✨';
         setTimeout(() => { mockStatusEl.textContent = ''; }, 1500);
     }
 
-    document.getElementById('grades-mock-new-exam-btn').addEventListener('click', async () => {
-        const label = prompt('새 모의고사 이름을 입력해주세요 (예: 고1 6월)');
-        if (!label || !label.trim()) return;
-        const trimmed = label.trim();
-        if (!examLabels.includes(trimmed)) {
-            examLabels.push(trimmed);
+    newExamBtn.addEventListener('click', () => {
+        const label = buildExamLabel(newYearSelect.value, newMonthSelect.value, newOfficeInput.value);
+        if (!examMap.has(label)) {
+            examMap.set(label, []);
             renderMockExamOptions();
+            renderMockList();
         }
-        mockExamSelect.value = trimmed;
-        await loadMockRows();
+        mockExamSelect.value = label;
+        newOfficeInput.value = '';
+        loadEditorRows(label);
     });
     document.getElementById('grades-mock-add-row-btn').addEventListener('click', addMockRow);
     document.getElementById('grades-mock-save-btn').addEventListener('click', saveMockRows);
-    mockExamSelect.addEventListener('change', loadMockRows);
+    mockExamSelect.addEventListener('change', () => loadEditorRows(mockExamSelect.value));
 
-    await loadMockExamLabels();
-    await loadMockRows();
+    await refreshMockData();
+    loadEditorRows(mockExamSelect.value);
 }
