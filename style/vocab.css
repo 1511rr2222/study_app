@@ -54,8 +54,8 @@
     min-width: 72px;
     padding: 10px 14px;
     border-radius: 12px;
-    border: 1px solid #ddd;
-    background: #ffe2fc;
+    border: 1px solid #ff6b9a;
+    background-color: #f8e8f2;
     cursor: pointer;
     font-family: inherit;
     transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
@@ -63,6 +63,7 @@
 
 .vocab-day-btn:hover {
     border-color: #ff6b9a;
+    color: #ff6b9a;
     background-color: #fff7fa;
 }
 
@@ -237,7 +238,7 @@
     padding: 12px 20px;
     border-radius: 8px;
     border: 1px solid #ddd;
-    background-color: #f49ab2e0;
+    background-color: #fff;
     color: #444;
     font-weight: 700;
     font-family: inherit;
@@ -249,7 +250,7 @@
 .vocab-list-btn:hover {
     border-color: #ff6b9a;
     color: #ff6b9a;
-    background-color: #fff6bf;
+    background-color: #fff7fa;
 }
 
 .vocab-feedback {

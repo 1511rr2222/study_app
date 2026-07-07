@@ -64,11 +64,9 @@ export async function initVocabMainPage(onBack, onSelectDay) {
         return;
     }
 
-    // 단어 테이블에서 존재하는 day 목록 추출
-    const { data: wordRows, error: wordsError } = await supabase
-        .from('vocab_words')
-        .select('day')
-        .order('day', { ascending: true });
+    // Day 목록 (전체 단어를 select하면 Supabase 기본 1000행 제한에 걸려
+    // 일부 day가 누락될 수 있어서, distinct day만 반환하는 RPC를 사용함)
+    const { data: dayRows, error: wordsError } = await supabase.rpc('get_vocab_days');
 
     if (wordsError) {
         console.error('단어 목록 로드 실패:', wordsError);
@@ -76,7 +74,7 @@ export async function initVocabMainPage(onBack, onSelectDay) {
         return;
     }
 
-    const days = [...new Set((wordRows || []).map(r => r.day))].sort(naturalDayCompare);
+    const days = [...new Set(dayRows || [])].sort(naturalDayCompare);
 
     // 사용자별 진행 현황 (연습 횟수 / clear 여부)
     const { data: progressRows, error: progressError } = await supabase

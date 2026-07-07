@@ -41,7 +41,7 @@ export function DashboardView() {
                         <span class="list-box-emoji">🔤</span>
                         <span class="list-box-label">영단어 퀴즈</span>
                     </div>
-                    <div class="list-box list-grades">
+                    <div class="list-box list-grades" id="open-grades-btn">
                         <span class="list-box-emoji">📊</span>
                         <span class="list-box-label">성적 기록</span>
                     </div>

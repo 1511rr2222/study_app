@@ -1,0 +1,353 @@
+.grades-container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 12px;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.grades-back-btn {
+    background: none;
+    border: none;
+    color: #ff6b9a;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 14px;
+}
+
+.grades-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 16px;
+    color: #333;
+}
+
+/* ===== 탭 (카드 밖, 내비게이션 역할) ===== */
+.grades-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f0dfe4;
+}
+
+.grades-tab-btn {
+    padding: 10px 14px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #999;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.grades-tab-btn:hover {
+    color: #ff6b9a;
+}
+
+.grades-tab-btn.active {
+    color: #ff6b9a;
+    border-bottom-color: #ff6b9a;
+}
+
+/* ===== 카드: 각 탭 내용을 감싸는 흰 블록 ===== */
+.grades-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #ffd6e3;
+    box-shadow: 0 6px 20px rgba(255, 107, 154, 0.08);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ===== 공통 ===== */
+.grades-select-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.grades-select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    color: #444;
+}
+
+.grades-select-wide {
+    flex: 1;
+    min-width: 0;
+}
+
+.grades-secondary-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #444;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.grades-secondary-btn:hover {
+    border-color: #ff6b9a;
+    color: #ff6b9a;
+    background-color: #fff7fa;
+}
+
+.grades-save-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff6b9a;
+    color: #fff;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.grades-save-btn:hover {
+    background-color: #e0397a;
+}
+
+.grades-actions-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.grades-status {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff6b9a;
+    min-height: 18px;
+    margin: 8px 0 0;
+}
+
+/* ===== 과목 빠른 추가 칩 ===== */
+.grades-quickadd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.grades-chip {
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.grades-chip:hover {
+    border-color: #ff6b9a;
+    color: #ff6b9a;
+    background-color: #ffe3ec;
+}
+
+/* ===== 표 ===== */
+.grades-table {
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.grades-empty {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 20px 12px;
+    margin: 0;
+}
+
+.grades-row {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr 1fr 32px;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.grades-row-mock {
+    grid-template-columns: 1.6fr 1fr 32px;
+}
+
+.grades-row:last-child {
+    border-bottom: none;
+}
+
+.grades-row-head {
+    background: #fafafa;
+    font-size: 12px;
+    font-weight: 700;
+    color: #999;
+}
+
+.grades-input {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    font-family: inherit;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.grades-input:focus {
+    outline: none;
+    border-color: #ff6b9a;
+}
+
+.grades-row-delete {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.grades-row-delete:hover {
+    color: #e57373;
+}
+
+/* ===== 분석(차트) ===== */
+.grades-chart-card {
+    background: #fff;
+    border: 1px solid #ffd6e3;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(255, 107, 154, 0.08);
+    padding: 20px;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+}
+
+.grades-chart-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 12px;
+}
+
+.grades-chart-note {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    margin: 10px 0 0;
+}
+
+/* ===================================== */
+/* 모바일 최적화 */
+/* ===================================== */
+@media (max-width: 768px) {
+    .grades-container {
+        padding: 10px;
+    }
+
+    .grades-title {
+        font-size: 18px;
+    }
+
+    .grades-tabs {
+        gap: 2px;
+    }
+
+    .grades-tab-btn {
+        flex: 1;
+        padding: 10px 4px;
+        font-size: 12.5px;
+        text-align: center;
+    }
+
+    .grades-card,
+    .grades-chart-card {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
+    .grades-select-row {
+        flex-wrap: wrap;
+    }
+
+    .grades-select {
+        flex: 1;
+        min-width: 90px;
+    }
+
+    .grades-quickadd {
+        gap: 6px;
+    }
+
+    .grades-chip {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .grades-row {
+        grid-template-columns: 1.2fr 0.7fr 0.9fr 26px;
+        gap: 5px;
+        padding: 8px;
+    }
+
+    .grades-row-mock {
+        grid-template-columns: 1.4fr 0.9fr 26px;
+    }
+
+    .grades-input {
+        font-size: 12px;
+        padding: 6px 7px;
+    }
+
+    .grades-row-head span {
+        font-size: 10px;
+    }
+
+    .grades-actions-row {
+        flex-direction: column;
+    }
+
+    .grades-secondary-btn,
+    .grades-save-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .grades-row,
+    .grades-row-mock {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .grades-row-head {
+        display: none;
+    }
+
+    .grades-row-delete {
+        justify-self: end;
+    }
+}

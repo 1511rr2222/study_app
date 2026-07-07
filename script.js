@@ -7,6 +7,7 @@ import { DashboardView, initDashboardEvents } from './page/dashboard.js';
 import { CompetencyPracticeView, initCompetencyPracticePage } from './page/competencyPractice.js';
 import { CompetencyResultView, initCompetencyResultPage } from './page/competencyResult.js';
 import { VocabMainView, initVocabMainPage, VocabPracticeView, initVocabPracticePage } from './page/vocab.js';
+import { GradesView, initGradesPage } from './page/grades.js';
 import { supabase } from './supabaseClient.js';
 
 const app = document.getElementById('app');
@@ -23,6 +24,7 @@ function navigate(page, param) {
         initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
         document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
         document.getElementById('open-vocab-btn').addEventListener('click', () => navigate('vocab'));
+        document.getElementById('open-grades-btn').addEventListener('click', () => navigate('grades'));
     } else if (page === 'homework') {
         app.innerHTML = header + HomeworkPageView();
         initHomeworkPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
@@ -54,6 +56,9 @@ function navigate(page, param) {
     } else if (page === 'vocab-practice') {
         app.innerHTML = header + VocabPracticeView(param);
         initVocabPracticePage(param, () => navigate('vocab'));      // 뒤로가기/완료 시 Day 목록으로 복귀
+    } else if (page === 'grades') {
+        app.innerHTML = header + GradesView();
+        initGradesPage(() => navigate('dashboard'));
     }
 
     const homeBtn = document.getElementById('nav-home-btn');
