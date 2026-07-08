@@ -280,6 +280,35 @@
     min-width: 0;
 }
 
+/* ✅ 상태 태그 + 수정/삭제 버튼을 오른쪽에 한 그룹으로 묶는 래퍼
+   (슬림한 3줄 레이아웃: 1줄 = 체크박스+내용 | 상태태그+수정/삭제) */
+.homework-item-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* ✅ 날짜가 더 이상 homework-item-main 안이 아니라 카드의 독립된 한 줄로
+   내려왔을 때(전체 페이지용), 위 줄과의 간격만 살짝 줌.
+   display:block이라 flex-direction이 적용되지 않으므로, 두 날짜(수업일/마감일)는
+   자연스럽게 인라인으로 한 줄에 붙고, margin으로만 간격을 줌 */
+.homework-item > .homework-dates {
+    margin-top: 6px;
+    display: block;
+}
+
+.homework-item > .homework-dates .homework-date {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.homework-item > .homework-dates .homework-date:last-child {
+    margin-right: 0;
+}
+
 .homework-item input[type="checkbox"] {
     width: 18px;
     height: 18px;
@@ -378,8 +407,6 @@
 /* ===== 인증사진 ===== */
 .homework-photo-section {
     margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed #e5e5e5;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -407,6 +434,7 @@
     object-fit: cover;
     object-position: center;
     display: block;
+    cursor: zoom-in;
 }
 
 .homework-photo-remove {
@@ -603,4 +631,52 @@
         font-size: 14px;
         padding: 5px 12px;
     }
+}
+
+/* ===== 인증사진 라이트박스 (크게보기) ===== */
+.homework-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.homework-lightbox-overlay.show {
+    display: flex;
+}
+
+.homework-lightbox-img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    display: block;
+}
+
+.homework-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.homework-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.3);
 }

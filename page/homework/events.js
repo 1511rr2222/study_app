@@ -1,6 +1,7 @@
 import { loadData, updateItem, deleteItemRow, getUser } from './data.js';
 import { uploadPhoto, removePhotoFromStorage } from './storage.js';
 import { setEditingId } from './editState.js';
+import { openLightbox } from './lightbox.js';
 
 export function attachCheckboxEvents(container, onChange) {
     container.querySelectorAll('.homework-item input[type="checkbox"]').forEach(checkbox => {
@@ -59,6 +60,13 @@ export function attachPhotoEvents(container, onChange) {
                 alert('사진을 업로드하는 중 문제가 생겼어요. 다시 시도해주세요.');
                 onChange();
             }
+        });
+    });
+
+    // ✅ 썸네일 클릭 시 라이트박스로 크게 보기
+    container.querySelectorAll('.homework-photo-img').forEach(img => {
+        img.addEventListener('click', () => {
+            openLightbox(img.dataset.src);
         });
     });
 
