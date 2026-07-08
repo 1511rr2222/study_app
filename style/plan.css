@@ -1,0 +1,298 @@
+/* ===== 계획표 페이지: 섹션 카드 간 간격 ===== */
+.plan-box {
+    margin-bottom: 16px;
+}
+
+.plan-box h2 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: #2B3A67;
+    letter-spacing: -0.3px;
+}
+
+.plan-notice {
+    margin: -4px 0 12px;
+    font-size: 12px;
+    color: #999;
+}
+
+.plan-empty {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* ===== 고정 계획 등록 ===== */
+.plan-item-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.plan-item-form input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.plan-item-form input:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-item-form .plan-item-add-btn {
+    width: auto;
+    flex-shrink: 0;
+    padding: 0 20px;
+}
+
+.plan-item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.plan-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.plan-item-content {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+    min-width: 0;
+}
+
+.plan-item-delete-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #666;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.plan-item-delete-btn:hover {
+    border-color: #e04b6a;
+    color: #e04b6a;
+}
+
+/* ===== 오늘의 기록 ===== */
+.plan-score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.plan-score-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #5c6b8a;
+    white-space: nowrap;
+}
+
+.plan-score-picker {
+    display: flex;
+    gap: 6px;
+}
+
+.plan-score-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.plan-score-btn:hover {
+    border-color: var(--edu-pink, #ff6b9a);
+    color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-score-btn.selected {
+    background: var(--edu-pink, #ff6b9a);
+    border-color: var(--edu-pink, #ff6b9a);
+    color: #fff;
+}
+
+.plan-memo-input {
+    width: 100%;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: vertical;
+    box-sizing: border-box;
+    min-height: 70px;
+}
+
+.plan-memo-input:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-save-row {
+    position: relative;
+    display: flex;
+    margin-top: 12px;
+}
+
+.plan-save-row .plan-save-btn {
+    width: 100%;
+    padding: 14px;
+    box-shadow: 0 4px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+.plan-save-row .plan-save-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+/* ✅ 저장완료 배지: 자리를 차지하지 않도록 절대위치로 버튼 위에 떠서 나타남 */
+.plan-save-badge {
+    position: absolute;
+    right: 0;
+    top: -26px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--edu-mint, #7ED9A8);
+    padding: 4px 10px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.plan-save-badge.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== 지난 기록: 접힘 한 줄 ↔ 펼침 ===== */
+.plan-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.plan-log-item {
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.plan-log-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.plan-log-date {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.plan-log-score {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--edu-pink-dark, #E14C7C);
+    background: var(--edu-pink-bg, #FFF5F8);
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.plan-log-caret {
+    margin-left: auto;
+    font-size: 11px;
+    color: #bbb;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.plan-log-expanded .plan-log-caret {
+    transform: rotate(180deg);
+    color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-log-detail {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+}
+
+.plan-log-expanded .plan-log-detail {
+    display: block;
+}
+
+.plan-log-memo {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #555;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    .plan-item-form {
+        gap: 6px;
+    }
+
+    .plan-item-form .plan-item-add-btn {
+        padding: 0 14px;
+        font-size: 13px;
+    }
+
+    .plan-score-row {
+        gap: 8px;
+    }
+
+    .plan-score-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+
+    .plan-log-date {
+        font-size: 12px;
+    }
+}

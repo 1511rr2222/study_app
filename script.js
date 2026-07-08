@@ -8,6 +8,7 @@ import { CompetencyPracticeView, initCompetencyPracticePage } from './page/compe
 import { CompetencyResultView, initCompetencyResultPage } from './page/competencyResult.js';
 import { VocabMainView, initVocabMainPage, VocabPracticeView, initVocabPracticePage } from './page/vocab.js';
 import { GradesView, initGradesPage } from './page/grades.js';
+import { PlanPageView, initPlanPage } from './page/plan.js';
 import { supabase } from './supabaseClient.js';
 
 const app = document.getElementById('app');
@@ -28,6 +29,9 @@ function navigate(page, param) {
     } else if (page === 'homework') {
         app.innerHTML = header + HomeworkPageView();
         initHomeworkPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
+    } else if (page === 'plan') {
+        app.innerHTML = header + PlanPageView();
+        initPlanPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
     } else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
@@ -66,6 +70,17 @@ function navigate(page, param) {
         homeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             navigate('dashboard');
+        });
+    }
+
+    // ✅ 헤더의 "내 계획" 클릭 시 계획표 페이지로 이동
+    // (nav-home-btn / nav-logout-btn과 같은 id 네이밍 규칙을 따른다고 가정: nav-plan-btn.
+    //  header.js에서 실제 id가 다르면 이 부분의 'nav-plan-btn'만 맞춰서 바꿔주세요.)
+    const planBtn = document.getElementById('nav-plan-btn');
+    if (planBtn) {
+        planBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigate('plan');
         });
     }
 

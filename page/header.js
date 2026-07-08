@@ -8,7 +8,7 @@ export function HeaderView() {
                 </div>
                 <nav>
                     <a href="#" id="nav-home-btn">홈</a>
-                    <a href="#">내 계획</a>
+                    <a href="#" id="nav-plan-btn">내 계획</a>
                     <a href="#" id="nav-logout-btn">로그아웃</a>
                 </nav>
             </div>
