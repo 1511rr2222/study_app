@@ -11,25 +11,57 @@
 .hero-box h2 {
     font-size: 19px;
     font-weight: 800;
-    margin: 0 0 8px;
+    margin: 0;
     color: #2B3A67;
     letter-spacing: -0.3px;
 }
 
-/* ✅ 숙제 체크 통계: GS25 서브 블록처럼 파스텔 배경으로 감싸서 눈에 띄게 */
-.homework-stats {
+/* ✅ 숙제 체크 페이지/요약 카드 공통 헤더: 제목과 달성률을 한 줄에 배치 */
+.homework-header-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin: 4px 0 18px;
-    padding: 12px 16px;
-    background: var(--edu-pink-bg, #FFF5F8);
-    border: 1.5px solid #FFD9E4;
-    border-radius: 16px;
-    font-size: 14px;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.homework-rate-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.homework-rate-label {
+    font-size: 12px;
     font-weight: 700;
     color: #7a5a68;
+    white-space: nowrap;
+}
+
+/* ✅ 인증사진 관련 주의문구: 항목마다 반복되지 않고 페이지 상단에 한 번만 고정 */
+.homework-notice {
+    margin: 0 0 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff9a3d;
+}
+
+/* ✅ 대시보드 안에 들어가는 숙제 요약 카드: 부모(.card-homework)가 이미 카드
+   테두리 역할을 하므로, 여기서는 테두리/그림자 없이 내부 여백만 맡아서
+   이중 테두리(박스 안에 박스)가 생기는 걸 방지 */
+.homework-summary-box {
+    padding: 0;
     box-sizing: border-box;
+}
+
+.homework-summary-box h2 {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0;
+    color: #2B3A67;
+    letter-spacing: -0.3px;
 }
 
 .homework-rate {
@@ -105,17 +137,42 @@
 
 .homework-form-row {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.homework-form-label {
-    flex: 1;
+.homework-single-day-toggle {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     font-size: 12px;
     font-weight: 600;
     color: #5c6b8a;
-    gap: 4px;
+    cursor: pointer;
+}
+
+.homework-single-day-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--edu-pink, #ff6b9a);
+}
+
+.homework-form-label {
+    flex: 1 1 140px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5c6b8a;
+    min-width: 0;
+}
+
+.homework-form-label span {
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .homework-form-label input {
@@ -127,6 +184,8 @@
     font-size: 13px;
     box-sizing: border-box;
     font-family: 'Noto Sans KR', sans-serif;
+    flex: 1;
+    min-width: 0;
 }
 
 .homework-form-label input:focus {
@@ -143,6 +202,15 @@
 .homework-add-form .pink-button:active {
     transform: translateY(2px);
     box-shadow: 0 2px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+/* ✅ 추가 버튼: 수업일/마감일과 같은 줄에 붙는 핑크 블록 (너비는 내용만큼만) */
+.homework-add-form .homework-add-btn {
+    width: auto;
+    flex-shrink: 0;
+    height: 38px;
+    padding: 0 22px;
+    margin: 0;
 }
 
 /* ===== 목록 ===== */
@@ -169,12 +237,23 @@
     transition: border-color 0.15s ease;
 }
 
-.homework-item label {
+/* ✅ 체크박스/날짜/내용/상태태그 + 수정·삭제 버튼을 한 행에 배치하는 상단 래퍼 */
+.homework-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.homework-item-main {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
     cursor: pointer;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .homework-item input[type="checkbox"] {
@@ -182,6 +261,12 @@
     height: 18px;
     margin: 0;
     accent-color: var(--edu-pink, #ff6b9a);
+    flex-shrink: 0;
+}
+
+.homework-item input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
 }
 
 .homework-dates {
@@ -191,6 +276,23 @@
     color: #999;
     min-width: 100px;
     line-height: 1.4;
+}
+
+/* ✅ 대시보드 요약: 날짜 대신 D-day 배지만 쓰므로 불필요한 최소 너비를 없애서 딱 붙게 표시 */
+.homework-dates-dday {
+    min-width: 0;
+}
+
+.homework-dday {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 10px;
+    background: var(--edu-blue-bg, #EEF3FF);
+    color: var(--edu-blue, #5B86E5);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
 }
 
 .homework-content {
@@ -244,13 +346,95 @@
     font-weight: 700;
 }
 
-/* 수정/삭제 버튼 */
-.homework-item-actions {
-    display: flex;
-    gap: 8px;
+.homework-item.overdue .homework-dday {
+    background: #fde3e3;
+    color: #c53030;
+}
+
+/* ===== 인증사진 ===== */
+.homework-photo-section {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px dashed #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.homework-photo-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 64px);
+    gap: 8px;
+}
+
+.homework-photo-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #eee;
+    box-sizing: border-box;
+}
+
+.homework-photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.homework-photo-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    line-height: 16px;
+    text-align: center;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.homework-photo-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edu-pink-dark, #E14C7C);
+    background: var(--edu-pink-bg, #FFF5F8);
+    border: 1.5px dashed #FFB8CF;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.homework-photo-upload-btn:hover {
+    background: #ffe9f0;
+}
+
+/* ✅ 네이티브 파일 인풋은 항상 완전히 숨김 (다른 전역 스타일이 input을 다시
+   보이게 만들더라도 이 규칙이 덮어써서 "파일 선택 / 선택된 파일 없음" 같은
+   브라우저 기본 UI가 버튼 안에 끼어 두 줄로 보이는 문제를 방지) */
+.homework-photo-input {
+    display: none !important;
+}
+
+/* 수정/삭제 버튼: 상단 행(homework-item-top) 오른쪽에 붙는 컴팩트 버튼 */
+.homework-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .homework-edit-btn,
@@ -258,10 +442,11 @@
     background: none;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
     cursor: pointer;
     color: #666;
+    white-space: nowrap;
     transition: border-color 0.15s ease, color 0.15s ease;
 }
 
@@ -317,19 +502,43 @@
 }
 
 @media (max-width: 480px) {
+    .homework-header-row {
+        align-items: flex-start;
+    }
+
     .homework-form-row {
         flex-direction: column;
+        align-items: stretch;
         gap: 10px;
     }
 
-    .homework-add-form .pink-button {
+    .homework-form-label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .homework-form-label input {
         width: 100%;
     }
 
-    .homework-item label {
+    .homework-add-form .pink-button,
+    .homework-add-form .homework-add-btn {
+        width: 100%;
+    }
+
+    .homework-item-top {
+        flex-wrap: wrap;
+    }
+
+    .homework-item-main {
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
+    }
+
+    .homework-item-actions {
+        align-self: flex-start;
     }
 
     .homework-dates {
@@ -344,15 +553,6 @@
 
     .homework-status-tag {
         align-self: flex-start;
-    }
-
-    .homework-item-actions {
-        flex-wrap: wrap;
-    }
-
-    .homework-stats {
-        font-size: 13px;
-        padding: 10px 14px;
     }
 
     .homework-rate {
