@@ -55,9 +55,10 @@
     padding: 0;
     box-sizing: border-box;
     /* ✅ 부모(.card-homework)가 옆 카드(.card-attendance)와 같은 높이로
-       늘어났을 때, 그 늘어난 높이를 이 박스도 그대로 이어받아서
-       내부의 리스트/버튼 배치에 쓸 수 있게 함 */
-    height: 100%;
+       늘어났을 때(flex + align-items:stretch), 그 늘어난 높이를 이 박스도
+       flex:1로 그대로 이어받아서 내부의 리스트/버튼 배치에 쓸 수 있게 함 */
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
 }
@@ -556,7 +557,11 @@
         font-size: 11.5px;
     }
 
-    /* ✅ 추가 버튼: 같은 줄에 얇고 컴팩트하게 붙임 */
+    /* ✅ 추가 버튼: 같은 줄에 얇고 컴팩트하게 붙임
+       (아래 .homework-add-btn 규칙이 .pink-button의 width:100%를 덮어써야 하므로,
+       이 미디어쿼리 안에서는 .pink-button의 width를 다시 100%로 재선언하지 않음.
+       재선언하면 같은 우선순위에서 나중에 적힌 쪽이 이겨버려서
+       버튼이 다시 전체 너비로 늘어나 날짜 필드를 덮어버리는 버그가 생김) */
     .homework-add-form .homework-add-btn {
         flex: 0 0 auto;
         width: auto;
@@ -564,10 +569,6 @@
         padding: 0 14px;
         font-size: 12.5px;
         margin: 0;
-    }
-
-    .homework-add-form .pink-button {
-        width: 100%;
     }
 
     .homework-item-top {

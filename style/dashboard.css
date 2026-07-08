@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
 
 /* 페이지 전체 배경 (살짝 누리끼리한 크림톤) */
@@ -58,14 +57,14 @@ body {
     width: 130px;
     height: auto;
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.12));
-    z-index: 2; /* ✅ 박스 테두리 위로 확실히 걸치도록 */
+    z-index: 2; 
 }
 
 .fairy-question-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6px; /* ✅ 문구-입력칸 사이 여백 최소화 */
+    gap: 1px; /* ✅ 문구-입력칸 사이 여백 최소화 */
 }
 
 .fairy-question-text {
@@ -73,7 +72,7 @@ body {
     font-weight: 700;
     color: var(--edu-pink-dark);
     letter-spacing: -0.2px;
-    white-space: normal; /* ✅ 줄바꿈 허용 */
+    white-space: normal; 
 }
 
 .fairy-input-row {
@@ -136,6 +135,8 @@ body {
     box-sizing: border-box;
     background: linear-gradient(180deg, #ffffff 0%, var(--edu-blue-bg) 100%);
     border: 2px solid var(--edu-blue);
+    display: flex;
+    flex-direction: column;
 }
 
 .card-header-row {
@@ -239,7 +240,6 @@ body {
     box-shadow: 0 2px 0 var(--edu-pink-dark);
 }
 
-/* ✅ 출석률을 파스텔 블록으로 감싸서 GS25 픽업/배달 서브 블록처럼 */
 .attendance-rate-row {
     display: flex;
     align-items: center;
@@ -329,13 +329,12 @@ body {
         flex-direction: column;
     }
 
-    /* ✅ 캐릭터 공간을 줄이고, 박스 자체를 위로 바짝 붙임 */
     .fairy-question-box {
         flex-direction: column;
         align-items: flex-start;
-        padding: 10px 12px 12px 12px;
-        margin-top: 8px;
-        margin-bottom: 12px;
+        padding: 10px 6px 6px 6px;
+        margin-top: 6px;
+        margin-bottom: 6px;
         overflow: visible;
     }
 
@@ -381,7 +380,6 @@ body {
         align-self: flex-start;
     }
 
-    /* ✅ 하단 역량확인/영단어/성적기록: 모바일에서는 하단 탭바처럼 화면에 고정 */
     .bottom-section {
         position: fixed;
         left: 0;
@@ -405,7 +403,6 @@ body {
         transform: none;
     }
 
-    /* 하단 고정바에 콘텐츠가 가려지지 않도록 여유 공간 확보 */
     .dashboard-container {
         padding-bottom: 100px;
     }
