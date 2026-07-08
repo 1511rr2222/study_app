@@ -112,7 +112,7 @@ async function renderPage(onBack) {
             <input type="text" id="homework-input" placeholder="숙제 내용을 입력하세요" required>
             <label class="homework-single-day-toggle">
                 <input type="checkbox" id="homework-single-day-toggle">
-                요일(당일)계획 (예: "화요일 수학 1페이지")
+                당일 계획
             </label>
             <div class="homework-form-row">
                 <label class="homework-form-label">

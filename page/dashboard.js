@@ -19,7 +19,7 @@ export function DashboardView() {
                 <div class="top-section">
                     <div class="card-attendance">
                         <div class="card-header-row">
-                            <h3 id="calendar-title">📅 0월 출석 현황</h3>
+                            <h3 id="calendar-title">📅 0월 출석 </h3>
                             <span id="streak-badge" class="streak-badge">🔥 0일 연속</span>
                         </div>
                         <div id="calendar-grid" class="calendar-grid"></div>
@@ -67,7 +67,7 @@ export async function initDashboardEvents() {
     const today = now.getDate();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    if (title) title.innerText = `📅 ${month + 1}월 출석 현황`;
+    if (title) title.innerText = `📅 ${month + 1}월 출석`;
 
     // 현재 로그인된 사용자 확인
     const { data: { user } } = await supabase.auth.getUser();
