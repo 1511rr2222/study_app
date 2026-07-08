@@ -1,7 +1,8 @@
 import { loadData, insertItem } from './data.js';
 import { renderItem } from './render.js';
-import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents } from './events.js';
+import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attachItemExpandEvents } from './events.js';
 import { setEditingId } from './editState.js';
+import { clearExpanded } from './expandState.js';
 import { todayStr, sortForDisplay, getWeeklyAverageRate } from './utils.js';
 
 /* ---------------- 대시보드 요약 카드 ---------------- */
@@ -87,6 +88,7 @@ export function HomeworkPageView() {
 // onBack: 대시보드로 돌아갈 때 실행할 콜백
 export function initHomeworkPage(onBack) {
     setEditingId(null);
+    clearExpanded(); // ✅ 전체 페이지에 새로 들어올 때는 모두 접힌 상태로 시작
     renderPage(onBack);
     document.getElementById('homework-back-btn').addEventListener('click', onBack);
 }
@@ -172,4 +174,5 @@ async function renderPage(onBack) {
     attachCheckboxEvents(container, () => renderPage(onBack));
     attachPhotoEvents(container, () => renderPage(onBack));
     attachItemActionEvents(container, () => renderPage(onBack));
+    attachItemExpandEvents(container); // ✅ 항목 행 클릭 시 펼침/접힘 토글
 }

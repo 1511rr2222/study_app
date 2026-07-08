@@ -261,7 +261,8 @@
     transition: border-color 0.15s ease;
 }
 
-/* ✅ 체크박스/날짜/내용/상태태그 + 수정·삭제 버튼을 한 행에 배치하는 상단 래퍼 */
+/* ✅ 체크박스/날짜/내용/상태태그 + 수정·삭제 버튼을 한 행에 배치하는 상단 래퍼
+   (대시보드 요약 카드 전용, editable:false) */
 .homework-item-top {
     display: flex;
     align-items: center;
@@ -280,15 +281,82 @@
     min-width: 0;
 }
 
-/* ✅ 상태 태그 + 수정/삭제 버튼을 오른쪽에 한 그룹으로 묶는 래퍼
-   (슬림한 3줄 레이아웃: 1줄 = 체크박스+내용 | 상태태그+수정/삭제) */
-.homework-item-right {
+/* =====================================================================
+   ✅ 숙제 체크 "전체 페이지" 전용: 접힘(한 줄) ↔ 펼침(상세) 카드
+   - 기본(접힘): 체크박스 + 숙제 내용 + D-day + 완료/미완료, 정확히 한 줄
+   - 행(.homework-item-row) 클릭 시 .homework-item에 .homework-item-expanded가
+     토글되면서 아래 .homework-item-detail(날짜/수정/삭제/인증사진)이 펼쳐짐
+   ===================================================================== */
+.homework-item-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.homework-item-row input[type="checkbox"] {
     flex-shrink: 0;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+}
+
+/* 숙제 내용: 아무리 길어도 한 줄을 넘기지 않고 말줄임(...) 처리 */
+.homework-item-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.homework-item.done .homework-item-content {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.homework-item-row .homework-dday,
+.homework-item-row .homework-status-tag {
+    flex-shrink: 0;
+}
+
+/* 펼침 여부를 보여주는 작은 화살표 */
+.homework-item-caret {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #bbb;
+    transition: transform 0.15s ease;
+}
+
+.homework-item-expanded .homework-item-caret {
+    transform: rotate(180deg);
+    color: var(--edu-pink, #ff6b9a);
+}
+
+/* 펼침 상세 영역: 기본은 완전히 숨김 */
+.homework-item-detail {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #eee;
+}
+
+.homework-item-expanded .homework-item-detail {
+    display: flex;
+}
+
+.homework-item-detail .homework-dates {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: #999;
+}
+
+.homework-item.overdue .homework-item-detail .homework-dates {
+    color: #c53030;
+    font-weight: 700;
 }
 
 /* ✅ 날짜가 더 이상 homework-item-main 안이 아니라 카드의 독립된 한 줄로
@@ -482,7 +550,7 @@
     display: none !important;
 }
 
-/* 수정/삭제 버튼: 상단 행(homework-item-top) 오른쪽에 붙는 컴팩트 버튼 */
+/* 수정/삭제 버튼: 펼침 상세(.homework-item-detail) 안에 붙는 컴팩트 버튼 */
 .homework-item-actions {
     display: flex;
     gap: 6px;
@@ -558,7 +626,6 @@
         align-items: flex-start;
     }
 
-    /* ✅ 시작일 / 마감일 / 추가 버튼을 모바일에서도 한 줄에 배치 */
     .homework-form-row {
         flex-direction: row;
         flex-wrap: nowrap;
@@ -585,11 +652,6 @@
         font-size: 11.5px;
     }
 
-    /* ✅ 추가 버튼: 같은 줄에 얇고 컴팩트하게 붙임
-       (아래 .homework-add-btn 규칙이 .pink-button의 width:100%를 덮어써야 하므로,
-       이 미디어쿼리 안에서는 .pink-button의 width를 다시 100%로 재선언하지 않음.
-       재선언하면 같은 우선순위에서 나중에 적힌 쪽이 이겨버려서
-       버튼이 다시 전체 너비로 늘어나 날짜 필드를 덮어버리는 버그가 생김) */
     .homework-add-form .homework-add-btn {
         flex: 0 0 auto;
         width: auto;
@@ -604,13 +666,23 @@
     }
 
     .homework-item-main {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .homework-item-text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .homework-item-actions {
+        flex-direction: row;
         align-self: flex-start;
+        gap: 6px;
     }
 
     .homework-dates {
@@ -630,6 +702,35 @@
     .homework-rate {
         font-size: 14px;
         padding: 5px 12px;
+    }
+
+    /* ✅ 숙제 체크 전체 페이지의 접힘 한 줄(.homework-item-row)이 좁은 화면에서도
+       절대 두 줄로 안 밀리도록 여백/글자 크기를 살짝 줄임 */
+    .homework-item {
+        padding: 10px 12px;
+    }
+
+    .homework-item-row {
+        gap: 7px;
+    }
+
+    .homework-item-content {
+        font-size: 13px;
+    }
+
+    .homework-item-row .homework-dday {
+        padding: 3px 7px;
+        font-size: 10px;
+    }
+
+    .homework-item-row .homework-status-tag {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    .homework-item-detail .homework-dates {
+        gap: 10px;
+        flex-wrap: wrap;
     }
 }
 

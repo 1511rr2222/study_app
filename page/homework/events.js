@@ -1,6 +1,7 @@
 import { loadData, updateItem, deleteItemRow, getUser } from './data.js';
 import { uploadPhoto, removePhotoFromStorage } from './storage.js';
 import { setEditingId } from './editState.js';
+import { toggleExpanded } from './expandState.js';
 import { openLightbox } from './lightbox.js';
 
 export function attachCheckboxEvents(container, onChange) {
@@ -138,6 +139,21 @@ export function attachItemActionEvents(container, onChange) {
             const ok = await updateItem(id, { lessonDate, dueDate, content });
             if (ok) setEditingId(null);
             onChange();
+        });
+    });
+}
+
+// ✅ 접힘 한 줄 ↔ 펼침 상세 토글.
+export function attachItemExpandEvents(container) {
+    container.querySelectorAll('.homework-item-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+            if (e.target.closest('input[type="checkbox"]')) return;
+
+            const id = row.dataset.id;
+            toggleExpanded(id);
+
+            const item = row.closest('.homework-item');
+            if (item) item.classList.toggle('homework-item-expanded');
         });
     });
 }
