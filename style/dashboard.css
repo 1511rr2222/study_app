@@ -35,57 +35,71 @@ body {
     box-sizing: border-box;
 }
 
-/* ===== 요정 질문 박스 ===== */
+/* =====================================================================
+   ✅ 요정 질문 박스: 얇은 한 줄 바 형태로 재구성
+   - 이미지: 훨씬 크게(150px), 박스 테두리 위/아래로 자연스럽게 삐져나오도록 배치
+   - 콘텐츠(질문+입력): 세로로 쌓지 않고 한 줄(row)로 나란히 배치해서
+     박스 전체 높이를 줄이고, padding도 최소화
+   - overflow: visible 유지 → 이미지가 잘리지 않고 위로 튀어나옴
+   ===================================================================== */
 .fairy-question-box {
     position: relative;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     background: linear-gradient(135deg, #ffffff 55%, var(--edu-pink-bg) 100%);
     border: 2px solid var(--edu-pink);
-    border-radius: 22px;
-    padding: 22px 22px 18px 90px;
-    margin-bottom: 24px;
-    margin-top: 10px;
+    border-radius: 18px;
+    padding: 10px 18px 10px 118px;
+    margin: 18px 0 20px;
     box-sizing: border-box;
     overflow: visible; /* ✅ 캐릭터가 테두리 밖으로 나가도 잘리지 않게 */
+    min-height: 56px;
 }
 
 .fairy-question-img {
     position: absolute;
-    left: -28px;
-    top: -30px;
-    width: 130px;
+    left: -18px;
+    top: -44px;
+    width: 150px;
     height: auto;
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.12));
-    z-index: 2; 
+    z-index: 2;
+    pointer-events: none; /* ✅ 이미지가 커져서 입력창 위를 덮어도 클릭/포커스를 가로채지 않도록 */
 }
 
 .fairy-question-content {
     flex: 1;
+    min-width: 0;
     display: flex;
-    flex-direction: column;
-    gap: 1px; /* ✅ 문구-입력칸 사이 여백 최소화 */
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
 }
 
 .fairy-question-text {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--edu-pink-dark);
     letter-spacing: -0.2px;
-    white-space: normal; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+    max-width: 42%;
 }
 
 .fairy-input-row {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%;
 }
 
 .fairy-answer-input {
     flex: 1;
-    min-width: 160px;
-    height: 38px;
+    min-width: 120px;
+    height: 36px;
     border: 1.5px solid #FFD9E4;
     border-radius: 12px;
     padding: 0 14px;
@@ -329,55 +343,57 @@ body {
         flex-direction: column;
     }
 
+    /* ✅ 모바일에서도 얇은 한 줄 바 유지 (세로로 쌓지 않음) */
     .fairy-question-box {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 6px 6px 6px;
-        margin-top: 6px;
-        margin-bottom: 6px;
+        flex-direction: row;
+        align-items: center;
+        padding: 8px 14px 8px 78px;
+        margin: 12px 0 16px;
         overflow: visible;
+        min-height: 48px;
     }
 
     .fairy-question-img {
-        width: 56px;
-        left: -6px;
-        top: -20px;
-        transform: none;
+        width: 92px;
+        left: -14px;
+        top: -22px;
     }
 
     .fairy-question-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
         flex-wrap: nowrap;
         width: 100%;
+        min-width: 0;
     }
 
     .fairy-question-text {
-        font-size: 13px;
-        white-space: normal;
-        overflow: visible;
-        text-overflow: unset;
-        max-width: 100%;
+        font-size: 11.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 36%;
+        flex-shrink: 0;
     }
 
     .fairy-input-row {
         flex: 1 1 auto;
         min-width: 0;
-        width: 100%;
+        width: auto;
     }
 
     .fairy-answer-input {
-        width: 100%; 
+        width: 100%;
         min-width: 0;
         flex: 1 1 auto;
-        height: 38px; 
-        font-size: 13px;
-        padding: 0 6px;
+        height: 34px;
+        font-size: 12px;
+        padding: 0 10px;
     }
 
     .fairy-save-badge {
-        align-self: flex-start;
+        align-self: center;
     }
 
     .bottom-section {
@@ -409,8 +425,14 @@ body {
 }
 
 @media (max-width: 400px) {
+    /* ✅ 아주 좁은 화면에서는 질문 텍스트가 들어가면 다시 두 줄로 밀릴 위험이 있어서
+       텍스트는 숨기고 입력창이 폭을 꽉 채우도록 함 (이미지+입력창만 남는 슬림 바) */
     .fairy-question-text {
-        font-size: 11px;
+        display: none;
+    }
+
+    .fairy-question-box {
+        padding-left: 70px;
     }
 
     .card-header-row h3,
