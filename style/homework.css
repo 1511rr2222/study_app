@@ -642,7 +642,7 @@
     }
 
     .homework-form-label span {
-        font-size: 10.5px;
+        font-size: 11.5px;
     }
 
     .homework-form-label input {
@@ -657,7 +657,7 @@
         width: auto;
         height: 34px;
         padding: 0 10px;
-        font-size: 10.5px;
+        font-size: 11.5px;
         margin: 0;
     }
 
@@ -700,7 +700,7 @@
     }
 
     .homework-rate {
-        font-size: 14px;
+        font-size: 12px;
         padding: 5px 10px;
     }
 
@@ -713,7 +713,7 @@
     }
 
     .homework-item-content {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .homework-item-row .homework-dday {
