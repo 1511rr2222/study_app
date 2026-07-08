@@ -8,7 +8,7 @@ export function DashboardView() {
                 <div class="fairy-question-box">
                     <img src="fairy.png" alt="공부 요정" class="fairy-question-img">
                     <div class="fairy-question-content">
-                        <label for="fairy-answer-input" class="fairy-question-text">공부를 통해 무엇을 이루고 싶나요?</label>
+                        <label for="fairy-answer-input" class="fairy-question-text" data-short="나만의 공부 목표 :">나만의 공부 목표?</label>
                         <div class="fairy-input-row">
                             <input type="text" id="fairy-answer-input" class="fairy-answer-input" placeholder="자유롭게 적어보세요!">
                             <span id="fairy-save-badge" class="fairy-save-badge">저장완료 ✨</span>
