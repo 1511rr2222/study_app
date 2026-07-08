@@ -54,6 +54,21 @@
 .homework-summary-box {
     padding: 0;
     box-sizing: border-box;
+    /* ✅ 부모(.card-homework)가 옆 카드(.card-attendance)와 같은 높이로
+       늘어났을 때, 그 늘어난 높이를 이 박스도 그대로 이어받아서
+       내부의 리스트/버튼 배치에 쓸 수 있게 함 */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ✅ 헤더(제목+달성률) 아래, 리스트+버튼을 감싸는 영역을 세로 flex로 만들어서
+   버튼이 항상 카드 맨 아래에 붙도록 함 */
+#homework-summary {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 .homework-summary-box h2 {
@@ -88,6 +103,9 @@
     cursor: pointer;
     box-shadow: 0 4px 0 var(--edu-pink-dark, #E14C7C);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
+    /* ✅ 리스트가 flex:1로 늘어나도 버튼 자체는 줄어들지 않고
+       항상 카드 맨 아래에 그대로 붙어 있게 함 */
+    flex-shrink: 0;
 }
 
 .homework-open-btn:hover {
@@ -215,6 +233,11 @@
 
 /* ===== 목록 ===== */
 .homework-list {
+    /* ✅ 대시보드 요약 카드 안에서는 남는 세로 공간을 채우며(flex:1)
+       그 안에서만 스크롤되어 버튼 위치가 밀리지 않도록 함.
+       (숙제 체크 전체 페이지에서는 max-height가 그대로 상한선 역할) */
+    flex: 1;
+    min-height: 0;
     max-height: 360px;
     overflow-y: auto;
     display: flex;
