@@ -730,6 +730,38 @@
         gap: 10px;
         flex-wrap: wrap;
     }
+
+/* 요약 카드 제목 크기 축소 */
+    .homework-summary-box h2 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    /* 요약 카드 내 숙제 내용 글씨 크기 축소 */
+    .homework-summary-box .homework-content {
+        font-size: 12px;
+    }
+
+    /* 요약 카드 내 D-Day 라벨 크기 조절 */
+    .homework-summary-box .homework-dday {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    /* 요약 카드 내 상태 태그 크기 조절 */
+    .homework-summary-box .homework-status-tag {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+    
+    /* 요약 카드 달성률 글자 크기 최적화 */
+    .homework-rate-inline .homework-rate-label {
+        font-size: 11px;
+    }
+    
+    .homework-rate-inline #homework-summary-rate {
+        font-size: 12px;
+    }
 }
 
 /* ===== 인증사진 라이트박스 (크게보기) ===== */
