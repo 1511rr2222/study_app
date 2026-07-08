@@ -120,6 +120,9 @@ body {
 }
 
 .fairy-save-badge {
+    position: absolute;
+    right: 0;
+    top: -26px;
     font-size: 11px;
     font-weight: 700;
     color: #fff;
@@ -131,6 +134,7 @@ body {
     transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
     pointer-events: none;
+    z-index: 5;
 }
 
 .fairy-save-badge.show {
@@ -373,9 +377,6 @@ body {
         min-width: 0;
     }
 
-    /* ✅ 모바일에서는 긴 문구 대신 짧은 문구("나만의 공부 목표 :")를 보여줌
-       (percentage로 잘라서 ellipsis 처리하던 방식은 화면 폭에 따라 말줄임표 없이
-       뚝 끊겨 보이는 문제가 있어서, 아예 짧은 문구 자체를 쓰는 쪽으로 변경) */
     .fairy-question-text-full {
         display: none;
     }
@@ -405,7 +406,7 @@ body {
     }
 
     .fairy-save-badge {
-        align-self: center;
+         top: -22px;
     }
 
     .bottom-section {
@@ -441,7 +442,7 @@ body {
     .card-homework h2,
     .card-homework h3,
     .card-homework h4 {
-        font-size: 14px;
+        font-size: 12px;
     }
 
     .day {
