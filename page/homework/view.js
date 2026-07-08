@@ -23,7 +23,6 @@ export function HomeworkSummaryView() {
     `;
 }
 
-// onOpenFull: "숙제 체크 페이지"로 이동할 때 실행할 콜백
 export function initHomeworkSummary(onOpenFull) {
     renderSummary(onOpenFull);
 }
@@ -52,7 +51,7 @@ async function renderSummary(onOpenFull) {
         </div>
 
         <button type="button" id="homework-open-btn" class="homework-open-btn">
-            숙제 확인하고 추가하기 →
+            완료 인증 및 숙제 추가 →
         </button>
     `;
 
@@ -74,11 +73,11 @@ export function HomeworkPageView() {
                 <div class="homework-header-row">
                     <h2>숙제 체크</h2>
                     <div class="homework-rate-inline">
-                        <span class="homework-rate-label">주간 평균 달성률</span>
+                        <span class="homework-rate-label">평균 달성률</span>
                         <span class="homework-rate" id="homework-weekly-rate">0%</span>
                     </div>
                 </div>
-                <p class="homework-notice">* 완료 체크를 하려면 인증사진을 1장 이상 올려주세요</p>
+                <p class="homework-notice">*인증사진을 1장 이상 올려야 완료 체크가 가능해요</p>
                 <div id="homework-page"></div>
             </div>
         </div>
@@ -100,8 +99,6 @@ async function renderPage(onBack) {
 
     const data = await loadData();
     const weeklyRate = getWeeklyAverageRate(data);
-
-    // 달성률은 페이지 헤더(제목 옆)에 고정되어 있는 배지 텍스트만 갱신
     const weeklyRateEl = document.getElementById('homework-weekly-rate');
     if (weeklyRateEl) weeklyRateEl.textContent = `${weeklyRate}%`;
 
@@ -115,11 +112,11 @@ async function renderPage(onBack) {
             <input type="text" id="homework-input" placeholder="숙제 내용을 입력하세요" required>
             <label class="homework-single-day-toggle">
                 <input type="checkbox" id="homework-single-day-toggle">
-                하루 안에 끝나는 숙제예요 (예: "화요일에 수학 1페이지" 같은 요일 계획)
+                요일(당일)계획 (예: "화요일 수학 1페이지")
             </label>
             <div class="homework-form-row">
                 <label class="homework-form-label">
-                    <span id="homework-lesson-date-label">수업일</span>
+                    <span id="homework-lesson-date-label">시작일</span>
                     <input type="date" id="homework-lesson-date" value="${todayStr()}" required>
                 </label>
                 <label class="homework-form-label" id="homework-due-date-field">
@@ -146,7 +143,7 @@ async function renderPage(onBack) {
         const isSingle = singleDayToggle.checked;
         dueDateField.style.display = isSingle ? 'none' : '';
         dueDateInput.required = !isSingle;
-        lessonDateLabel.textContent = isSingle ? '날짜' : '수업일';
+        lessonDateLabel.textContent = isSingle ? '날짜' : '시작일';
         if (isSingle) dueDateInput.value = lessonDateInput.value;
     }
 
@@ -163,9 +160,8 @@ async function renderPage(onBack) {
         const dueDateValue = singleDayToggle.checked ? lessonDateInput.value : dueDateInput.value;
         if (!content || !lessonDateInput.value || !dueDateValue) return;
 
-        // 마감일이 수업일보다 빠르면 안내
         if (dueDateValue < lessonDateInput.value) {
-            alert('마감일은 수업일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
+            alert('마감일은 시작일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
             return;
         }
 
