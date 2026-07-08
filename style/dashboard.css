@@ -37,10 +37,6 @@ body {
 
 /* =====================================================================
    ✅ 요정 질문 박스: 얇은 한 줄 바 형태로 재구성
-   - 이미지: 훨씬 크게(150px), 박스 테두리 위/아래로 자연스럽게 삐져나오도록 배치
-   - 콘텐츠(질문+입력): 세로로 쌓지 않고 한 줄(row)로 나란히 배치해서
-     박스 전체 높이를 줄이고, padding도 최소화
-   - overflow: visible 유지 → 이미지가 잘리지 않고 위로 튀어나옴
    ===================================================================== */
 .fairy-question-box {
     position: relative;
@@ -52,7 +48,7 @@ body {
     padding: 10px 18px 10px 118px;
     margin: 18px 0 20px;
     box-sizing: border-box;
-    overflow: visible; /* ✅ 캐릭터가 테두리 밖으로 나가도 잘리지 않게 */
+    overflow: visible; 
     min-height: 56px;
 }
 
@@ -64,7 +60,7 @@ body {
     height: auto;
     filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.12));
     z-index: 2;
-    pointer-events: none; /* ✅ 이미지가 커져서 입력창 위를 덮어도 클릭/포커스를 가로채지 않도록 */
+    pointer-events: none; 
 }
 
 .fairy-question-content {
@@ -84,19 +80,19 @@ body {
     color: var(--edu-pink-dark);
     letter-spacing: -0.2px;
     white-space: nowrap;
-    flex-shrink: 0; /* ✅ 글자가 잘리지 않도록 절대 줄어들지 않게 함 (대신 입력창이 줄어듦) */
+    flex-shrink: 0; 
 }
 
 .fairy-question-text-short {
-    display: none; /* ✅ 데스크톱/태블릿에서는 짧은 문구를 숨김 */
+    display: none; 
 }
 
 .fairy-input-row {
     flex: 1;
     min-width: 0;
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .fairy-answer-input {
@@ -109,9 +105,9 @@ body {
     font-size: 13px;
     font-family: 'Noto Sans KR', sans-serif;
     background: #FFFDFE;
-    color: #3A2E39; /* ✅ 글자색을 명시적으로 지정 (다른 전역 input 스타일에 덮여써서
-                        글자가 배경색과 비슷해져 안 보이는 문제를 방지) */
+    color: #3A2E39; 
     box-sizing: border-box;
+    width: 100%;
 }
 
 .fairy-answer-input:focus {
@@ -352,7 +348,6 @@ body {
         flex-direction: column;
     }
 
-    /* ✅ 모바일에서도 얇은 한 줄 바 유지 (세로로 쌓지 않음) */
     .fairy-question-box {
         flex-direction: row;
         align-items: center;
