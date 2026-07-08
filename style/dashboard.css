@@ -109,6 +109,8 @@ body {
     font-size: 13px;
     font-family: 'Noto Sans KR', sans-serif;
     background: #FFFDFE;
+    color: #3A2E39; /* ✅ 글자색을 명시적으로 지정 (다른 전역 input 스타일에 덮여써서
+                        글자가 배경색과 비슷해져 안 보이는 문제를 방지) */
     box-sizing: border-box;
 }
 
