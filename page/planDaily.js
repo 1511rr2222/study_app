@@ -11,7 +11,7 @@ export function DailyLogHtml() {
                     ${SCORES.map(n => `<button type="button" class="plan-score-btn" data-score="${n}">${n}</button>`).join('')}
                 </div>
             </div>
-            <textarea id="plan-memo-input" class="plan-memo-input" placeholder="오늘 하루를 짧게 기록해보세요" rows="3"></textarea>
+            <textarea id="plan-memo-input" class="plan-memo-input" placeholder="오늘 계획 실천에서 잘한점, 못한점을 짧게 기록해주세요" rows="3"></textarea>
             <div class="plan-save-row">
                 <button type="button" id="plan-save-btn" class="pink-button plan-save-btn">오늘 기록 저장</button>
                 <span id="plan-save-badge" class="plan-save-badge">저장완료 ✨</span>

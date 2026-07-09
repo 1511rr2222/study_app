@@ -7,6 +7,191 @@
     padding: 20px 0;
 }
 
+/* ---------- 전체 페이지: 새 챌린지 추가 + 챌린지 카드 목록 ---------- */
+.grit-page {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.grit-add-section {
+    margin-bottom: 18px;
+}
+
+.grit-add-toggle-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1.5px dashed #ff6b9a;
+    background: #fff5f8;
+    color: #d6336c;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.grit-add-toggle-btn:hover {
+    background: #ffe9f0;
+}
+
+.grit-challenge-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.grit-no-challenge {
+    text-align: center;
+    padding: 24px 0;
+}
+
+/* ---------- 진행중/완료 그룹 토글 ---------- */
+.grit-group {
+    margin-bottom: 12px;
+}
+
+.grit-group-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1.5px solid #ffe3ee;
+    border-radius: 14px;
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.grit-group-caret {
+    font-size: 12px;
+    color: #ff6b9a;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.grit-group-toggle.open .grit-group-caret {
+    transform: rotate(180deg);
+}
+
+.grit-group-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 800;
+    color: #444;
+}
+
+.grit-group-count {
+    font-size: 12px;
+    font-weight: 800;
+    color: #d6336c;
+    background: #fff0f5;
+    padding: 3px 9px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.grit-group-list {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.grit-group-list.show {
+    display: flex;
+}
+
+.grit-challenge-card {
+    background: #fff;
+    border: 1.5px solid #ffe3ee;
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 0 rgba(255, 107, 154, 0.08);
+}
+
+.grit-challenge-finished {
+    opacity: 0.85;
+}
+
+/* ---------- 접힘 요약 행 (항상 보이는 한 줄: 상태점 + 이름 + 날짜 + Day + 화살표) ---------- */
+.grit-challenge-summary-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.grit-challenge-status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #ff6b9a;
+}
+
+.grit-challenge-status-dot.finished {
+    background: #bbb;
+}
+
+.grit-challenge-summary-goal {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grit-challenge-summary-date {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.grit-challenge-summary-day {
+    font-size: 11px;
+    font-weight: 800;
+    color: #d6336c;
+    background: #fff0f5;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.grit-challenge-finished .grit-challenge-summary-day {
+    color: #888;
+    background: #f2f2f2;
+}
+
+.grit-challenge-caret {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #bbb;
+    transition: transform 0.15s ease;
+}
+
+.grit-challenge-expanded .grit-challenge-caret {
+    transform: rotate(180deg);
+    color: #ff6b9a;
+}
+
+/* ---------- 펼침 상세 (기본 숨김, 펼쳤을 때만 보임) ---------- */
+.grit-challenge-detail {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #ffe3ee;
+}
+
+.grit-challenge-expanded .grit-challenge-detail {
+    display: block;
+}
+
 /* ---------- 설정 화면 ---------- */
 .grit-setup {
     max-width: 480px;
@@ -139,6 +324,52 @@
     font-weight: 700;
 }
 
+/* ---------- 프로그레스 바 + 스트릭 + 동기부여 문구 (게이미피케이션) ---------- */
+.grit-progress-bar-track {
+    height: 10px;
+    border-radius: 8px;
+    background: #ffe9f0;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.grit-progress-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff6b9a, #ffd469);
+    transition: width 0.4s ease;
+}
+
+.grit-progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.grit-progress-row .grit-progress-text {
+    margin: 0;
+}
+
+.grit-streak-badge {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #a06b00;
+    background: #fff1d6;
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.grit-motivation-text {
+    text-align: center;
+    margin: 0 0 16px;
+    font-size: 12.5px;
+    color: #d6336c;
+    font-weight: 700;
+}
+
 .grit-today-box {
     background: #fff7fa;
     border: 1px solid #ffd7e4;
@@ -157,6 +388,26 @@
 
 .grit-finish-box .grit-today-lead {
     color: #d6336c;
+}
+
+.grit-trophy {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 6px;
+    animation: gritTrophyBounce 0.7s ease;
+}
+
+.grit-finish-sub {
+    text-align: center;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: #a05070;
+}
+
+@keyframes gritTrophyBounce {
+    0% { transform: translateY(-16px) scale(0.7); opacity: 0; }
+    60% { transform: translateY(4px) scale(1.1); opacity: 1; }
+    100% { transform: translateY(0) scale(1); }
 }
 
 .grit-reflection-input {
@@ -178,6 +429,104 @@
     border-color: #ffb3d1;
 }
 
+/* ---------- 오늘의 인증사진 (완료 도장 찍기 전 업로드 영역) ---------- */
+.grit-photo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.grit-photo-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 64px);
+    gap: 8px;
+}
+
+.grit-photo-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #ffd7e4;
+    box-sizing: border-box;
+}
+
+.grit-photo-thumb-new {
+    animation: gritThumbPop 0.3s ease;
+}
+
+.grit-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: zoom-in;
+}
+
+.grit-photo-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.grit-photo-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #d6336c;
+    background: #fff5f8;
+    border: 1.5px dashed #ffb3d1;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.grit-photo-upload-btn:hover {
+    background: #ffe9f0;
+}
+
+.grit-photo-notice {
+    margin: 0;
+    font-size: 11px;
+    color: #ff9a3d;
+    font-weight: 600;
+}
+
+/* ---------- 완료 시 Day 동그라미가 한 번 튀어오르는 pop 애니메이션 (게임 느낌) ---------- */
+@keyframes gritDayPop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35) rotate(-8deg); box-shadow: 0 0 0 6px rgba(255, 107, 154, 0.25); }
+    60% { transform: scale(0.92) rotate(4deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.grit-day-pop {
+    animation: gritDayPop 0.55s ease;
+}
+
+@keyframes gritThumbPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
 .grit-history-list {
     list-style: none;
     margin: 0;
@@ -197,6 +546,35 @@
     line-height: 1.4;
 }
 
+.grit-history-top {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.grit-history-text {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.grit-history-photos {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.grit-history-photo {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #eee;
+    cursor: zoom-in;
+}
+
 .grit-history-day {
     font-weight: 700;
     color: #d6336c;
@@ -213,5 +591,103 @@
         width: 34px;
         height: 34px;
         font-size: 12px;
+    }
+
+    .grit-day-dots {
+        gap: 6px;
+    }
+
+    .grit-today-box {
+        padding: 14px;
+    }
+
+    /* ✅ 사진 추가 버튼 터치 영역은 살짝 넉넉하게, 썸네일은 살짝 작게 */
+    .grit-photo-thumb {
+        width: 58px;
+        height: 58px;
+    }
+
+    .grit-photo-list {
+        grid-template-columns: repeat(auto-fill, 58px);
+    }
+
+    .grit-photo-upload-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 11px 16px; /* 엄지로 누르기 편하게 세로 여백 확보 */
+    }
+}
+
+@media (max-width: 400px) {
+    .grit-setup-lead {
+        font-size: 13px;
+    }
+
+    .grit-period-btn {
+        font-size: 13px;
+        padding: 9px 0;
+    }
+
+    .grit-day-dot {
+        width: 30px;
+        height: 30px;
+        font-size: 11px;
+    }
+
+    .grit-day-dots {
+        gap: 5px;
+    }
+
+    .grit-goal-display {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+
+    .grit-today-lead {
+        font-size: 13px;
+    }
+
+    .grit-photo-thumb {
+        width: 50px;
+        height: 50px;
+    }
+
+    .grit-photo-list {
+        grid-template-columns: repeat(auto-fill, 50px);
+    }
+
+    .grit-history-photo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .grit-challenge-summary-goal {
+        font-size: 13px;
+    }
+
+    .grit-challenge-summary-date {
+        display: none; /* ✅ 아주 좁은 화면에서는 이름 + Day 배지만 남기고 날짜 범위는 생략 */
+    }
+
+    .grit-challenge-summary-day {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .grit-group-toggle {
+        padding: 10px 14px;
+    }
+
+    .grit-group-label {
+        font-size: 13px;
+    }
+
+    .grit-streak-badge,
+    .grit-motivation-text {
+        font-size: 11px;
+    }
+
+    .grit-trophy {
+        font-size: 26px;
     }
 }

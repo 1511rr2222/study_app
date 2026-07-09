@@ -1,7 +1,18 @@
 import { supabase } from '../../supabaseClient.js';
 import { escapeHtml } from './practiceUtils.js';
+// ⚠️ 경로 추정: storage.js/lightbox.js가 page/homework/ 폴더에 있다고 가정했어요.
+// 실제 위치가 다르면 이 두 줄의 경로만 맞는 걸로 바꿔주세요!
+import { uploadPhoto, removePhotoFromStorage } from '../homework/storage.js';
+import { openLightbox } from '../homework/lightbox.js';
 
 const PERIOD_OPTIONS = [1, 3, 5, 7];
+
+// ✅ 방금 완료 도장을 찍은 (challengeId → dayIndex) 를 기억해뒀다가
+// 그 챌린지 카드의 그 날짜 동그라미에만 한 번 pop 애니메이션을 재생함
+const justCompletedMap = new Map();
+
+// ✅ 펼쳐둔 챌린지 카드의 id를 기억 (다시 그려져도 접히지 않도록)
+const expandedChallengeIds = new Set();
 
 export async function initGritPractice(contentEl) {
     const { data: { user } } = await supabase.auth.getUser();
@@ -10,22 +21,19 @@ export async function initGritPractice(contentEl) {
         return;
     }
 
-    await renderCurrentState(contentEl, user);
+    await renderAll(contentEl, user);
 }
 
-async function renderCurrentState(contentEl, user) {
-    console.log('[DEBUG] renderCurrentState 진입');
+/* -------------------- 전체 화면: 새 챌린지 추가 + 챌린지 카드 목록 -------------------- */
+
+async function renderAll(contentEl, user) {
     contentEl.innerHTML = `<p class="grit-loading">불러오는 중...</p>`;
 
-    const { data: challenge, error: challengeErr } = await supabase
+    const { data: challenges, error: challengeErr } = await supabase
         .from('grit_challenges')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-    console.log('[DEBUG] challenge 조회 결과:', challenge, 'error:', challengeErr);
+        .order('created_at', { ascending: false });
 
     if (challengeErr) {
         console.error('챌린지 로드 실패:', challengeErr);
@@ -33,54 +41,116 @@ async function renderCurrentState(contentEl, user) {
         return;
     }
 
-    if (!challenge) {
-        console.log('[DEBUG] challenge가 null이라 renderSetup으로 감');
-        renderSetup(contentEl, user);
-        return;
+    const list = challenges || [];
+    let logsByChallenge = {};
+
+    if (list.length > 0) {
+        const { data: logs, error: logsErr } = await supabase
+            .from('grit_logs')
+            .select('*')
+            .in('challenge_id', list.map(c => c.id))
+            .order('day_index');
+
+        if (logsErr) {
+            console.error('회고 로드 실패:', logsErr);
+            contentEl.innerHTML = `<p class="practice-soon">데이터를 불러오지 못했어요. 다시 시도해주세요.</p>`;
+            return;
+        }
+
+        (logs || []).forEach(l => {
+            if (!logsByChallenge[l.challenge_id]) logsByChallenge[l.challenge_id] = [];
+            logsByChallenge[l.challenge_id].push(l);
+        });
     }
 
-    const { data: logs, error: logsErr } = await supabase
-        .from('grit_logs')
-        .select('*')
-        .eq('challenge_id', challenge.id)
-        .order('day_index');
+    // 진행 중 / 완료된 챌린지를 나눠서 각각 접이식 그룹으로 보여줌
+    const active = list.filter(c => calcDayIndex(c.start_date) <= c.period);
+    const finished = list.filter(c => calcDayIndex(c.start_date) > c.period);
 
-    console.log('[DEBUG] logs 조회 결과:', logs, 'error:', logsErr);
-
-    if (logsErr) {
-        console.error('회고 로드 실패:', logsErr);
-        contentEl.innerHTML = `<p class="practice-soon">데이터를 불러오지 못했어요. 다시 시도해주세요.</p>`;
-        return;
-    }
-
-    console.log('[DEBUG] renderTracker 호출 직전');
-    renderTracker(contentEl, user, challenge, logs || []);
-    console.log('[DEBUG] renderTracker 호출 직후');
-}
-
-/* -------------------- 설정 화면 -------------------- */
-
-function renderSetup(contentEl, user) {
     contentEl.innerHTML = `
-        <div class="grit-setup">
-            <p class="grit-setup-lead">작은 약속을 정하고, 며칠이든 나와의 약속을 지켜보아요.</p>
+        <div class="grit-page">
+            <div class="grit-add-section">
+                <button type="button" id="grit-add-toggle-btn" class="grit-add-toggle-btn">+ 새 챌린지 시작하기</button>
+                <div class="grit-setup" id="grit-setup-form" style="display:none;">
+                    <p class="grit-setup-lead">작은 약속을 정하고, 며칠이든 나와의 약속을 지켜보아요.</p>
 
-            <p class="grit-field-label">기간을 선택해주세요</p>
-            <div class="grit-period-select" id="grit-period-select">
-                ${PERIOD_OPTIONS.map(p => `<button type="button" class="grit-period-btn" data-period="${p}">${p}일</button>`).join('')}
+                    <p class="grit-field-label">기간을 선택해주세요</p>
+                    <div class="grit-period-select" id="grit-period-select">
+                        ${PERIOD_OPTIONS.map(p => `<button type="button" class="grit-period-btn" data-period="${p}">${p}일</button>`).join('')}
+                    </div>
+
+                    <p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
+                    <input type="text" id="grit-goal-input" class="grit-goal-input" placeholder="예: 수학 문제집 5페이지 풀기">
+
+                    <button type="button" id="grit-start-btn" class="pink-button grit-start-btn" disabled>챌린지 시작하기 🔥</button>
+                </div>
             </div>
 
-            <p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
-            <input type="text" id="grit-goal-input" class="grit-goal-input" placeholder="예: 수학 문제집 5페이지 풀기">
-
-            <button type="button" id="grit-start-btn" class="pink-button grit-start-btn" disabled>챌린지 시작하기 🔥</button>
+            ${GroupSectionHtml('active', '진행중인 챌린지 보기', active, logsByChallenge)}
+            ${GroupSectionHtml('finished', '완료된 챌린지 보기', finished, logsByChallenge)}
         </div>
     `;
 
+    initAddSection(contentEl, user);
+
+    contentEl.querySelectorAll('.grit-group-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.dataset.group;
+            groupOpenState[key] = !groupOpenState[key];
+            const listEl = contentEl.querySelector(`.grit-group-list[data-group-list="${key}"]`);
+            if (listEl) listEl.classList.toggle('show', groupOpenState[key]);
+            btn.classList.toggle('open', groupOpenState[key]);
+        });
+    });
+
+    const allChallenges = [...active, ...finished];
+    contentEl.querySelectorAll('.grit-challenge-card').forEach(card => {
+        const challenge = allChallenges.find(c => c.id === card.dataset.challengeId);
+        const logs = logsByChallenge[challenge.id] || [];
+        initChallengeCard(card, user, challenge, logs, () => renderAll(contentEl, user));
+    });
+}
+
+// ✅ 그룹(진행중/완료) 펼침 상태 기억 - 진행중은 기본으로 펼쳐두고, 완료는 접어둠
+const groupOpenState = { active: true, finished: false };
+
+function GroupSectionHtml(key, label, challengeList, logsByChallenge) {
+    if (key === 'finished' && challengeList.length === 0) return ''; // 완료된 챌린지가 없으면 섹션 자체를 숨김
+
+    const isOpen = groupOpenState[key];
+    const bodyHtml = challengeList.length === 0
+        ? `<p class="grit-history-empty grit-no-challenge">아직 진행 중인 챌린지가 없어요. 위에서 새 챌린지를 시작해보세요!</p>`
+        : challengeList.map(c => ChallengeCardHtml(c, logsByChallenge[c.id] || [])).join('');
+
+    return `
+        <div class="grit-group">
+            <button type="button" class="grit-group-toggle ${isOpen ? 'open' : ''}" data-group="${key}">
+                <span class="grit-group-caret" aria-hidden="true">▾</span>
+                <span class="grit-group-label">${label}</span>
+                <span class="grit-group-count">${challengeList.length}</span>
+            </button>
+            <div class="grit-group-list ${isOpen ? 'show' : ''}" data-group-list="${key}">
+                ${bodyHtml}
+            </div>
+        </div>
+    `;
+}
+
+/* -------------------- 새 챌린지 추가 폼 -------------------- */
+
+function initAddSection(contentEl, user) {
+    const toggleBtn = document.getElementById('grit-add-toggle-btn');
+    const form = document.getElementById('grit-setup-form');
     const periodSelect = document.getElementById('grit-period-select');
     const goalInput = document.getElementById('grit-goal-input');
     const startBtn = document.getElementById('grit-start-btn');
     let selectedPeriod = null;
+
+    toggleBtn.addEventListener('click', () => {
+        const isOpen = form.style.display !== 'none';
+        form.style.display = isOpen ? 'none' : '';
+        toggleBtn.textContent = isOpen ? '+ 새 챌린지 시작하기' : '취소';
+    });
 
     function updateStartBtn() {
         startBtn.disabled = !(selectedPeriod && goalInput.value.trim().length > 0);
@@ -117,34 +187,51 @@ function renderSetup(contentEl, user) {
             return;
         }
 
-        console.log('[DEBUG] insert 성공, renderCurrentState 호출 시작');
-        await renderCurrentState(contentEl, user);
-        console.log('[DEBUG] renderCurrentState 완료됨');
+        await renderAll(contentEl, user);
     });
 }
 
-/* -------------------- 진행 화면 -------------------- */
+/* -------------------- 챌린지 카드 (마크업) -------------------- */
 
-function renderTracker(contentEl, user, challenge, logs) {
-    console.log('[DEBUG] renderTracker 진입', { challenge, logs });
+function ChallengeCardHtml(challenge, logs) {
     const dayIndex = calcDayIndex(challenge.start_date);
     const doneSet = new Set(logs.map(l => l.day_index));
     const isFinished = dayIndex > challenge.period;
     const alreadyDoneToday = doneSet.has(dayIndex);
+    const isOpen = expandedChallengeIds.has(challenge.id);
+    const percent = Math.round((doneSet.size / challenge.period) * 100);
+    const streak = calcStreak(doneSet, dayIndex, alreadyDoneToday);
 
+    const justPopDay = justCompletedMap.get(challenge.id);
     const dots = Array.from({ length: challenge.period }, (_, i) => {
         const n = i + 1;
         const classes = ['grit-day-dot'];
         if (doneSet.has(n)) classes.push('done');
         if (n === dayIndex && !isFinished) classes.push('today');
+        if (n === justPopDay) classes.push('grit-day-pop');
         return `<div class="${classes.join(' ')}">${doneSet.has(n) ? '✓' : n}</div>`;
     }).join('');
+    justCompletedMap.delete(challenge.id); // 한 번 쓰고 초기화 (다음 렌더부터는 재생 안 됨)
 
     const historyHtml = logs.length
         ? `<ul class="grit-history-list">${logs
             .slice()
             .sort((a, b) => b.day_index - a.day_index)
-            .map(l => `<li><span class="grit-history-day">Day ${l.day_index}</span>${l.reflection ? escapeHtml(l.reflection) : '(회고 없음)'}</li>`)
+            .map(l => {
+                const photos = l.photos || [];
+                const photosHtml = photos.length
+                    ? `<div class="grit-history-photos">${photos.map(src => `<img src="${src}" class="grit-history-photo" data-src="${src}" alt="Day ${l.day_index} 인증사진">`).join('')}</div>`
+                    : '';
+                return `
+                    <li>
+                        <div class="grit-history-top">
+                            <span class="grit-history-day">Day ${l.day_index}</span>
+                            <span class="grit-history-text">${l.reflection ? escapeHtml(l.reflection) : '(회고 없음)'}</span>
+                        </div>
+                        ${photosHtml}
+                    </li>
+                `;
+            })
             .join('')}</ul>`
         : `<p class="grit-history-empty">아직 회고가 없어요. 오늘의 기록을 남겨보세요!</p>`;
 
@@ -152,8 +239,9 @@ function renderTracker(contentEl, user, challenge, logs) {
     if (isFinished) {
         actionHtml = `
             <div class="grit-today-box grit-finish-box">
-                <p class="grit-today-lead">${challenge.period}일 챌린지를 마쳤어요! 정말 대단해요 🎉</p>
-                <button type="button" id="grit-new-challenge-btn" class="pink-button grit-start-btn">새 챌린지 시작하기</button>
+                <div class="grit-trophy">✨ 🏆 ✨</div>
+                <p class="grit-today-lead">${challenge.period}일 챌린지 완주!</p>
+                <p class="grit-finish-sub">스스로 한 약속을 끝까지 지켰어요. 정말 대단해요!</p>
             </div>
         `;
     } else if (alreadyDoneToday) {
@@ -166,61 +254,185 @@ function renderTracker(contentEl, user, challenge, logs) {
         actionHtml = `
             <div class="grit-today-box">
                 <p class="grit-today-lead">오늘 목표, 잘 해내셨나요?</p>
-                <textarea id="grit-reflection-input" class="grit-reflection-input" placeholder="오늘 하루를 한 줄로 남겨보세요 (선택사항)"></textarea>
-                <button type="button" id="grit-complete-btn" class="pink-button grit-start-btn">오늘 완료 도장 찍기 ✅</button>
+
+                <div class="grit-photo-section">
+                    <div class="grit-photo-list"></div>
+                    <label class="grit-photo-upload-btn">
+                        📷 인증사진 추가
+                        <input type="file" accept="image/*" multiple class="grit-photo-input" hidden>
+                    </label>
+                    <p class="grit-photo-notice">*인증사진을 1장 이상 올려야 완료 도장을 찍을 수 있어요</p>
+                </div>
+
+                <textarea class="grit-reflection-input" placeholder="오늘 하루를 한 줄로 남겨보세요 (선택사항)"></textarea>
+                <button type="button" class="pink-button grit-start-btn grit-complete-btn" disabled>오늘 완료 도장 찍기 ✅</button>
             </div>
         `;
     }
 
-    contentEl.innerHTML = `
-        <div class="grit-tracker">
-            <p class="grit-goal-display">오늘의 목표: <strong>${escapeHtml(challenge.goal_text)}</strong></p>
+    return `
+        <div class="grit-challenge-card ${isFinished ? 'grit-challenge-finished' : ''} ${isOpen ? 'grit-challenge-expanded' : ''}" data-challenge-id="${challenge.id}">
+            <div class="grit-challenge-summary-row" data-id="${challenge.id}">
+                <span class="grit-challenge-status-dot ${isFinished ? 'finished' : 'active'}"></span>
+                <span class="grit-challenge-summary-goal">${escapeHtml(challenge.goal_text)}</span>
+                <span class="grit-challenge-summary-date">${formatDateRange(challenge.start_date, challenge.period)}</span>
+                <span class="grit-challenge-summary-day">${isFinished ? '완료' : `Day ${dayIndex}/${challenge.period}`}</span>
+                <span class="grit-challenge-caret" aria-hidden="true">▾</span>
+            </div>
 
-            <div class="grit-day-dots">${dots}</div>
-            <p class="grit-progress-text">${doneSet.size}일 / ${challenge.period}일 성공! 스스로를 칭찬해주세요 👏</p>
+            <div class="grit-challenge-detail">
+                <div class="grit-day-dots">${dots}</div>
 
-            ${actionHtml}
+                <div class="grit-progress-bar-track">
+                    <div class="grit-progress-bar-fill" style="width:${percent}%"></div>
+                </div>
+                <div class="grit-progress-row">
+                    <p class="grit-progress-text">${doneSet.size}일 / ${challenge.period}일 (${percent}%)</p>
+                    ${streak >= 2 ? `<span class="grit-streak-badge">🔥 ${streak}일 연속</span>` : ''}
+                </div>
+                ${!isFinished ? `<p class="grit-motivation-text">${motivationText(percent)}</p>` : ''}
 
-            <div class="grit-history">
-                <p class="grit-field-label">회고 기록</p>
-                ${historyHtml}
+                ${actionHtml}
+
+                <div class="grit-history">
+                    <p class="grit-field-label">회고 기록</p>
+                    ${historyHtml}
+                </div>
             </div>
         </div>
     `;
+}
 
-    const newChallengeBtn = document.getElementById('grit-new-challenge-btn');
-    if (newChallengeBtn) {
-        newChallengeBtn.addEventListener('click', () => renderSetup(contentEl, user));
-        return;
+// 완료한 날짜(doneSet) 기준 오늘(또는 어제)까지 이어진 연속 성공일수
+function calcStreak(doneSet, dayIndex, alreadyDoneToday) {
+    let streak = 0;
+    let day = alreadyDoneToday ? dayIndex : dayIndex - 1;
+    while (day >= 1 && doneSet.has(day)) {
+        streak += 1;
+        day -= 1;
     }
+    return streak;
+}
 
-    const completeBtn = document.getElementById('grit-complete-btn');
-    if (completeBtn) {
-        completeBtn.addEventListener('click', async () => {
-            const reflectionInput = document.getElementById('grit-reflection-input');
-            const reflection = reflectionInput ? reflectionInput.value.trim() : '';
+// 진행률 구간별 동기부여 문구
+function motivationText(percent) {
+    if (percent === 0) return '첫 도장을 찍어볼까요? 시작이 반이에요 💪';
+    if (percent < 50) return '좋은 흐름이에요, 이대로 계속 가봐요! 🌱';
+    if (percent < 75) return '벌써 절반 넘었어요! 🎯';
+    if (percent < 100) return '거의 다 왔어요, 조금만 더! 🔥';
+    return '마지막 하루예요! 완주가 코앞이에요 🏁';
+}
 
-            completeBtn.disabled = true;
-            completeBtn.innerText = '저장하는 중...';
+/* -------------------- 챌린지 카드 (이벤트) -------------------- */
 
-            const { error } = await supabase.from('grit_logs').insert({
-                challenge_id: challenge.id,
-                user_id: user.id,
-                day_index: dayIndex,
-                reflection: reflection || null,
-            });
+function initChallengeCard(card, user, challenge, logs, onChanged) {
+    const dayIndex = calcDayIndex(challenge.start_date);
 
-            if (error) {
-                console.error('오늘 기록 저장 실패:', error);
-                alert('저장 중 문제가 생겼어요. 다시 시도해주세요.');
-                completeBtn.disabled = false;
-                completeBtn.innerText = '오늘 완료 도장 찍기 ✅';
-                return;
-            }
+    // 요약 행 클릭 → 펼침/접힘 토글 (화면 다시 그리지 않고 즉시 반응 + 상태도 기억)
+    const summaryRow = card.querySelector('.grit-challenge-summary-row');
+    summaryRow.addEventListener('click', () => {
+        const id = summaryRow.dataset.id;
+        if (expandedChallengeIds.has(id)) {
+            expandedChallengeIds.delete(id);
+        } else {
+            expandedChallengeIds.add(id);
+        }
+        card.classList.toggle('grit-challenge-expanded');
+    });
 
-            await renderCurrentState(contentEl, user);
+    // 히스토리 사진 - 클릭하면 크게 보기
+    card.querySelectorAll('.grit-history-photo').forEach(img => {
+        img.addEventListener('click', () => openLightbox(img.dataset.src));
+    });
+
+    const completeBtn = card.querySelector('.grit-complete-btn');
+    if (!completeBtn) return; // 이미 완료했거나 챌린지가 끝난 카드는 사진/완료 로직 불필요
+
+    /* ---------- 오늘의 인증사진 업로드 (완료 도장 찍기 전, 이 카드 안에서만 임시로 들고 있음) ---------- */
+    const photoList = card.querySelector('.grit-photo-list');
+    const photoInput = card.querySelector('.grit-photo-input');
+    let todayPhotos = []; // 완료 도장 찍을 때 grit_logs에 같이 저장됨
+
+    function renderPhotoThumbs() {
+        photoList.innerHTML = todayPhotos.map((src, idx) => `
+            <div class="grit-photo-thumb grit-photo-thumb-new">
+                <img src="${src}" alt="인증사진 ${idx + 1}" class="grit-photo-img" data-src="${src}">
+                <button type="button" class="grit-photo-remove" data-index="${idx}">×</button>
+            </div>
+        `).join('');
+
+        photoList.querySelectorAll('.grit-photo-img').forEach(img => {
+            img.addEventListener('click', () => openLightbox(img.dataset.src));
         });
+
+        photoList.querySelectorAll('.grit-photo-remove').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const idx = Number(btn.dataset.index);
+                const [removedUrl] = todayPhotos.splice(idx, 1);
+                if (removedUrl) await removePhotoFromStorage(removedUrl);
+                renderPhotoThumbs();
+                completeBtn.disabled = todayPhotos.length === 0;
+            });
+        });
+
+        completeBtn.disabled = todayPhotos.length === 0;
     }
+
+    photoInput.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+
+        const label = photoInput.closest('.grit-photo-upload-btn');
+        if (label) label.style.opacity = '0.5';
+
+        try {
+            const itemId = `challenge-${challenge.id}-day${dayIndex}`;
+            const uploadedUrls = await Promise.all(
+                files.map(file => uploadPhoto(file, user.id, itemId))
+            );
+            todayPhotos.push(...uploadedUrls);
+            renderPhotoThumbs();
+        } catch (err) {
+            console.error('사진 업로드 실패:', err);
+            alert('사진을 업로드하는 중 문제가 생겼어요. 다시 시도해주세요.');
+        } finally {
+            if (label) label.style.opacity = '';
+            photoInput.value = '';
+        }
+    });
+
+    /* ---------- 완료 도장 찍기 ---------- */
+    completeBtn.addEventListener('click', async () => {
+        if (todayPhotos.length === 0) {
+            alert('완료 도장을 찍기 전에 인증사진을 1장 이상 올려주세요!');
+            return;
+        }
+
+        const reflectionInput = card.querySelector('.grit-reflection-input');
+        const reflection = reflectionInput ? reflectionInput.value.trim() : '';
+
+        completeBtn.disabled = true;
+        completeBtn.innerText = '저장하는 중...';
+
+        const { error } = await supabase.from('grit_logs').insert({
+            challenge_id: challenge.id,
+            user_id: user.id,
+            day_index: dayIndex,
+            reflection: reflection || null,
+            photos: todayPhotos,
+        });
+
+        if (error) {
+            console.error('오늘 기록 저장 실패:', error);
+            alert('저장 중 문제가 생겼어요. 다시 시도해주세요.');
+            completeBtn.disabled = false;
+            completeBtn.innerText = '오늘 완료 도장 찍기 ✅';
+            return;
+        }
+
+        justCompletedMap.set(challenge.id, dayIndex); // 다음 렌더에서 이 챌린지의 이 날짜만 pop 애니메이션
+        await onChanged();
+    });
 }
 
 /* -------------------- 유틸 -------------------- */
@@ -241,4 +453,13 @@ function calcDayIndex(startDateStr) {
     const today = toDateOnly(new Date());
     const diffDays = Math.round((today - start) / (1000 * 60 * 60 * 24));
     return diffDays + 1;
+}
+
+// 요약 행에 보여줄 'MM.DD~MM.DD' 날짜 범위 (시작일 ~ 시작일+기간-1일)
+function formatDateRange(startDateStr, period) {
+    const [y, m, d] = startDateStr.split('-').map(Number);
+    const start = new Date(y, m - 1, d);
+    const end = new Date(y, m - 1, d + period - 1);
+    const fmt = (date) => `${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+    return `${fmt(start)}~${fmt(end)}`;
 }
