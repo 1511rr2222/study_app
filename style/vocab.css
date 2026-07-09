@@ -51,14 +51,22 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    min-width: 72px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #ff6b9a;
-    background-color: #f8e8f2;
+    width: 92px;
+    height: 60px;
+    padding: 0 8px;
+    border-radius: 14px;
+    border: 1.5px solid #ff6b9a;
+    background-color: #fff7fa;
+    box-shadow: 0 3px 0 #e0397a;
     cursor: pointer;
     font-family: inherit;
-    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    box-sizing: border-box;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+}
+
+.vocab-day-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #e0397a;
 }
 
 .vocab-day-btn:hover {
@@ -69,7 +77,13 @@
 
 .vocab-day-btn.cleared {
     border-color: #ff6b9a;
-    background-color: #ffe3ec;
+    background-color: #ff6b9a;
+    box-shadow: 0 3px 0 #e0397a;
+}
+
+.vocab-day-btn.cleared .vocab-day-label,
+.vocab-day-btn.cleared .vocab-day-meta {
+    color: #fff;
 }
 
 .vocab-day-label {
@@ -83,18 +97,10 @@
     color: #ff6b9a;
 }
 
-.vocab-day-btn.cleared .vocab-day-label {
-    color: #ff6b9a;
-}
-
 .vocab-day-meta {
     font-size: 10px;
     color: #999;
     white-space: nowrap;
-}
-
-.vocab-day-btn.cleared .vocab-day-meta {
-    color: #e0397a;
 }
 
 /* ===== 퀴즈 화면 ===== */
@@ -314,8 +320,9 @@
     }
 
     .vocab-day-btn {
-        min-width: 64px;
-        padding: 8px 10px;
+        width: 76px;
+        height: 52px;
+        padding: 0 6px;
     }
 
     .vocab-day-label {

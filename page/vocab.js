@@ -44,7 +44,8 @@ export function VocabMainView() {
         <div class="vocab-container">
             <button id="vocab-back-btn" class="vocab-back-btn">← 대시보드로</button>
             <h2 class="vocab-title">🔤 영단어 퀴즈</h2>
-            <p class="vocab-intro">영단어 연습을 시작해볼까요?</p>
+            <p class="vocab-intro"><영단어장: Word Master 수능 2000>
+            <br>연습을 시작해볼까요? 연습을 완료하면 연습 횟수가 표시돼요 </p>
             <div id="vocab-day-list" class="vocab-day-list">
                 <p class="vocab-loading">Day 목록을 불러오는 중...</p>
             </div>
@@ -102,7 +103,7 @@ export async function initVocabMainPage(onBack, onSelectDay) {
             <button class="vocab-day-btn ${cleared ? 'cleared' : ''}" data-day="${escapeHtml(day)}">
                 <span class="vocab-day-label">${escapeHtml(day)}</span>
                 <span class="vocab-day-meta">
-                    ${attempts > 0 ? `${attempts}회 연습` : '아직 연습 전'}
+                    ${attempts > 0 ? `${attempts}회 연습` : '연습 전'}
                     ${cleared ? ' · Clear! 🎉' : ''}
                 </span>
             </button>

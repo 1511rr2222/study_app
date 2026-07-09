@@ -1,553 +1,508 @@
-/* ===== 그릿 챌린지 (practice/grit.js) ===== */
+/* ===== 계획표 페이지: 섹션 카드 간 간격 (조밀하게) ===== */
+.plan-box {
+    margin-bottom: 10px;
+    padding: 16px; /* ✅ hero-box 기본 padding(24px)보다 좁게 오버라이드 */
+}
 
-.grit-loading {
-    text-align: center;
+.plan-box h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: #2B3A67;
+    letter-spacing: -0.3px;
+}
+
+.plan-notice {
+    margin: -2px 0 8px;
+    font-size: 11.5px;
+    color: #999;
+}
+
+.plan-empty {
     color: #999;
     font-size: 13px;
-    padding: 20px 0;
+    text-align: center;
+    padding: 12px 0;
 }
 
-/* ---------- 전체 페이지: 새 챌린지 추가 + 챌린지 카드 목록 ---------- */
-.grit-page {
-    max-width: 480px;
-    margin: 0 auto;
+/* ===== 주간 시간표 그리드 (월~금) ===== */
+.plan-grid-wrap {
+    overflow-x: auto;
+    margin-bottom: 14px;
+    -webkit-overflow-scrolling: touch;
 }
 
-.grit-add-section {
-    margin-bottom: 18px;
+.plan-grid {
+    display: grid;
+    grid-template-columns: 30px repeat(5, minmax(46px, 1fr));
+    min-width: 300px;
 }
 
-.grit-add-toggle-btn {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1.5px dashed #ff6b9a;
-    background: #fff5f8;
-    color: #d6336c;
-    font-weight: 700;
-    font-size: 14px;
+.plan-grid-corner {
+    /* 시간축 위 빈 칸 */
+}
+
+.plan-grid-day-header {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #5c6b8a;
+    padding-bottom: 6px;
+}
+
+.plan-grid-time-axis {
+    position: relative;
+}
+
+.plan-grid-hour-label {
+    position: absolute;
+    right: 4px;
+    transform: translateY(-50%);
+    font-size: 9px;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+.plan-grid-day-body {
+    position: relative;
+    border-left: 1px solid #eee;
+    background: #fcfcfe;
+}
+
+.plan-grid-hour-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #f0f0f5;
+}
+
+.plan-grid-block {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    background: var(--edu-blue-bg, #EEF3FF);
+    border: 1px solid var(--edu-blue, #5B86E5);
+    border-radius: 6px;
+    padding: 2px 4px;
+    overflow: hidden;
     cursor: pointer;
-    transition: background 0.15s ease;
+    box-sizing: border-box;
 }
 
-.grit-add-toggle-btn:hover {
-    background: #ffe9f0;
+.plan-grid-block-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--edu-blue, #5B86E5);
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
 }
 
-.grit-challenge-list {
+/* ===== 토/일: 시간 제약 없는 자유 목록 ===== */
+.plan-weekend-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 }
 
-.grit-no-challenge {
-    text-align: center;
-    padding: 24px 0;
+.plan-weekend-day {
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    padding: 10px 12px;
 }
 
-.grit-challenge-card {
-    background: #fff;
-    border: 1.5px solid #ffe3ee;
-    border-radius: 18px;
-    padding: 14px 16px;
-    box-shadow: 0 4px 0 rgba(255, 107, 154, 0.08);
+.plan-weekend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
 }
 
-.grit-challenge-finished {
-    opacity: 0.85;
+.plan-weekend-header span {
+    font-size: 13px;
+    font-weight: 800;
+    color: #2B3A67;
 }
 
-/* ---------- 접힘 요약 행 (항상 보이는 한 줄: 상태점 + 이름 + 날짜 + Day + 화살표) ---------- */
-.grit-challenge-summary-row {
+.plan-weekend-add-btn {
+    background: none;
+    border: 1.5px dashed var(--edu-pink, #ff6b9a);
+    color: var(--edu-pink-dark, #E14C7C);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.plan-weekend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.plan-weekend-item {
     display: flex;
     align-items: center;
     gap: 8px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 8px 10px;
     cursor: pointer;
+    flex-wrap: wrap;
 }
 
-.grit-challenge-status-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: #ff6b9a;
-}
-
-.grit-challenge-status-dot.finished {
-    background: #bbb;
-}
-
-.grit-challenge-summary-goal {
-    flex: 1;
-    min-width: 0;
-    font-size: 14px;
-    font-weight: 700;
-    color: #444;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.grit-challenge-summary-date {
-    font-size: 11px;
-    color: #999;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.grit-challenge-summary-day {
+.plan-weekend-time {
     font-size: 11px;
     font-weight: 800;
-    color: #d6336c;
-    background: #fff0f5;
-    padding: 3px 8px;
-    border-radius: 10px;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.grit-challenge-finished .grit-challenge-summary-day {
-    color: #888;
-    background: #f2f2f2;
-}
-
-.grit-challenge-caret {
-    flex-shrink: 0;
-    font-size: 11px;
-    color: #bbb;
-    transition: transform 0.15s ease;
-}
-
-.grit-challenge-expanded .grit-challenge-caret {
-    transform: rotate(180deg);
-    color: #ff6b9a;
-}
-
-/* ---------- 펼침 상세 (기본 숨김, 펼쳤을 때만 보임) ---------- */
-.grit-challenge-detail {
-    display: none;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px dashed #ffe3ee;
-}
-
-.grit-challenge-expanded .grit-challenge-detail {
-    display: block;
-}
-
-/* ---------- 설정 화면 ---------- */
-.grit-setup {
-    max-width: 480px;
-    margin: 0 auto;
-}
-
-.grit-setup-lead {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.5;
-    margin: 0 0 18px;
-    text-align: center;
-}
-
-.grit-field-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #444;
-    margin: 0 0 8px;
-}
-
-.grit-period-select {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 18px;
-}
-
-.grit-period-btn {
-    flex: 1;
-    padding: 10px 0;
-    border-radius: 12px;
-    border: 2px solid #ffd7e4;
-    background: #fff7fa;
-    color: #666;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.grit-period-btn.selected {
-    border-color: #ff6b9a;
-    background: #ffe3ee;
-    color: #d6336c;
-}
-
-.grit-goal-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1.5px solid #eee;
-    margin-bottom: 20px;
-    font-size: 14px;
-    background: #fafafa;
-}
-
-.grit-goal-input:focus {
-    outline: none;
-    border-color: #ffb3d1;
-}
-
-.grit-start-btn {
-    width: 100%;
-}
-
-.grit-start-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-/* ---------- 진행 화면 ---------- */
-.grit-tracker {
-    max-width: 480px;
-    margin: 0 auto;
-}
-
-.grit-goal-display {
-    font-size: 14px;
-    color: #555;
-    margin: 0 0 18px;
-    padding: 12px 14px;
-    background: #fff7fa;
-    border: 1px solid #ffd7e4;
-    border-radius: 10px;
-}
-
-.grit-goal-display strong {
-    color: #d6336c;
-}
-
-.grit-day-dots {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.grit-day-dot {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    background: #f7f7f7;
-    color: #bbb;
-    border: 2px solid transparent;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.grit-day-dot.done {
-    background: #ff6b9a;
-    color: white;
-}
-
-.grit-day-dot.today {
-    border-color: #ff6b9a;
-    color: #d6336c;
-}
-
-.grit-progress-text {
-    text-align: center;
-    margin: 0 0 20px;
-    font-size: 13px;
-    color: #666;
-    font-weight: 700;
-}
-
-.grit-today-box {
-    background: #fff7fa;
-    border: 1px solid #ffd7e4;
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.grit-today-lead {
-    margin: 0 0 10px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 700;
-    text-align: center;
-}
-
-.grit-finish-box .grit-today-lead {
-    color: #d6336c;
-}
-
-.grit-reflection-input {
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 60px;
-    resize: vertical;
-    border-radius: 10px;
-    border: 1.5px solid #eee;
-    padding: 10px 12px;
-    font-size: 13px;
-    margin-bottom: 12px;
-    font-family: inherit;
-    background: #fafafa;
-}
-
-.grit-reflection-input:focus {
-    outline: none;
-    border-color: #ffb3d1;
-}
-
-/* ---------- 오늘의 인증사진 (완료 도장 찍기 전 업로드 영역) ---------- */
-.grit-photo-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.grit-photo-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 64px);
-    gap: 8px;
-}
-
-.grit-photo-thumb {
-    position: relative;
-    width: 64px;
-    height: 64px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1.5px solid #ffd7e4;
-    box-sizing: border-box;
-}
-
-.grit-photo-thumb-new {
-    animation: gritThumbPop 0.3s ease;
-}
-
-.grit-photo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    cursor: zoom-in;
-}
-
-.grit-photo-remove {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 20px;
-    height: 20px;
-    line-height: 18px;
-    text-align: center;
-    padding: 0;
-    background: rgba(0, 0, 0, 0.55);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.grit-photo-upload-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    align-self: flex-start;
-    padding: 9px 16px;
-    font-size: 12.5px;
-    font-weight: 700;
-    color: #d6336c;
-    background: #fff5f8;
-    border: 1.5px dashed #ffb3d1;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    white-space: nowrap;
-}
-
-.grit-photo-upload-btn:hover {
-    background: #ffe9f0;
-}
-
-.grit-photo-notice {
-    margin: 0;
-    font-size: 11px;
-    color: #ff9a3d;
-    font-weight: 600;
-}
-
-/* ---------- 완료 시 Day 동그라미가 한 번 튀어오르는 pop 애니메이션 (게임 느낌) ---------- */
-@keyframes gritDayPop {
-    0% { transform: scale(1); }
-    35% { transform: scale(1.35) rotate(-8deg); box-shadow: 0 0 0 6px rgba(255, 107, 154, 0.25); }
-    60% { transform: scale(0.92) rotate(4deg); }
-    100% { transform: scale(1) rotate(0deg); }
-}
-
-.grit-day-pop {
-    animation: gritDayPop 0.55s ease;
-}
-
-@keyframes gritThumbPop {
-    from { transform: scale(0.6); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-.grit-history-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.grit-history-list li {
-    font-size: 12.5px;
-    color: #555;
-    background: #fafafa;
-    border: 1px solid #eee;
+    color: var(--edu-blue, #5B86E5);
+    background: var(--edu-blue-bg, #EEF3FF);
+    padding: 2px 7px;
     border-radius: 8px;
-    padding: 8px 12px;
-    line-height: 1.4;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.grit-history-top {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.grit-history-text {
+.plan-weekend-content {
+    font-size: 13px;
+    color: #333;
     flex: 1;
     min-width: 0;
     word-break: break-word;
 }
 
-.grit-history-photos {
+/* ===== 계획 추가/수정 팝업 ===== */
+.plan-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.plan-modal-overlay.show {
     display: flex;
-    gap: 6px;
-    margin-top: 8px;
+}
+
+.plan-modal-box {
+    background: #fff;
+    width: min(92vw, 340px);
+    border-radius: 18px;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.plan-modal-box h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #2B3A67;
+}
+
+.plan-modal-day-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edu-pink-dark, #E14C7C);
+    margin-bottom: 12px;
+}
+
+.plan-modal-time-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.plan-modal-time-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #5c6b8a;
+}
+
+.plan-modal-time-label input {
+    height: 38px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 0 8px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.plan-modal-content-input {
+    width: 100%;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: vertical;
+    box-sizing: border-box;
+    min-height: 60px;
+}
+
+.plan-modal-content-input:focus,
+.plan-modal-time-label input:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.plan-modal-delete-btn {
+    background: none;
+    border: 1.5px solid #f3b8b8;
+    color: #c53030;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-right: auto;
+}
+
+.plan-modal-cancel-btn {
+    background: none;
+    border: 1.5px solid #ddd;
+    color: #666;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.plan-modal-box .plan-modal-save-btn {
+    width: auto;
+    padding: 10px 18px;
+    box-shadow: 0 4px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+/* ===== 오늘의 기록 ===== */
+.plan-score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
 }
 
-.grit-history-photo {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 1px solid #eee;
-    cursor: zoom-in;
-}
-
-.grit-history-day {
+.plan-score-label {
+    font-size: 13px;
     font-weight: 700;
-    color: #d6336c;
-    margin-right: 6px;
+    color: #5c6b8a;
+    white-space: nowrap;
 }
 
-.grit-history-empty {
-    font-size: 12.5px;
+.plan-score-picker {
+    display: flex;
+    gap: 6px;
+}
+
+.plan-score-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-weight: 800;
+    font-size: 14px;
     color: #999;
+    cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-@media (max-width: 600px) {
-    .grit-day-dot {
-        width: 34px;
-        height: 34px;
-        font-size: 12px;
-    }
-
-    .grit-day-dots {
-        gap: 6px;
-    }
-
-    .grit-today-box {
-        padding: 14px;
-    }
-
-    /* ✅ 사진 추가 버튼 터치 영역은 살짝 넉넉하게, 썸네일은 살짝 작게 */
-    .grit-photo-thumb {
-        width: 58px;
-        height: 58px;
-    }
-
-    .grit-photo-list {
-        grid-template-columns: repeat(auto-fill, 58px);
-    }
-
-    .grit-photo-upload-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 11px 16px; /* 엄지로 누르기 편하게 세로 여백 확보 */
-    }
+.plan-score-btn:hover {
+    border-color: var(--edu-pink, #ff6b9a);
+    color: var(--edu-pink, #ff6b9a);
 }
 
-@media (max-width: 400px) {
-    .grit-setup-lead {
-        font-size: 13px;
+.plan-score-btn.selected {
+    background: var(--edu-pink, #ff6b9a);
+    border-color: var(--edu-pink, #ff6b9a);
+    color: #fff;
+}
+
+.plan-memo-input {
+    width: 100%;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: vertical;
+    box-sizing: border-box;
+    min-height: 52px;
+}
+
+.plan-memo-input:focus {
+    outline: none;
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-save-row {
+    position: relative;
+    display: flex;
+    margin-top: 8px;
+}
+
+.plan-save-row .plan-save-btn {
+    width: 100%;
+    padding: 12px;
+    box-shadow: 0 4px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+.plan-save-row .plan-save-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--edu-pink-dark, #E14C7C);
+}
+
+/* ✅ 저장완료 배지: 자리를 차지하지 않도록 절대위치로 버튼 위에 떠서 나타남 */
+.plan-save-badge {
+    position: absolute;
+    right: 0;
+    top: -26px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--edu-mint, #7ED9A8);
+    padding: 4px 10px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.plan-save-badge.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== 지난 기록: 접힘 한 줄 ↔ 펼침 ===== */
+.plan-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.plan-log-item {
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.plan-log-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.plan-log-date {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    flex-shrink: 0;
+}
+
+.plan-log-score {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--edu-pink-dark, #E14C7C);
+    background: var(--edu-pink-bg, #FFF5F8);
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.plan-log-caret {
+    margin-left: auto;
+    font-size: 11px;
+    color: #bbb;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.plan-log-expanded .plan-log-caret {
+    transform: rotate(180deg);
+    color: var(--edu-pink, #ff6b9a);
+}
+
+.plan-log-detail {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+}
+
+.plan-log-expanded .plan-log-detail {
+    display: block;
+}
+
+.plan-log-memo {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #555;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    .plan-grid {
+        grid-template-columns: 26px repeat(5, minmax(40px, 1fr));
     }
 
-    .grit-period-btn {
-        font-size: 13px;
-        padding: 9px 0;
-    }
-
-    .grit-day-dot {
-        width: 30px;
-        height: 30px;
+    .plan-grid-day-header {
         font-size: 11px;
     }
 
-    .grit-day-dots {
-        gap: 5px;
+    .plan-grid-hour-label {
+        font-size: 8px;
     }
 
-    .grit-goal-display {
-        font-size: 13px;
-        padding: 10px 12px;
+    .plan-grid-block-text {
+        font-size: 9px;
     }
 
-    .grit-today-lead {
-        font-size: 13px;
+    .plan-score-row {
+        gap: 8px;
     }
 
-    .grit-photo-thumb {
-        width: 50px;
-        height: 50px;
-    }
-
-    .grit-photo-list {
-        grid-template-columns: repeat(auto-fill, 50px);
-    }
-
-    .grit-history-photo {
-        width: 38px;
-        height: 38px;
-    }
-
-    .grit-challenge-summary-goal {
+    .plan-score-btn {
+        width: 32px;
+        height: 32px;
         font-size: 13px;
     }
 
-    .grit-challenge-summary-date {
-        display: none; /* ✅ 아주 좁은 화면에서는 이름 + Day 배지만 남기고 날짜 범위는 생략 */
+    .plan-log-date {
+        font-size: 12px;
     }
 
-    .grit-challenge-summary-day {
-        font-size: 10px;
-        padding: 3px 6px;
+    .plan-modal-time-row {
+        gap: 6px;
     }
 }

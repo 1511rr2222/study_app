@@ -13,7 +13,6 @@ export async function uploadPhoto(file, userId, itemId) {
     return data.publicUrl;
 }
 
-// 공개 URL에서 버킷 내부 경로만 추출 (삭제할 때 필요)
 function pathFromPublicUrl(url) {
     const marker = `/${PHOTO_BUCKET}/`;
     const idx = url.indexOf(marker);
