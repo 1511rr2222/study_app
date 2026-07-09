@@ -498,6 +498,12 @@
         font-size: 13px;
     }
 
+    .plan-memo-input{
+        width: 100%;
+        height: 32px;
+        font-size: 13px;
+    }
+
     .plan-log-date {
         font-size: 12px;
     }

@@ -1,4 +1,5 @@
 import { supabase } from '../../supabaseClient.js';
+import { escapeHtml } from './practiceUtils.js';
 
 const PERIOD_OPTIONS = [1, 3, 5, 7];
 
@@ -13,6 +14,7 @@ export async function initGritPractice(contentEl) {
 }
 
 async function renderCurrentState(contentEl, user) {
+    console.log('[DEBUG] renderCurrentState 진입');
     contentEl.innerHTML = `<p class="grit-loading">불러오는 중...</p>`;
 
     const { data: challenge, error: challengeErr } = await supabase
@@ -23,6 +25,8 @@ async function renderCurrentState(contentEl, user) {
         .limit(1)
         .maybeSingle();
 
+    console.log('[DEBUG] challenge 조회 결과:', challenge, 'error:', challengeErr);
+
     if (challengeErr) {
         console.error('챌린지 로드 실패:', challengeErr);
         contentEl.innerHTML = `<p class="practice-soon">데이터를 불러오지 못했어요. 다시 시도해주세요.</p>`;
@@ -30,6 +34,7 @@ async function renderCurrentState(contentEl, user) {
     }
 
     if (!challenge) {
+        console.log('[DEBUG] challenge가 null이라 renderSetup으로 감');
         renderSetup(contentEl, user);
         return;
     }
@@ -40,13 +45,17 @@ async function renderCurrentState(contentEl, user) {
         .eq('challenge_id', challenge.id)
         .order('day_index');
 
+    console.log('[DEBUG] logs 조회 결과:', logs, 'error:', logsErr);
+
     if (logsErr) {
         console.error('회고 로드 실패:', logsErr);
         contentEl.innerHTML = `<p class="practice-soon">데이터를 불러오지 못했어요. 다시 시도해주세요.</p>`;
         return;
     }
 
+    console.log('[DEBUG] renderTracker 호출 직전');
     renderTracker(contentEl, user, challenge, logs || []);
+    console.log('[DEBUG] renderTracker 호출 직후');
 }
 
 /* -------------------- 설정 화면 -------------------- */
@@ -108,13 +117,16 @@ function renderSetup(contentEl, user) {
             return;
         }
 
+        console.log('[DEBUG] insert 성공, renderCurrentState 호출 시작');
         await renderCurrentState(contentEl, user);
+        console.log('[DEBUG] renderCurrentState 완료됨');
     });
 }
 
 /* -------------------- 진행 화면 -------------------- */
 
 function renderTracker(contentEl, user, challenge, logs) {
+    console.log('[DEBUG] renderTracker 진입', { challenge, logs });
     const dayIndex = calcDayIndex(challenge.start_date);
     const doneSet = new Set(logs.map(l => l.day_index));
     const isFinished = dayIndex > challenge.period;
@@ -229,10 +241,4 @@ function calcDayIndex(startDateStr) {
     const today = toDateOnly(new Date());
     const diffDays = Math.round((today - start) / (1000 * 60 * 60 * 24));
     return diffDays + 1;
-}
-
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.innerText = str;
-    return div.innerHTML;
 }
