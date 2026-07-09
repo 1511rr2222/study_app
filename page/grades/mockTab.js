@@ -41,9 +41,10 @@ export async function initMockTab(user) {
     const mockTableEl = document.getElementById('grades-mock-table');
     const mockStatusEl = document.getElementById('grades-mock-status');
     const mockListEl = document.getElementById('grades-mock-list');
-
+    const DEFAULT_SUBJECTS = ['공통 국어', '공통수학', '한국사', '영어', '통합사회', '통합과학'];
     let mockRows = []; // 편집 중인(위쪽 카드) 과목/등급 행
     let examMap = new Map(); // exam_label -> [{ id, subject, grade }]  (전체 캐시)
+    const expandedExamLabels = new Set();
 
     function buildExamLabel(year, month, office) {
         const base = `고${year} ${month}월`;
@@ -84,34 +85,71 @@ export async function initMockTab(user) {
         }
 
         mockListEl.innerHTML = labels.map(label => {
-            const rows = examMap.get(label) || [];
-            const rowsHtml = rows.length
-                ? rows.map(r => `
-                    <div class="grades-mock-block-row">
-                        <span class="grades-mock-block-subject">${escapeHtml(r.subject)}</span>
-                        <span class="grades-mock-block-grade">${r.grade != null ? `${r.grade}등급` : '-'}</span>
-                    </div>
-                `).join('')
-                : '<p class="grades-empty">입력된 과목이 없어요.</p>';
+    const rows = examMap.get(label) || [];
+    const rowsHtml = rows.length
+        ? rows.map(r => `
+            <div class="grades-mock-block-row">
+                <span class="grades-mock-block-subject">${escapeHtml(r.subject)}</span>
+                <span class="grades-mock-block-grade">${r.grade != null ? `${r.grade}등급` : '-'}</span>
+            </div>
+        `).join('')
+        : '<p class="grades-empty">입력된 과목이 없어요.</p>';
+    const isOpen = expandedExamLabels.has(label);
 
-            return `
-                <div class="grades-mock-block">
-                    <div class="grades-mock-block-header">
-                        <h4 class="grades-mock-block-title">${escapeHtml(label)}</h4>
-                        <button type="button" class="grades-mock-block-edit" data-label="${escapeHtml(label)}">수정</button>
-                    </div>
-                    <div class="grades-mock-block-body">${rowsHtml}</div>
-                </div>
-            `;
-        }).join('');
+    return `
+        <div class="grades-mock-block ${isOpen ? 'grades-mock-block-expanded' : ''}" data-label="${escapeHtml(label)}">
+            <div class="grades-mock-block-header">
+                <span class="grades-mock-block-caret" aria-hidden="true">▾</span>
+                <h4 class="grades-mock-block-title">${escapeHtml(label)}</h4>
+                <button type="button" class="grades-mock-block-edit" data-label="${escapeHtml(label)}">수정</button>
+                <button type="button" class="grades-mock-block-delete" data-label="${escapeHtml(label)}">삭제</button>
+            </div>
+            <div class="grades-mock-block-body">${rowsHtml}</div>
+        </div>
+    `;
+}).join('');
 
-        mockListEl.querySelectorAll('.grades-mock-block-edit').forEach(btn => {
-            btn.addEventListener('click', () => {
-                mockExamSelect.value = btn.dataset.label;
-                loadEditorRows(btn.dataset.label);
-                document.querySelector('.grades-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
+mockListEl.querySelectorAll('.grades-mock-block-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+        if (e.target.closest('.grades-mock-block-edit')) return; // 수정 버튼 클릭 시엔 펼침 토글 안 함
+        const block = header.closest('.grades-mock-block');
+        const label = block.dataset.label;
+        expandedExamLabels.has(label) ? expandedExamLabels.delete(label) : expandedExamLabels.add(label);
+        block.classList.toggle('grades-mock-block-expanded');
+    });
+});
+
+mockListEl.querySelectorAll('.grades-mock-block-edit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // 헤더 펼침 토글이 같이 실행되지 않도록
+        mockExamSelect.value = btn.dataset.label;
+        loadEditorRows(btn.dataset.label);
+        document.querySelector('.grades-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+mockListEl.querySelectorAll('.grades-mock-block-delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        e.stopPropagation(); // 헤더 펼침 토글이 같이 실행되지 않도록
+        const label = btn.dataset.label;
+        if (!confirm(`"${label}" 모의고사를 삭제할까요? 저장된 과목 성적도 모두 삭제돼요.`)) return;
+
+        const { error } = await supabase
+            .from('grades_mock')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('exam_label', label);
+
+        if (error) {
+            console.error('모의고사 삭제 실패:', error);
+            alert('삭제 중 문제가 생겼어요.');
+            return;
+        }
+
+        expandedExamLabels.delete(label);
+        await refreshMockData();
+        loadEditorRows(mockExamSelect.value); // 삭제로 선택값이 바뀌었을 수 있으니 편집 표도 같이 동기화
+    });
+});
     }
 
     // ---- 위쪽: 편집용 표 ----
@@ -122,8 +160,7 @@ export async function initMockTab(user) {
             return;
         }
         mockTableEl.innerHTML = `
-            <div class="grades-row grades-row-head grades-row-head-mock">
-                <span>과목</span><span>등급</span><span></span>
+            <div class="grades-row grades-row-head grades-row-mock">    <span>과목</span><span>등급</span><span></span>
             </div>
             ${mockRows.map((row, idx) => `
                 <div class="grades-row grades-row-mock" data-idx="${idx}">
@@ -233,6 +270,7 @@ export async function initMockTab(user) {
 
     newExamBtn.addEventListener('click', () => {
         const label = buildExamLabel(newYearSelect.value, newMonthSelect.value, newOfficeInput.value);
+        const isNew = !examMap.has(label);
         if (!examMap.has(label)) {
             examMap.set(label, []);
             renderMockExamOptions();
@@ -241,6 +279,10 @@ export async function initMockTab(user) {
         mockExamSelect.value = label;
         newOfficeInput.value = '';
         loadEditorRows(label);
+        if (isNew) {
+            mockRows = DEFAULT_SUBJECTS.map(subject => ({ subject, grade: null }));
+            renderMockTable();
+        }
     });
     document.getElementById('grades-mock-add-row-btn').addEventListener('click', addMockRow);
     document.getElementById('grades-mock-save-btn').addEventListener('click', saveMockRows);

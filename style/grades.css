@@ -181,16 +181,36 @@
 .grades-mock-block-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
-    margin-bottom: 6px;
+    cursor: pointer;
+}
+
+.grades-mock-block-caret {
+    font-size: 11px;
+    color: #ccc;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.grades-mock-block-expanded .grades-mock-block-caret {
+    transform: rotate(180deg);
+    color: #ff6b9a;
 }
 
 .grades-mock-block-title {
+    flex: 1;
     font-size: 14px;
     font-weight: 800;
     color: #333;
     margin: 0;
+}
+.grades-mock-block-body {
+    display: none;
+    margin-top: 10px;
+}
+
+.grades-mock-block-expanded .grades-mock-block-body {
+    display: block;
 }
 
 .grades-mock-block-edit {
@@ -206,6 +226,21 @@
 }
 
 .grades-mock-block-edit:hover {
+    text-decoration: underline;
+}
+.grades-mock-block-delete {
+    background: none;
+    border: none;
+    color: #e57373;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.grades-mock-block-delete:hover {
     text-decoration: underline;
 }
 
@@ -420,7 +455,115 @@
     text-align: center;
     margin: 10px 0 0;
 }
+.grades-analysis-section {
+    margin-bottom: 24px;
+}
 
+.grades-analysis-section:last-child {
+    margin-bottom: 0;
+}
+
+.grades-analysis-heading {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 10px;
+}
+/* ===== 성적 분석: 아코디언 카드 (analysisTab.js 전용) ===== */
+.grades-chart-card {
+    padding: 0;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.grades-chart-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 16px 20px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+
+.grades-chart-caret {
+    font-size: 12px;
+    color: #ffb3c9;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.grades-chart-open .grades-chart-caret {
+    transform: rotate(180deg);
+}
+
+.grades-chart-body {
+    display: none;
+    padding: 0 20px 20px;
+}
+
+.grades-chart-open .grades-chart-body {
+    display: block;
+}
+
+.grades-chart-empty {
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+    padding: 30px 0;
+}
+
+/* ===== 목표 등급 리스트 ===== */
+.grades-goal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.grades-goal-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fafafa;
+    border-radius: 10px;
+}
+
+.grades-goal-subject {
+    font-weight: 800;
+    font-size: 13px;
+    width: 56px;
+    flex-shrink: 0;
+}
+
+.grades-goal-select {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.grades-goal-status-text {
+    font-size: 12px;
+    color: #999;
+    margin-left: auto;
+    text-align: right;
+}
+
+.grades-goal-achieved {
+    color: #1e8a4c;
+    font-weight: 700;
+}
+
+.grades-goal-save-btn {
+    width: 100%;
+}
 /* 모바일 최적화 */
 @media (max-width: 768px) {
     .grades-container {

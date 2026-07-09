@@ -498,6 +498,12 @@
         font-size: 13px;
     }
 
+    .plan-save-badge {
+        font-size: 13px;
+        width: 100%;
+        height: 32px;
+    }
+    
     .plan-log-date {
         font-size: 12px;
     }
