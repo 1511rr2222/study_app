@@ -175,6 +175,72 @@
     transition: transform 0.15s ease;
 }
 
+/* ---------- 요약 행 안의 작은 수정/삭제 아이콘 버튼 ---------- */
+.grit-icon-btn {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.grit-icon-btn:hover {
+    background: #fff0f5;
+}
+
+.grit-challenge-save-btn {
+    color: #1e8a4c;
+    background: #dff5e6;
+}
+
+.grit-challenge-cancel-btn {
+    color: #888;
+    background: #f2f2f2;
+}
+
+/* ---------- 인라인 수정 행 (요약 행과 자리를 바꿔치기하며 나타남) ---------- */
+.grit-challenge-edit-row {
+    align-items: center;
+    gap: 6px;
+}
+
+.grit-challenge-edit-period {
+    flex-shrink: 0;
+    height: 28px;
+    border: 1.5px solid #ffd7e4;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #666;
+    background: #fff;
+    padding: 0 4px;
+}
+
+.grit-challenge-edit-input {
+    flex: 1;
+    min-width: 0;
+    height: 28px;
+    border: 1.5px solid #ffd7e4;
+    border-radius: 8px;
+    padding: 0 8px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.grit-challenge-edit-input:focus,
+.grit-challenge-edit-period:focus {
+    outline: none;
+    border-color: #ff6b9a;
+}
+
 .grit-challenge-expanded .grit-challenge-caret {
     transform: rotate(180deg);
     color: #ff6b9a;
@@ -689,5 +755,21 @@
 
     .grit-trophy {
         font-size: 26px;
+    }
+
+    .grit-icon-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+    }
+
+    .grit-challenge-edit-period {
+        height: 26px;
+        font-size: 11px;
+    }
+
+    .grit-challenge-edit-input {
+        height: 26px;
+        font-size: 12px;
     }
 }

@@ -1,17 +1,10 @@
 import { supabase } from '../../supabaseClient.js';
 import { escapeHtml } from './practiceUtils.js';
-// ⚠️ 경로 추정: storage.js/lightbox.js가 page/homework/ 폴더에 있다고 가정했어요.
-// 실제 위치가 다르면 이 두 줄의 경로만 맞는 걸로 바꿔주세요!
 import { uploadPhoto, removePhotoFromStorage } from '../homework/storage.js';
 import { openLightbox } from '../homework/lightbox.js';
 
 const PERIOD_OPTIONS = [1, 3, 5, 7];
-
-// ✅ 방금 완료 도장을 찍은 (challengeId → dayIndex) 를 기억해뒀다가
-// 그 챌린지 카드의 그 날짜 동그라미에만 한 번 pop 애니메이션을 재생함
 const justCompletedMap = new Map();
-
-// ✅ 펼쳐둔 챌린지 카드의 id를 기억 (다시 그려져도 접히지 않도록)
 const expandedChallengeIds = new Set();
 
 export async function initGritPractice(contentEl) {
@@ -277,7 +270,18 @@ function ChallengeCardHtml(challenge, logs) {
                 <span class="grit-challenge-summary-goal">${escapeHtml(challenge.goal_text)}</span>
                 <span class="grit-challenge-summary-date">${formatDateRange(challenge.start_date, challenge.period)}</span>
                 <span class="grit-challenge-summary-day">${isFinished ? '완료' : `Day ${dayIndex}/${challenge.period}`}</span>
+                <button type="button" class="grit-icon-btn grit-challenge-edit-btn" title="수정">✏️</button>
+                <button type="button" class="grit-icon-btn grit-challenge-delete-btn" title="삭제">🗑️</button>
                 <span class="grit-challenge-caret" aria-hidden="true">▾</span>
+            </div>
+
+            <div class="grit-challenge-edit-row" style="display:none;">
+                <select class="grit-challenge-edit-period">
+                    ${PERIOD_OPTIONS.map(p => `<option value="${p}" ${p === challenge.period ? 'selected' : ''}>${p}일</option>`).join('')}
+                </select>
+                <input type="text" class="grit-challenge-edit-input" value="${escapeHtml(challenge.goal_text)}">
+                <button type="button" class="grit-icon-btn grit-challenge-save-btn" title="저장">✓</button>
+                <button type="button" class="grit-icon-btn grit-challenge-cancel-btn" title="취소">✕</button>
             </div>
 
             <div class="grit-challenge-detail">
@@ -338,6 +342,73 @@ function initChallengeCard(card, user, challenge, logs, onChanged) {
             expandedChallengeIds.add(id);
         }
         card.classList.toggle('grit-challenge-expanded');
+    });
+
+    /* ---------- 수정 / 삭제 (요약 행 안의 작은 아이콘 버튼) ---------- */
+    const editRow = card.querySelector('.grit-challenge-edit-row');
+    const editBtn = card.querySelector('.grit-challenge-edit-btn');
+    const deleteBtn = card.querySelector('.grit-challenge-delete-btn');
+    const cancelEditBtn = card.querySelector('.grit-challenge-cancel-btn');
+    const saveEditBtn = card.querySelector('.grit-challenge-save-btn');
+    const editInput = card.querySelector('.grit-challenge-edit-input');
+    const editPeriodSelect = card.querySelector('.grit-challenge-edit-period');
+
+    editBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // 요약 행 펼침 토글이 같이 실행되지 않도록
+        summaryRow.style.display = 'none';
+        editRow.style.display = 'flex';
+        editInput.focus();
+        editInput.select();
+    });
+
+    cancelEditBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        editRow.style.display = 'none';
+        summaryRow.style.display = 'flex';
+    });
+
+    saveEditBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const newGoal = editInput.value.trim();
+        const newPeriod = Number(editPeriodSelect.value);
+
+        if (!newGoal) {
+            alert('목표 내용을 입력해주세요!');
+            return;
+        }
+
+        saveEditBtn.disabled = true;
+        const { error } = await supabase
+            .from('grit_challenges')
+            .update({ goal_text: newGoal, period: newPeriod })
+            .eq('id', challenge.id);
+
+        if (error) {
+            console.error('챌린지 수정 실패:', error);
+            alert('수정 중 문제가 생겼어요.');
+            saveEditBtn.disabled = false;
+            return;
+        }
+
+        await onChanged();
+    });
+
+    deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('이 챌린지를 삭제할까요? 그동안의 회고 기록도 함께 삭제돼요.')) return;
+
+        deleteBtn.disabled = true;
+        const { error } = await supabase.from('grit_challenges').delete().eq('id', challenge.id);
+
+        if (error) {
+            console.error('챌린지 삭제 실패:', error);
+            alert('삭제 중 문제가 생겼어요.');
+            deleteBtn.disabled = false;
+            return;
+        }
+
+        expandedChallengeIds.delete(challenge.id);
+        await onChanged();
     });
 
     // 히스토리 사진 - 클릭하면 크게 보기
