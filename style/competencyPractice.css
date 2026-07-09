@@ -2,8 +2,3 @@
 @import url('./practice/practiceShared.css');
 @import url('./practice/metaPractice.css');
 @import url('./practice/deepPractice.css');
-
-/* 새 역량 추가 시: 여기에 한 줄만 추가하면 됩니다
-   @import url('./practice/deepPractice.css');
-   @import url('./practice/gritPractice.css');
-*/

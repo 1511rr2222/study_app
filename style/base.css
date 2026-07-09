@@ -9,9 +9,6 @@ body {
     min-height: 100vh;
 }
 
-/* header를 제외한 나머지 영역(로그인/대시보드)
-   ✅ header.css에서 .main-header가 position: fixed로 화면에 붕 뜨기 때문에,
-      그만큼 위쪽 여백을 미리 확보해서 콘텐츠가 헤더에 가려지지 않게 함 */
 #app {
     padding: 40px 20px;
     padding-top: 112px;
