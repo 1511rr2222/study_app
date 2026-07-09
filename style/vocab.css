@@ -31,6 +31,25 @@
     color: #999;
     margin: 0 0 20px;
 }
+.vocab-intro-box {
+    text-align: center;
+    background: #fff7fa;
+    border: 1.5px solid #ffd6e3;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 0 0 20px;
+}
+
+.vocab-intro-box .vocab-deck-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e0397a;
+    margin: 0 0 6px;
+}
+
+.vocab-intro-box .vocab-intro {
+    margin: 0;
+}
 
 .vocab-loading {
     color: #999;
@@ -38,7 +57,7 @@
     padding: 24px 0;
 }
 
-/* ===== Day 목록: 칩(pill) 형태로 얇게, 내용 크기만큼만 ===== */
+/* ===== Day 목록 ===== */
 .vocab-day-list {
     display: flex;
     flex-wrap: wrap;
@@ -307,14 +326,14 @@
     margin-top: 24px;
 }
 
-/* ===================================== */
-/* 모바일 최적화 */
-/* ===================================== */
 @media (max-width: 768px) {
     .vocab-container {
         padding: 10px;
     }
 
+    .vocab-day-list {
+        justify-content: center;
+    }
     .vocab-title {
         font-size: 18px;
     }

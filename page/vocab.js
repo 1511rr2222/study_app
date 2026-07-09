@@ -44,8 +44,10 @@ export function VocabMainView() {
         <div class="vocab-container">
             <button id="vocab-back-btn" class="vocab-back-btn">← 대시보드로</button>
             <h2 class="vocab-title">🔤 영단어 퀴즈</h2>
-            <p class="vocab-intro"><영단어장: Word Master 수능 2000>
-            <br>연습을 시작해볼까요? 연습을 완료하면 연습 횟수가 표시돼요 </p>
+            <div class="vocab-intro-box">
+                <p class="vocab-deck-name">&lt;영단어장: Word Master 수능 2000&gt;</p>
+                <p class="vocab-intro">연습을 시작해볼까요? 연습을 완료하면 연습 횟수가 표시돼요</p>
+            </div>
             <div id="vocab-day-list" class="vocab-day-list">
                 <p class="vocab-loading">Day 목록을 불러오는 중...</p>
             </div>
