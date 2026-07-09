@@ -237,7 +237,88 @@
     border-radius: 12px;
     overflow: hidden;
 }
+/* ===== 내신 입력: 과목별 접힘/펼침 행 (schoolTab.js 전용) ===== */
+.grades-row-item {
+    border-bottom: 1px solid #f5f5f5;
+}
 
+.grades-row-item:last-child {
+    border-bottom: none;
+}
+
+.grades-row-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.grades-row-summary .grades-input-subject {
+    flex: 1;
+    min-width: 0;
+}
+
+.grades-row-summary-meta {
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.grades-row-caret {
+    font-size: 11px;
+    color: #ccc;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.grades-row-expanded .grades-row-caret {
+    transform: rotate(180deg);
+    color: #ff6b9a;
+}
+
+.grades-row-detail {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 12px 14px;
+}
+
+.grades-row-expanded .grades-row-detail {
+    display: flex;
+}
+
+.grades-detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+}
+
+.grades-detail-field .grades-input {
+    width: 100%;
+}
+
+/* .grades-row-detail 안에서만 적용 → 다른 곳의 작은 ✕ 삭제버튼(.grades-row-delete)엔 영향 없음 */
+.grades-row-detail .grades-row-delete {
+    width: 100%;
+    text-align: center;
+    background: none;
+    border: 1px solid #f3b8c4;
+    color: #e0397a;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.grades-row-detail .grades-row-delete:hover {
+    background: #fff0f5;
+}
 .grades-empty {
     text-align: center;
     color: #999;
@@ -249,10 +330,10 @@
 .grades-row {
     display: grid;
     grid-template-columns: 1.4fr 0.8fr 1fr 32px;
-    gap: 8px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f5f5f5;
+    gap: 0;
+    align-items: stretch;
+    padding: 0;
+    border-bottom: 1px solid #eee;
 }
 
 .grades-row-mock {
@@ -263,6 +344,11 @@
     border-bottom: none;
 }
 
+/* ✅ 마지막 칸(삭제 버튼) 빼고 모든 셀 사이에 세로 격자선 */
+.grades-row > *:not(:last-child) {
+    border-right: 1px solid #eee;
+}
+
 .grades-row-head {
     background: #fafafa;
     font-size: 12px;
@@ -270,22 +356,34 @@
     color: #999;
 }
 
+.grades-row-head span {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+}
+
+/* ✅ 입력칸 자체 테두리/그림자는 없애고, 표 셀에 딱 맞게 flat하게 */
 .grades-input {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
     font-size: 13px;
     font-family: inherit;
     box-sizing: border-box;
     width: 100%;
+    height: 100%;
 }
 
 .grades-input:focus {
     outline: none;
-    border-color: #ff6b9a;
+    background: #fff7fa; /* 테두리 대신 배경색으로 포커스 표시 */
 }
 
 .grades-row-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     color: #ccc;
@@ -323,9 +421,7 @@
     margin: 10px 0 0;
 }
 
-/* ===================================== */
 /* 모바일 최적화 */
-/* ===================================== */
 @media (max-width: 768px) {
     .grades-container {
         padding: 10px;
@@ -363,8 +459,8 @@
 
     .grades-row {
         grid-template-columns: 1.2fr 0.7fr 0.9fr 26px;
-        gap: 5px;
-        padding: 8px;
+        gap: 0;
+        padding: 0;
     }
 
     .grades-row-mock {
@@ -392,6 +488,14 @@
     .grades-mock-block {
         padding: 12px;
         border-radius: 14px;
+    }
+    .grades-row-summary {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .grades-row-summary-meta {
+        font-size: 11px;
     }
 }
 

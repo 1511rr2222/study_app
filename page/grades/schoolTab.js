@@ -31,51 +31,57 @@ export async function initSchoolTab(user) {
     const termSelect = document.getElementById('grades-term-select');
     const schoolTableEl = document.getElementById('grades-school-table');
     const schoolStatusEl = document.getElementById('grades-school-status');
-
+    const DEFAULT_SUBJECTS = ['공통 국어', '공통수학', '한국사', '영어', '통합사회', '통합과학'];
     let schoolRows = []; // { id?, subject, raw_score, grade }
 
-    function renderSchoolTable() {
-        if (!schoolTableEl) return;
-        if (schoolRows.length === 0) {
-            schoolTableEl.innerHTML = '<p class="grades-empty">아직 입력한 과목이 없어요. "+ 과목 추가"를 눌러보세요.</p>';
-            return;
-        }
-        schoolTableEl.innerHTML = `
-            <div class="grades-row grades-row-head">
-                <span>과목</span><span>원점수</span><span>등급</span><span></span>
-            </div>
-            ${schoolRows.map((row, idx) => `
-                <div class="grades-row" data-idx="${idx}">
-                    <select class="grades-input grades-input-subject" data-field="subject">${subjectOptionsHtml(row.subject)}</select>
-                    <input type="number" class="grades-input grades-input-score" data-field="raw_score" value="${row.raw_score ?? ''}" min="0" max="100" placeholder="점수">
-                    <select class="grades-input grades-select-grade" data-field="grade">${gradeOptionsHtml(row.grade)}</select>
-                    <button type="button" class="grades-row-delete" title="삭제">✕</button>
-                </div>
-            `).join('')}
-        `;
+const expandedKeys = new Set(); // ✅ 펼쳐둔 과목 행을 기억 (initSchoolTab 함수 맨 위, schoolRows 선언 바로 아래에 추가)
 
-        schoolTableEl.querySelectorAll('.grades-row[data-idx]').forEach(rowEl => {
-            const idx = Number(rowEl.dataset.idx);
-            rowEl.querySelectorAll('[data-field]').forEach(input => {
-                const eventName = input.tagName === 'SELECT' ? 'change' : 'input';
-                input.addEventListener(eventName, () => {
-                    const field = input.dataset.field;
-                    schoolRows[idx][field] = field === 'raw_score' || field === 'grade'
-                        ? (input.value === '' ? null : Number(input.value))
-                        : input.value;
-                });
-            });
-            rowEl.querySelector('.grades-row-delete').addEventListener('click', async () => {
-                const row = schoolRows[idx];
-                if (row.id) {
-                    await supabase.from('grades_school').delete().eq('id', row.id);
-                }
-                schoolRows.splice(idx, 1);
-                renderSchoolTable();
+function rowKey(row) {
+    if (!row._key) row._key = row.id ? `id-${row.id}` : `tmp-${Math.random().toString(36).slice(2)}`;
+    return row._key;
+}
+
+function renderSchoolTable() {
+    if (!schoolTableEl) return;
+    if (schoolRows.length === 0) {
+        schoolTableEl.innerHTML = '<p class="grades-empty">아직 입력한 과목이 없어요. "+ 과목 추가"를 눌러보세요.</p>';
+        return;
+    }
+    schoolTableEl.innerHTML = `
+        <div class="grades-row grades-row-head">
+            <span>과목</span><span>원점수</span><span>등급</span><span></span>
+        </div>
+        ${schoolRows.map((row, idx) => `
+            <div class="grades-row" data-idx="${idx}">
+                <select class="grades-input grades-input-subject" data-field="subject">${subjectOptionsHtml(row.subject)}</select>
+                <input type="number" class="grades-input grades-input-score" data-field="raw_score" value="${row.raw_score ?? ''}" min="0" max="100" placeholder="점수">
+                <select class="grades-input grades-select-grade" data-field="grade">${gradeOptionsHtml(row.grade)}</select>
+                <button type="button" class="grades-row-delete" title="삭제">✕</button>
+            </div>
+        `).join('')}
+    `;
+
+    schoolTableEl.querySelectorAll('.grades-row[data-idx]').forEach(rowEl => {
+        const idx = Number(rowEl.dataset.idx);
+        rowEl.querySelectorAll('[data-field]').forEach(input => {
+            const eventName = input.tagName === 'SELECT' ? 'change' : 'input';
+            input.addEventListener(eventName, () => {
+                const field = input.dataset.field;
+                schoolRows[idx][field] = field === 'raw_score' || field === 'grade'
+                    ? (input.value === '' ? null : Number(input.value))
+                    : input.value;
             });
         });
-    }
-
+        rowEl.querySelector('.grades-row-delete').addEventListener('click', async () => {
+            const row = schoolRows[idx];
+            if (row.id) {
+                await supabase.from('grades_school').delete().eq('id', row.id);
+            }
+            schoolRows.splice(idx, 1);
+            renderSchoolTable();
+        });
+    });
+}
     async function loadSchoolRows() {
         schoolStatusEl.textContent = '';
         const { data, error } = await supabase
@@ -89,19 +95,23 @@ export async function initSchoolTab(user) {
         if (error) {
             console.error('내신 성적 로드 실패:', error);
             schoolRows = [];
+        } else if (data && data.length > 0) {
+        schoolRows = data;
         } else {
-            schoolRows = data || [];
+        schoolRows = DEFAULT_SUBJECTS.map(subject => ({ subject, raw_score: null, grade: null }));
         }
         renderSchoolTable();
     }
 
     function addSchoolRow() {
-        schoolRows.push({ subject: '', raw_score: null, grade: null });
+        const row = { subject: '', raw_score: null, grade: null, _key: `tmp-${Math.random().toString(36).slice(2)}` };
+        expandedKeys.add(row._key);
+        schoolRows.push(row);
         renderSchoolTable();
     }
 
     async function saveSchoolRows() {
-        // 같은 과목이 여러 행에 있으면 마지막 입력만 저장 (upsert 충돌 방지)
+        schoolStatusEl.textContent = '';
         const dedupMap = new Map();
         schoolRows
             .filter(r => r.subject && r.subject.trim())
