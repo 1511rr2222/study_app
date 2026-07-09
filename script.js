@@ -13,8 +13,9 @@ import { supabase } from './supabaseClient.js';
 
 const app = document.getElementById('app');
 
-function navigate(page, param) {
-    const header = HeaderView(); // 헤더는 항상 표시하고, 내용만 갈아끼우기
+function navigate(page, param, opts = {}) {
+    const { fromPopState = false } = opts;
+    const header = HeaderView(); 
 
     if (page === 'login') {
         app.innerHTML = header + LoginView();
@@ -73,9 +74,6 @@ function navigate(page, param) {
         });
     }
 
-    // ✅ 헤더의 "내 계획" 클릭 시 계획표 페이지로 이동
-    // (nav-home-btn / nav-logout-btn과 같은 id 네이밍 규칙을 따른다고 가정: nav-plan-btn.
-    //  header.js에서 실제 id가 다르면 이 부분의 'nav-plan-btn'만 맞춰서 바꿔주세요.)
     const planBtn = document.getElementById('nav-plan-btn');
     if (planBtn) {
         planBtn.addEventListener('click', (e) => {
@@ -83,8 +81,10 @@ function navigate(page, param) {
             navigate('plan');
         });
     }
+    if (!fromPopState) {
+        history.pushState({ page, param }, '', `#${page}`);
+    }
 
-    // 로그아웃 버튼이 헤더에 있다면 연결 (없으면 무시됨)
     const logoutBtn = document.getElementById('nav-logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async (e) => {
@@ -95,16 +95,25 @@ function navigate(page, param) {
     }
 }
 
-// 처음 실행: 이미 로그인된 세션이 있으면 대시보드로, 없으면 로그인 화면으로
 async function init() {
     const { data: { session } } = await supabase.auth.getSession();
-    navigate(session ? 'dashboard' : 'login');
+    const initialPage = session ? 'dashboard' : 'login';
+    history.replaceState({ page: initialPage }, '', `#${initialPage}`);
+    navigate(initialPage, undefined, { fromPopState: true });
 }
 
-// 로그인/로그아웃 등 인증 상태가 바뀔 때도 반응 (예: 토큰 만료로 자동 로그아웃된 경우)
 supabase.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_OUT') {
         navigate('login');
+    }
+});
+// ✅ 안드로이드 뒤로가기(또는 브라우저 뒤로가기)를 눌렀을 때 앱 안에서 이전 화면으로 이동
+window.addEventListener('popstate', (e) => {
+    const state = e.state;
+    if (state && state.page) {
+        navigate(state.page, state.param, { fromPopState: true });
+    } else {
+        navigate('dashboard', undefined, { fromPopState: true });
     }
 });
 
