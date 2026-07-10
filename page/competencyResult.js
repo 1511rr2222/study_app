@@ -13,7 +13,7 @@ export function CompetencyResultView() {
     `;
 }
 
-export function initCompetencyResultPage(onBack) {
+export function initCompetencyResultPage(onBack, onOpenTrait) {
     document.getElementById('result-back-btn').addEventListener('click', onBack);
 
     const history = loadHistory();
@@ -32,18 +32,21 @@ export function initCompetencyResultPage(onBack) {
 
             <div class="competency-divider"></div>
             <h3 class="competency-section-title">강점 &amp; 보완 포인트</h3>
+             <p class="competency-section-hint">아래에 각각의 역량을 클릭해 어떤 행동 특성을 기르면 되는지 확인해보세요!</p>
             ${renderStrengthWeakness(latest)}
             <div id="ai-tip-content" class="ai-tip-box">
                 <p class="ai-tip-loading">AI가 보완 tip을 생각하고 있어요...</p>
             </div>
         </div>
     `;
+    root.querySelectorAll('.sw-card').forEach(card => {
+        card.addEventListener('click', () => onOpenTrait(card.dataset.traitId));
+    });
 
     renderChart(latest);
     const ranked = getRanked(latest);
     loadAiTips(ranked.weakest, ranked.strongest);
 }
-
 /* -------------------- 비교 표 -------------------- */
 
 function renderComparisonTable(history) {
@@ -104,7 +107,7 @@ function renderStrengthWeakness(latest) {
     const { strongest, weakest } = getRanked(latest);
 
     const renderCards = (list) => list.map(trait => `
-        <div class="sw-card">
+        <div class="sw-card" data-trait-id="${trait.id}">
             <span class="sw-card-name">${trait.name}</span>
             <span class="sw-card-score">${trait.score}점</span>
         </div>

@@ -51,7 +51,10 @@ function navigate(page, param, opts = {}) {
         initCompetencyPracticePage(param, () => navigate('competency'));
     } else if (page === 'competency-result') {
         app.innerHTML = header + CompetencyResultView();
-        initCompetencyResultPage(() => navigate('competency'));
+        initCompetencyResultPage(
+            () => navigate('competency'),
+            (traitId) => navigate('competency-practice', traitId) // ✅ 카드 클릭 시 해당 역량 설명 페이지로
+        );
     } else if (page === 'vocab') {
         app.innerHTML = header + VocabMainView();
         initVocabMainPage(

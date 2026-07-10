@@ -353,6 +353,19 @@
     font-weight: 600;
     white-space: pre-line;
 }
+.comic-summary-image {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.comic-summary-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
 @media (max-width: 480px) {
     .comic-panels {
         grid-template-columns: 1fr;

@@ -1,5 +1,4 @@
 import { TRAITS, CATEGORY_CLASS } from './competencyData.js';
-import { initGritPractice } from './practice/gritPractice.js';
 
 const TRAIT_EMOJI = {
     meta: '🧠',
@@ -50,11 +49,6 @@ export function initCompetencyPracticePage(traitId, onBack) {
     const contentEl = document.getElementById('practice-content');
     const trait = TRAITS.find(t => t.id === traitId);
     renderExampleCards(contentEl, trait);
-
-    if (traitId === 'grit') {
-        const mountEl = document.getElementById('grit-tracker-mount');
-        if (mountEl) initGritPractice(mountEl);
-    }
 }
 // ✅ 원형 실루엣 캐릭터 SVG (이미지 파일 없이 코드로 직접 그림)
 const CHAR_SVG_BEFORE = `
@@ -134,7 +128,11 @@ function renderExampleCards(el, trait) {
                 `;
             }).join('')}
         </div>
-        ${trait.id === 'grit' ? '<div id="grit-tracker-mount" class="grit-tracker-mount"></div>' : ''}
+        ${trait.comicImage ? `
+            <div class="comic-summary-image">
+                <img src="${trait.comicImage}" alt="${escapeHtml(trait.name)} 만화" class="comic-summary-img">
+            </div>
+        ` : ''}
     `;
 
     // ✅ KPI 블록 클릭 → 그 아래 비교 패널 펼침/접힘 (평소엔 접힌 상태로 시작)

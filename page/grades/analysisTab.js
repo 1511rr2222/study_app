@@ -320,7 +320,6 @@ export function initAnalysisTab(user) {
         await loadGoals();
         renderGoalList();
 
-        // 이미 펼쳐져 있던 차트는 최신 데이터로 다시 그림
         Object.keys(charts).forEach(id => { charts[id].destroy(); delete charts[id]; });
         document.querySelectorAll('.grades-chart-card.grades-chart-open').forEach(card => buildChartIfNeeded(card.dataset.chartId));
     }
