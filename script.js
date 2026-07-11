@@ -10,6 +10,7 @@ import { VocabMainView, initVocabMainPage, VocabPracticeView, initVocabPracticeP
 import { GradesView, initGradesPage } from './page/grades.js';
 import { PlanPageView, initPlanPage } from './page/plan.js';
 import { supabase } from './supabaseClient.js';
+import { GritPageView, initGritPage, initGritSummary } from './page/practice/gritPractice.js';
 
 const app = document.getElementById('app');
 
@@ -24,12 +25,16 @@ function navigate(page, param, opts = {}) {
         app.innerHTML = header + DashboardView();
         initDashboardEvents();
         initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
+        initGritSummary(() => navigate('grit'));
         document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
         document.getElementById('open-vocab-btn').addEventListener('click', () => navigate('vocab'));
         document.getElementById('open-grades-btn').addEventListener('click', () => navigate('grades'));
     } else if (page === 'homework') {
         app.innerHTML = header + HomeworkPageView();
         initHomeworkPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
+    } else if (page === 'grit') {
+        app.innerHTML = header + GritPageView();
+        initGritPage(() => navigate('dashboard'));
     } else if (page === 'plan') {
         app.innerHTML = header + PlanPageView();
         initPlanPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀

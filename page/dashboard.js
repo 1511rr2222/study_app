@@ -1,4 +1,5 @@
 import { HomeworkSummaryView } from './homework.js';
+import { GritSummaryView } from './practice/gritPractice.js';
 import { supabase } from '../supabaseClient.js';
 
 export function DashboardView() {
@@ -34,6 +35,8 @@ export function DashboardView() {
                     </div>
                     <div class="card-homework">${HomeworkSummaryView()}</div>
                 </div>
+
+                <div class="card-grit">${GritSummaryView()}</div>
 
                 <div class="bottom-section">
                     <div class="list-box list-competency" id="open-competency-btn">

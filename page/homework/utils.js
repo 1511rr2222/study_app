@@ -13,8 +13,14 @@ export function isOverdue(item) {
     return !item.done && item.dueDate && item.dueDate < todayStr();
 }
 
+// ✅ 완료는 했지만, 완료 처리한 시점(completedAt)이 마감일을 넘긴 뒤였는지 확인
+function isDoneLate(item) {
+    if (!item.done || !item.completedAt || !item.dueDate) return false;
+    return item.completedAt.slice(0, 10) > item.dueDate;
+}
+
 export function getStatus(item) {
-    if (item.done) return 'done';
+    if (item.done) return isDoneLate(item) ? 'done-late' : 'done';
     if (isOverdue(item)) return 'overdue';
     return 'pending';
 }
@@ -52,6 +58,7 @@ export function getWeeklyAverageRate(data) {
 
 export function statusLabel(status) {
     if (status === 'done') return '완료';
+    if (status === 'done-late') return '기한초과 완료';
     if (status === 'overdue') return '기한 초과';
     return '미완료';
 }
@@ -67,9 +74,17 @@ export function getDDayLabel(dueDate) {
     return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`;
 }
 
-// 기한초과 → 미완료(마감 임박순) → 완료 순으로 정렬
+// ✅ 날짜별 그룹 헤더에 보여줄 라벨 (예: "2026-07-09 (수)")
+export function formatDateLabel(dateStr) {
+    if (!dateStr) return '날짜 미정';
+    const d = new Date(dateStr + 'T00:00:00');
+    const week = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
+    return `${dateStr} (${week})`;
+}
+
+// 기한초과 → 미완료(마감 임박순) → 완료/기한초과 완료 순으로 정렬
 export function sortForDisplay(data) {
-    const statusOrder = { overdue: 0, pending: 1, done: 2 };
+    const statusOrder = { overdue: 0, pending: 1, done: 2, 'done-late': 2 };
     return data.slice().sort((a, b) => {
         const statusDiff = statusOrder[getStatus(a)] - statusOrder[getStatus(b)];
         if (statusDiff !== 0) return statusDiff;

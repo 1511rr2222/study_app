@@ -1,8 +1,9 @@
 import { loadData, insertItem } from './data.js';
-import { renderItem } from './render.js';
-import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attachItemExpandEvents } from './events.js';
+import { renderItem, renderDateGroupsHtml } from './render.js';
+import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attachItemExpandEvents, attachDateGroupEvents } from './events.js';
 import { setEditingId } from './editState.js';
 import { clearExpanded } from './expandState.js';
+import { clearDateGroups } from './dateGroupState.js';
 import { todayStr, sortForDisplay, getWeeklyAverageRate } from './utils.js';
 
 /* ---------------- 대시보드 요약 카드 ---------------- */
@@ -88,7 +89,8 @@ export function HomeworkPageView() {
 // onBack: 대시보드로 돌아갈 때 실행할 콜백
 export function initHomeworkPage(onBack) {
     setEditingId(null);
-    clearExpanded(); // ✅ 전체 페이지에 새로 들어올 때는 모두 접힌 상태로 시작
+    clearExpanded();    // ✅ 전체 페이지에 새로 들어올 때는 항목 펼침 상태 모두 초기화
+    clearDateGroups();  // ✅ 날짜 그룹 펼침 상태도 모두 초기화 (전부 접힌 채로 시작)
     renderPage(onBack);
     document.getElementById('homework-back-btn').addEventListener('click', onBack);
 }
@@ -105,9 +107,8 @@ async function renderPage(onBack) {
     if (weeklyRateEl) weeklyRateEl.textContent = `${weeklyRate}%`;
 
     const sorted = sortForDisplay(data);
-    const listHtml = sorted.length === 0
-        ? `<p class="homework-empty">아직 등록된 숙제가 없어요.</p>`
-        : sorted.map(item => renderItem(item, { editable: true })).join('');
+    // ✅ 날짜별로 묶어서 접힘/펼침 가능한 그룹 형태로 렌더링 (그룹 헤더에 그 날짜의 달성률도 같이 표시됨)
+    const groupsHtml = renderDateGroupsHtml(sorted);
 
     container.innerHTML = `
         <form id="homework-add-form" class="homework-add-form">
@@ -129,8 +130,8 @@ async function renderPage(onBack) {
             </div>
         </form>
 
-        <div class="homework-list">
-            ${listHtml}
+        <div class="homework-date-groups">
+            ${groupsHtml}
         </div>
     `;
 
@@ -175,4 +176,5 @@ async function renderPage(onBack) {
     attachPhotoEvents(container, () => renderPage(onBack));
     attachItemActionEvents(container, () => renderPage(onBack));
     attachItemExpandEvents(container); // ✅ 항목 행 클릭 시 펼침/접힘 토글
+    attachDateGroupEvents(container);  // ✅ 날짜 그룹 헤더 클릭 시 펼침/접힘 토글
 }

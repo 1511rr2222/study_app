@@ -17,7 +17,8 @@ function mapRow(row) {
         lessonDate: row.lesson_date,
         dueDate: row.due_date,
         done: row.done,
-        photos: row.photos || []
+        photos: row.photos || [],
+        completedAt: row.completed_at // ✅ 완료 처리한 시점 (기한초과 완료 여부 판단용)
     };
 }
 
@@ -65,7 +66,12 @@ export async function insertItem({ lessonDate, dueDate, content }) {
 
 export async function updateItem(id, patch) {
     const dbPatch = {};
-    if ('done' in patch) dbPatch.done = patch.done;
+    if ('done' in patch) {
+        dbPatch.done = patch.done;
+        // ✅ 완료 처리하는 순간의 시각을 기록해두고, 완료 취소하면 다시 비움
+        //    (마감일과 비교해서 "기한 넘긴 뒤에 완료했는지" 판단하는 데 씀)
+        dbPatch.completed_at = patch.done ? new Date().toISOString() : null;
+    }
     if ('photos' in patch) dbPatch.photos = patch.photos;
     if ('content' in patch) dbPatch.content = patch.content;
     if ('lessonDate' in patch) dbPatch.lesson_date = patch.lessonDate;

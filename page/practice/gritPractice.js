@@ -7,6 +7,100 @@ const PERIOD_OPTIONS = [1, 3, 5, 7];
 const justCompletedMap = new Map();
 const expandedChallengeIds = new Set();
 
+/* -------------------- 대시보드 요약 카드 -------------------- */
+
+export function GritSummaryView() {
+    return `
+        <div class="grit-summary-box">
+            <div class="homework-header-row">
+                <h2>🔥 그릿 챌린지</h2>
+                <span class="grit-summary-badge" id="grit-summary-badge">0개 진행중</span>
+            </div>
+            <div id="grit-summary-content"><p class="grit-loading">불러오는 중...</p></div>
+        </div>
+    `;
+}
+
+export async function initGritSummary(onOpenFull) {
+    const container = document.getElementById('grit-summary-content');
+    if (!container) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        container.innerHTML = `<p class="practice-soon">로그인이 필요해요.</p>`;
+        return;
+    }
+
+    const { data: challenges, error } = await supabase
+        .from('grit_challenges')
+        .select('*')
+        .eq('user_id', user.id);
+
+    if (error) {
+        console.error('그릿 요약 로드 실패:', error);
+        container.innerHTML = `<p class="practice-soon">불러오지 못했어요.</p>`;
+        return;
+    }
+
+    const list = challenges || [];
+    const active = list.filter(c => calcDayIndex(c.start_date) <= c.period);
+
+    const badge = document.getElementById('grit-summary-badge');
+    if (badge) badge.textContent = `${active.length}개 진행중`;
+
+    if (active.length === 0) {
+        container.innerHTML = `
+            <p class="homework-empty">진행 중인 챌린지가 없어요. 새 챌린지를 시작해보세요!</p>
+            <button type="button" id="grit-summary-open-btn" class="homework-open-btn">챌린지 보러가기 →</button>
+        `;
+    } else {
+        const { data: logs } = await supabase
+            .from('grit_logs')
+            .select('challenge_id, day_index')
+            .in('challenge_id', active.map(c => c.id));
+
+        const doneSet = new Set((logs || []).map(l => `${l.challenge_id}-${l.day_index}`));
+
+        const rowsHtml = active.map(c => {
+            const dayIndex = calcDayIndex(c.start_date);
+            const doneToday = doneSet.has(`${c.id}-${dayIndex}`);
+            return `
+                <div class="grit-summary-row">
+                    <span class="grit-summary-dot ${doneToday ? 'done' : ''}"></span>
+                    <span class="grit-summary-goal">${escapeHtml(c.goal_text)}</span>
+                    <span class="grit-summary-day">Day ${dayIndex}/${c.period}</span>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="grit-summary-list">${rowsHtml}</div>
+            <button type="button" id="grit-summary-open-btn" class="homework-open-btn">챌린지 전체 보기 →</button>
+        `;
+    }
+
+    document.getElementById('grit-summary-open-btn').addEventListener('click', onOpenFull);
+}
+
+/* -------------------- 그릿 전용 전체 페이지 (헤더 없이 챌린지 화면만) -------------------- */
+
+export function GritPageView() {
+    return `
+        <div class="dashboard-container">
+            <button type="button" id="grit-back-btn" class="homework-back-btn">← 대시보드로 돌아가기</button>
+            <div class="hero-box">
+                <h2>🔥 그릿 챌린지</h2>
+                <div id="grit-page-content"></div>
+            </div>
+        </div>
+    `;
+}
+
+export function initGritPage(onBack) {
+    document.getElementById('grit-back-btn').addEventListener('click', onBack);
+    initGritPractice(document.getElementById('grit-page-content'));
+}
+
 export async function initGritPractice(contentEl) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {

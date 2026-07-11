@@ -2,6 +2,7 @@ import { loadData, updateItem, deleteItemRow, getUser } from './data.js';
 import { uploadPhoto, removePhotoFromStorage } from './storage.js';
 import { setEditingId } from './editState.js';
 import { toggleExpanded } from './expandState.js';
+import { toggleDateGroup } from './dateGroupState.js';
 import { openLightbox } from './lightbox.js';
 
 export function attachCheckboxEvents(container, onChange) {
@@ -144,6 +145,10 @@ export function attachItemActionEvents(container, onChange) {
 }
 
 // ✅ 접힘 한 줄 ↔ 펼침 상세 토글.
+// 체크박스를 클릭한 경우는 제외(체크박스는 자기 자신의 change 이벤트로만 동작해야 함).
+// 화면을 다시 그리지 않고 클래스만 토글해서 즉각적으로 반응하게 하고,
+// expandState 모듈에도 기록해서 다른 항목 체크/사진추가로 목록이 다시 그려져도
+// 펼쳐둔 카드가 그대로 펼쳐진 채로 남아있게 한다.
 export function attachItemExpandEvents(container) {
     container.querySelectorAll('.homework-item-row').forEach(row => {
         row.addEventListener('click', (e) => {
@@ -154,6 +159,18 @@ export function attachItemExpandEvents(container) {
 
             const item = row.closest('.homework-item');
             if (item) item.classList.toggle('homework-item-expanded');
+        });
+    });
+}
+
+// ✅ 날짜별 그룹 헤더 클릭 시 펼침/접힘 토글 (개별 숙제 항목 펼침과는 완전히 별개)
+export function attachDateGroupEvents(container) {
+    container.querySelectorAll('.homework-date-group-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const group = btn.closest('.homework-date-group');
+            const dateKey = group.dataset.dateKey;
+            toggleDateGroup(dateKey);
+            group.classList.toggle('homework-date-group-open');
         });
     });
 }

@@ -1,6 +1,7 @@
-import { escapeHtml, getStatus, statusLabel, getDDayLabel } from './utils.js';
+import { escapeHtml, getStatus, statusLabel, getDDayLabel, formatDateLabel, sortForDisplay, todayStr } from './utils.js';
 import { getEditingId } from './editState.js';
 import { isExpanded } from './expandState.js';
+import { isDateGroupExpanded } from './dateGroupState.js';
 
 export function renderPhotoSection(item) {
     const photos = item.photos || [];
@@ -40,6 +41,7 @@ function renderDatesHtml(item, dateFormat) {
 }
 
 // ✅ 전체 페이지(editable) 펼침 영역 전용: "수업일" 대신 "시작일" 표현을 씀
+// (숙제 등록 폼에서 이미 "시작일/마감일"이라는 용어를 쓰고 있어서 통일)
 function renderExpandedDatesHtml(item) {
     return item.lessonDate === item.dueDate
         ? `<span class="homework-date">날짜 ${item.lessonDate || '-'}</span>`
@@ -81,6 +83,7 @@ export function renderItem(item, options = {}) {
     const checkboxHtml = `<input type="checkbox" data-id="${item.id}" ${item.done ? 'checked' : ''} ${(!item.done && !canComplete) ? 'disabled' : ''}>`;
 
     // ✅ 대시보드 요약 카드 (editable:false): 한 줄 컴팩트 레이아웃 그대로 유지
+    // (체크박스 + D-day + 내용 + 상태태그가 한 줄에 붙는 기존 디자인)
     if (!editable) {
         return `
             <div class="homework-item ${status}">
@@ -98,6 +101,10 @@ export function renderItem(item, options = {}) {
             </div>
         `;
     }
+
+    // ✅ 숙제 체크 전체 페이지 (editable:true): 접힘/펼침 카드
+    // - 접힘(기본): 체크박스 + 내용 + D-day + 완료상태, 딱 "한 줄"
+    // - 펼침(행 클릭 시): 시작일/마감일 + 수정/삭제 버튼 + 인증사진
     const open = isExpanded(item.id);
 
     return `
@@ -119,4 +126,58 @@ export function renderItem(item, options = {}) {
             </div>
         </div>
     `;
+}
+
+// ✅ 숙제 체크 전체 페이지 전용: 마감일(dueDate) 기준으로 묶어서 날짜별 그룹으로 렌더링.
+// 각 그룹은 평소엔 접혀있고(한 줄: 날짜 + 완료/전체 개수 + 그날의 달성률), 누르면 그 날짜의 숙제들이 펼쳐짐.
+export function renderDateGroupsHtml(items) {
+    if (items.length === 0) {
+        return `<p class="homework-empty">아직 등록된 숙제가 없어요.</p>`;
+    }
+
+    const groups = {};
+    items.forEach(item => {
+        const key = item.dueDate || '';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+    });
+
+    // 마감일 빠른 순으로 그룹 정렬 (날짜 미정('')은 맨 뒤로)
+    const dateKeys = Object.keys(groups).sort((a, b) => {
+        if (a === '') return 1;
+        if (b === '') return -1;
+        return a.localeCompare(b);
+    });
+
+    const today = todayStr();
+
+    return dateKeys.map(dateKey => {
+        const groupItems = sortForDisplay(groups[dateKey]);
+        const total = groupItems.length;
+        const doneCount = groupItems.filter(i => i.done).length;
+        const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);
+        const isOpen = isDateGroupExpanded(dateKey);
+        const isPast = dateKey !== '' && dateKey < today;
+        const isToday = dateKey === today;
+
+        const labelClasses = ['homework-date-group-label'];
+        if (isPast) labelClasses.push('overdue');
+        if (isToday) labelClasses.push('today');
+
+        return `
+            <div class="homework-date-group ${isOpen ? 'homework-date-group-open' : ''}" data-date-key="${dateKey}">
+                <button type="button" class="homework-date-group-toggle">
+                    <span class="homework-date-group-caret" aria-hidden="true">▾</span>
+                    <span class="${labelClasses.join(' ')}">${escapeHtml(formatDateLabel(dateKey))}${isToday ? ' · 오늘' : ''}</span>
+                    <span class="homework-date-group-count">${doneCount}/${total}</span>
+                    <span class="homework-date-group-rate">${rate}%</span>
+                </button>
+                <div class="homework-date-group-body">
+                    <div class="homework-date-group-items">
+                        ${groupItems.map(item => renderItem(item, { editable: true })).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }

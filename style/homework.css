@@ -253,6 +253,124 @@
     padding: 24px 0;
 }
 
+/* =====================================================================
+   ✅ 숙제 체크 전체 페이지: 마감일 기준 날짜별 그룹 (접힘 ↔ 펼침)
+   - 접힘(기본): 날짜 + 완료/전체 개수 + 그 날짜의 달성률만 한 줄
+   - 펼침(헤더 클릭 시): 그 날짜에 속한 숙제 항목들이 아래로 펼쳐짐
+   ===================================================================== */
+.homework-date-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.homework-date-group {
+    background-color: #fff;
+    border: 1.5px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.homework-date-group-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    padding: 12px 14px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+
+.homework-date-group-caret {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #bbb;
+    transition: transform 0.15s ease;
+}
+
+.homework-date-group-open .homework-date-group-caret {
+    transform: rotate(180deg);
+    color: var(--edu-pink, #ff6b9a);
+}
+
+.homework-date-group-label {
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #444;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.homework-date-group-label.today {
+    color: var(--edu-pink-dark, #E14C7C);
+}
+
+.homework-date-group-label.overdue {
+    color: #c53030;
+}
+
+.homework-date-group-count {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    white-space: nowrap;
+}
+
+.homework-date-group-rate {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--edu-blue, #5B86E5);
+    background: var(--edu-blue-bg, #EEF3FF);
+    padding: 2px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.homework-date-group-body {
+    display: none;
+    padding: 0 14px 14px;
+}
+
+.homework-date-group-open .homework-date-group-body {
+    display: block;
+}
+
+.homework-date-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ===== 기한초과 완료 (완료는 했지만 마감일을 넘긴 뒤에 체크한 경우) ===== */
+.homework-status-tag.done-late {
+    background-color: #fde3e3;
+    color: #c53030;
+}
+
+.homework-item.done-late {
+    background-color: #fff5f5;
+    border-color: #f3b8b8;
+}
+
+.homework-item.done-late .homework-item-content,
+.homework-item.done-late .homework-content {
+    text-decoration: line-through;
+    color: #c53030;
+}
+
+.homework-item.done-late .homework-dday {
+    background: #fde3e3;
+    color: #c53030;
+}
+
 .homework-item {
     background-color: #fafafa;
     border: 1.5px solid #eee;
@@ -731,36 +849,62 @@
         flex-wrap: wrap;
     }
 
-/* 요약 카드 제목 크기 축소 */
+    /* ✅ 날짜별 그룹 헤더도 좁은 화면에서 여백/폰트를 살짝 줄임 */
+    .homework-date-group-toggle {
+        padding: 10px 12px;
+        gap: 7px;
+    }
+
+    .homework-date-group-label {
+        font-size: 12px;
+    }
+
+    .homework-date-group-count {
+        font-size: 10px;
+    }
+
+    .homework-date-group-rate {
+        font-size: 10px;
+        padding: 2px 7px;
+    }
+
+    .homework-date-group-body {
+        padding: 0 12px 12px;
+    }
+
+    /* =================================================================
+       ✅ 대시보드 "숙제 체크" 요약 카드 전용 (HomeworkSummaryView).
+       위쪽 규칙들은 전체 페이지(.homework-item-row 등) 전용이라
+       이 요약 카드에는 적용되지 않아서, 여기서 따로 줄여줌.
+       ================================================================= */
     .homework-summary-box h2 {
-        font-size: 14px;
-        margin-bottom: 8px;
+        font-size: 15px;
     }
 
-    /* 요약 카드 내 숙제 내용 글씨 크기 축소 */
-    .homework-summary-box .homework-content {
+    .homework-rate-label {
+        font-size: 10.5px;
+    }
+
+    /* 요약 카드 안의 "기하학 3pg" 같은 내용 텍스트 */
+    .homework-content {
         font-size: 12px;
     }
 
-    /* 요약 카드 내 D-Day 라벨 크기 조절 */
-    .homework-summary-box .homework-dday {
+    /* 요약 카드 안의 D-day 배지 (전체 페이지용 .homework-item-row .homework-dday와는 별개) */
+    .homework-dates-dday .homework-dday {
         font-size: 10px;
-        padding: 2px 6px;
+        padding: 3px 7px;
     }
 
-    /* 요약 카드 내 상태 태그 크기 조절 */
-    .homework-summary-box .homework-status-tag {
+    /* 요약 카드 안의 완료/미완료 태그 (전체 페이지용 .homework-item-row .homework-status-tag와는 별개) */
+    .homework-item-main .homework-status-tag {
         font-size: 10px;
-        padding: 2px 6px;
+        padding: 3px 8px;
     }
-    
-    /* 요약 카드 달성률 글자 크기 최적화 */
-    .homework-rate-inline .homework-rate-label {
-        font-size: 11px;
-    }
-    
-    .homework-rate-inline #homework-summary-rate {
-        font-size: 12px;
+
+    .homework-open-btn {
+        font-size: 12.5px;
+        padding: 12px;
     }
 }
 
