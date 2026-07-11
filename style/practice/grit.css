@@ -440,12 +440,12 @@
     background: #fff7fa;
     border: 1px solid #ffd7e4;
     border-radius: 14px;
-    padding: 16px;
+    padding: 10px;
     margin-bottom: 20px;
 }
 
 .grit-today-lead {
-    margin: 0 0 10px;
+    margin: 0 0 5px;
     font-size: 14px;
     color: #444;
     font-weight: 700;
@@ -495,12 +495,11 @@
     border-color: #ffb3d1;
 }
 
-/* ---------- 오늘의 인증사진 (완료 도장 찍기 전 업로드 영역) ---------- */
 .grit-photo-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 4px;
+    margin-bottom: 6px;
 }
 
 .grit-photo-list {
@@ -575,8 +574,37 @@
     color: #ff9a3d;
     font-weight: 600;
 }
+.grit-goal-textarea {
+    min-height: 56px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.4;
+}
 
-/* ---------- 완료 시 Day 동그라미가 한 번 튀어오르는 pop 애니메이션 (게임 느낌) ---------- */
+.grit-quote-box {
+    background: linear-gradient(135deg, #fff7fa, #fdf3ff);
+    border: 1.5px dashed #ffb3d1;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.grit-quote-motivation {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #d6336c;
+    line-height: 1.4;
+}
+
+.grit-quote-reason {
+    margin: 0;
+    font-size: 12px;
+    color: #a05070;
+    line-height: 1.4;
+}
+
 @keyframes gritDayPop {
     0% { transform: scale(1); }
     35% { transform: scale(1.35) rotate(-8deg); box-shadow: 0 0 0 6px rgba(255, 107, 154, 0.25); }
@@ -738,7 +766,7 @@
     }
 
     .grit-today-box {
-        padding: 14px;
+        padding: 10px;
     }
 
     /* ✅ 사진 추가 버튼 터치 영역은 살짝 넉넉하게, 썸네일은 살짝 작게 */

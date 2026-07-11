@@ -1,6 +1,7 @@
 import { HomeworkSummaryView } from './homework.js';
 import { GritSummaryView } from './practice/gritPractice.js';
 import { supabase } from '../supabaseClient.js';
+import { PlanningTipCardView, initPlanningTipCard } from './planningTips.js';
 
 export function DashboardView() {
     return `
@@ -19,6 +20,8 @@ export function DashboardView() {
                         </div>
                     </div>
                 </div>
+
+                <div class="planning-tip-card">${PlanningTipCardView()}</div>
 
                 <div class="top-section">
                     <div class="card-attendance">
@@ -58,6 +61,7 @@ export function DashboardView() {
 }
 
 export async function initDashboardEvents() {
+    initPlanningTipCard();
     const grid = document.getElementById('calendar-grid');
     const rateText = document.getElementById('attendance-rate');
     const rateFill = document.getElementById('rate-bar-fill');

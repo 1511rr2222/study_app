@@ -50,7 +50,8 @@ export async function initGritSummary(onOpenFull) {
 
     if (active.length === 0) {
         container.innerHTML = `
-            <p class="homework-empty">진행 중인 챌린지가 없어요. 새 챌린지를 시작해보세요!</p>
+            <p class="homework-empty">공부 외적으로 단기적으로 도전해보고 싶은 목표가 있다면 새 챌린지를 시작해보세요!
+            <br>ex) 하루 1끼는 다이어트 식으로 먹기/ 하루 10분 런닝하기 등</p>
             <button type="button" id="grit-summary-open-btn" class="homework-open-btn">챌린지 보러가기 →</button>
         `;
     } else {
@@ -159,18 +160,26 @@ async function renderAll(contentEl, user) {
             <div class="grit-add-section">
                 <button type="button" id="grit-add-toggle-btn" class="grit-add-toggle-btn">+ 새 챌린지 시작하기</button>
                 <div class="grit-setup" id="grit-setup-form" style="display:none;">
-                    <p class="grit-setup-lead">작은 약속을 정하고, 며칠이든 나와의 약속을 지켜보아요.</p>
+                    <p class="grit-setup-lead">작은 약속을 정하고, 며칠이든 나와의 약속을 지켜보며 그릿을 키워보아요.</p>
 
                     <p class="grit-field-label">기간을 선택해주세요</p>
                     <div class="grit-period-select" id="grit-period-select">
                         ${PERIOD_OPTIONS.map(p => `<button type="button" class="grit-period-btn" data-period="${p}">${p}일</button>`).join('')}
                     </div>
 
-                    <p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
+<p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
                     <input type="text" id="grit-goal-input" class="grit-goal-input" placeholder="예: 수학 문제집 5페이지 풀기">
 
-                    <button type="button" id="grit-start-btn" class="pink-button grit-start-btn" disabled>챌린지 시작하기 🔥</button>
-                </div>
+                    <p class="grit-field-label">왜 이 챌린지를 해야 하나요?</p>
+                    <textarea id="grit-reason-input" class="grit-goal-input grit-goal-textarea" placeholder="이 챌린지가 나에게 중요한 이유를 적어보세요"></textarea>
+
+                    <p class="grit-field-label">이 챌린지를 하는 데 가장 큰 방해물은 무엇인가요?</p>
+                    <textarea id="grit-obstacle-input" class="grit-goal-input grit-goal-textarea" placeholder="나를 방해할 것 같은 걸 미리 적어보세요"></textarea>
+
+                    <p class="grit-field-label">가장 나를 동기부여시키는 말은 무엇인가요?</p>
+                    <textarea id="grit-motivation-input" class="grit-goal-input grit-goal-textarea" placeholder="힘들 때 스스로에게 해줄 한마디"></textarea>
+
+                    <button type="button" id="grit-start-btn" class="pink-button grit-start-btn" disabled>챌린지 시작하기 🔥</button>                </div>
             </div>
 
             ${GroupSectionHtml('active', '진행중인 챌린지 보기', active, logsByChallenge)}
@@ -230,6 +239,9 @@ function initAddSection(contentEl, user) {
     const form = document.getElementById('grit-setup-form');
     const periodSelect = document.getElementById('grit-period-select');
     const goalInput = document.getElementById('grit-goal-input');
+    const reasonInput = document.getElementById('grit-reason-input');
+    const obstacleInput = document.getElementById('grit-obstacle-input');
+    const motivationInput = document.getElementById('grit-motivation-input');
     const startBtn = document.getElementById('grit-start-btn');
     let selectedPeriod = null;
 
@@ -254,7 +266,7 @@ function initAddSection(contentEl, user) {
 
     goalInput.addEventListener('input', updateStartBtn);
 
-    startBtn.addEventListener('click', async () => {
+startBtn.addEventListener('click', async () => {
         if (!selectedPeriod || !goalInput.value.trim()) return;
         startBtn.disabled = true;
         startBtn.innerText = '시작하는 중...';
@@ -264,6 +276,9 @@ function initAddSection(contentEl, user) {
             period: selectedPeriod,
             goal_text: goalInput.value.trim(),
             start_date: todayString(),
+            reason_text: reasonInput.value.trim() || null,
+            obstacle_text: obstacleInput.value.trim() || null,
+            motivation_text: motivationInput.value.trim() || null,
         });
 
         if (error) {
@@ -337,13 +352,20 @@ function ChallengeCardHtml(challenge, logs) {
                 <p class="grit-today-lead">오늘 목표는 이미 완료했어요. 내일 또 만나요 ✨</p>
             </div>
         `;
-    } else {
+} else {
+        const quoteHtml = (challenge.motivation_text || challenge.reason_text) ? `
+            <div class="grit-quote-box">
+                ${challenge.motivation_text ? `<p class="grit-quote-motivation">"${escapeHtml(challenge.motivation_text)}"</p>` : ''}
+                ${challenge.reason_text ? `<p class="grit-quote-reason">💭 ${escapeHtml(challenge.reason_text)}</p>` : ''}
+            </div>
+        ` : '';
+
         actionHtml = `
             <div class="grit-today-box">
                 <p class="grit-today-lead">오늘 목표, 잘 해내셨나요?</p>
+                ${quoteHtml}
 
-                <div class="grit-photo-section">
-                    <div class="grit-photo-list"></div>
+                <div class="grit-photo-section">                    <div class="grit-photo-list"></div>
                     <label class="grit-photo-upload-btn">
                         📷 인증사진 추가
                         <input type="file" accept="image/*" multiple class="grit-photo-input" hidden>
