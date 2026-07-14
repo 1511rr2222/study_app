@@ -12,6 +12,7 @@ import { PlanPageView, initPlanPage } from './page/plan.js';
 import { supabase } from './supabaseClient.js';
 import { GritPageView, initGritPage, initGritSummary } from './page/practice/gritPractice.js';
 import { BuddyPageView, initBuddyPage } from './page/buddies.js';
+import { FriendHomeworkPageView, initFriendHomeworkPage } from './page/friendHomework.js';
 
 const app = document.getElementById('app');
 
@@ -41,13 +42,18 @@ function navigate(page, param, opts = {}) {
         initPlanPage(() => navigate('dashboard'));
     } else if (page === 'buddy') {
         app.innerHTML = header + BuddyPageView();
-        initBuddyPage(() => navigate('dashboard'));} else if (page === 'competency') {
+        initBuddyPage(
+            () => navigate('dashboard'),
+            (friend) => navigate('friend-homework', friend));
+    } else if (page === 'friend-homework') {
+        app.innerHTML = header + FriendHomeworkPageView();
+        initFriendHomeworkPage(param, () => navigate('buddy'));
+        else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
             () => navigate('dashboard'),       // 뒤로가기 시 대시보드로 복귀
             () => navigate('competency-survey'),
-            (traitId) => navigate('competency-practice' , traitId) 
-        );
+            (traitId) => navigate('competency-practice' , traitId) );
     } else if (page === 'competency-survey') {
         app.innerHTML = header + CompetencySurveyView();
         initCompetencySurveyPage(
