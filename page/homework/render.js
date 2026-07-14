@@ -50,7 +50,7 @@ function renderExpandedDatesHtml(item) {
 }
 
 export function renderItem(item, options = {}) {
-    const { editable = false, showPhotos = true, dateFormat = 'full' } = options;
+    const { editable = false, showPhotos = true, dateFormat = 'full', selfLocked = false } = options;
     const status = getStatus(item);
     const photos = item.photos || [];
     const canComplete = photos.length > 0;
@@ -80,7 +80,9 @@ export function renderItem(item, options = {}) {
     }
 
     const datesHtml = renderDatesHtml(item, dateFormat);
-    const checkboxHtml = `<input type="checkbox" data-id="${item.id}" ${item.done ? 'checked' : ''} ${(!item.done && !canComplete) ? 'disabled' : ''}>`;
+    // ✅ selfLocked: 연결된 친구가 있으면 본인이 직접 체크 못하게 막고, 친구의 인증만 받도록 함
+    const isAwaitingFriend = selfLocked && !item.done && canComplete;
+    const checkboxHtml = `<input type="checkbox" data-id="${item.id}" ${item.done ? 'checked' : ''} ${(!item.done && !canComplete) || isAwaitingFriend ? 'disabled' : ''}>`;
 
     // ✅ 대시보드 요약 카드 (editable:false): 한 줄 컴팩트 레이아웃 그대로 유지
     // (체크박스 + D-day + 내용 + 상태태그가 한 줄에 붙는 기존 디자인)
@@ -106,6 +108,8 @@ export function renderItem(item, options = {}) {
     // - 접힘(기본): 체크박스 + 내용 + D-day + 완료상태, 딱 "한 줄"
     // - 펼침(행 클릭 시): 시작일/마감일 + 수정/삭제 버튼 + 인증사진
     const open = isExpanded(item.id);
+    const statusTagClass = isAwaitingFriend ? 'awaiting' : status;
+    const statusTagText = isAwaitingFriend ? '친구 인증 대기중' : statusLabel(status);
 
     return `
         <div class="homework-item ${status} ${open ? 'homework-item-expanded' : ''}" data-item-id="${item.id}">
@@ -113,7 +117,7 @@ export function renderItem(item, options = {}) {
                 ${checkboxHtml}
                 <span class="homework-item-content">${escapeHtml(item.content)}</span>
                 <span class="homework-dday">${getDDayLabel(item.dueDate)}</span>
-                <span class="homework-status-tag ${status}">${statusLabel(status)}</span>
+                <span class="homework-status-tag ${statusTagClass}">${statusTagText}</span>
                 <span class="homework-item-caret" aria-hidden="true">▾</span>
             </div>
             <div class="homework-item-detail">
@@ -130,7 +134,8 @@ export function renderItem(item, options = {}) {
 
 // ✅ 숙제 체크 전체 페이지 전용: 마감일(dueDate) 기준으로 묶어서 날짜별 그룹으로 렌더링.
 // 각 그룹은 평소엔 접혀있고(한 줄: 날짜 + 완료/전체 개수 + 그날의 달성률), 누르면 그 날짜의 숙제들이 펼쳐짐.
-export function renderDateGroupsHtml(items) {
+export function renderDateGroupsHtml(items, options = {}) {
+    const { selfLocked = false } = options;
     if (items.length === 0) {
         return `<p class="homework-empty">아직 등록된 숙제가 없어요.</p>`;
     }
@@ -174,7 +179,7 @@ export function renderDateGroupsHtml(items) {
                 </button>
                 <div class="homework-date-group-body">
                     <div class="homework-date-group-items">
-                        ${groupItems.map(item => renderItem(item, { editable: true })).join('')}
+                        ${groupItems.map(item => renderItem(item, { editable: true, selfLocked })).join('')}
                     </div>
                 </div>
             </div>
