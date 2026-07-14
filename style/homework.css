@@ -371,6 +371,23 @@
     color: #c53030;
 }
 
+/* ✅ 친구 인증 대기중 (연결된 친구가 있어서 본인 셀프체크가 막힌 상태) */
+.homework-status-tag.awaiting {
+    background-color: var(--edu-blue-bg, #EEF3FF);
+    color: var(--edu-blue, #5B86E5);
+}
+
+/* ✅ 친구 숙제 인증하기 화면 전용 상태 (friendHomework.js) */
+.homework-status-tag.ready {
+    background-color: var(--edu-blue-bg, #EEF3FF);
+    color: var(--edu-blue, #5B86E5);
+}
+
+.homework-status-tag.waiting {
+    background-color: #f2f2f2;
+    color: #888;
+}
+
 .homework-item {
     background-color: #fafafa;
     border: 1.5px solid #eee;
