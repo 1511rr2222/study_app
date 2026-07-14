@@ -7,3 +7,14 @@
     width: 300px;
     margin: 60px auto 0; /* 화면 안에서 좌우 가운데 정렬 */
 }
+
+.login-mode-toggle {
+    background: none;
+    border: none;
+    color: #ff6b9a;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    text-decoration: underline;
+}
