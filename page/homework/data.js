@@ -93,3 +93,43 @@ export async function deleteItemRow(id) {
         alert('삭제 중 문제가 생겼어요. 다시 시도해주세요.');
     }
 }
+
+// ✅ 나를 검사해주는(reviewer) 친구가 몇 명 연결되어 있는지 - 1명 이상이면 본인 셀프체크를 막음
+export async function countReviewers(userId) {
+    const { count, error } = await supabase
+        .from('homework_reviewers')
+        .select('*', { count: 'exact', head: true })
+        .eq('student_id', userId);
+
+    if (error) {
+        console.error('연결된 친구 확인 실패:', error);
+        return 0;
+    }
+    return count || 0;
+}
+
+// ✅ 친구(student_id = friendUserId)의 숙제 목록 (내가 그 친구의 reviewer로 연결되어 있어야 RLS상 조회 가능)
+export async function loadFriendHomework(friendUserId) {
+    const { data, error } = await supabase
+        .from('homework')
+        .select('*')
+        .eq('user_id', friendUserId)
+        .order('due_date', { ascending: true });
+
+    if (error) {
+        console.error('친구 숙제 로드 실패:', error);
+        return [];
+    }
+    return (data || []).map(mapRow);
+}
+
+// ✅ 친구의 숙제를 인증(승인) - 실제 처리는 Supabase 함수(RPC)가 권한 확인까지 다 함
+export async function approveItem(id) {
+    const { error } = await supabase.rpc('approve_homework', { item_id: id });
+    if (error) {
+        console.error('인증 실패:', error);
+        alert('인증하는 중 문제가 생겼어요. 다시 시도해주세요.');
+        return false;
+    }
+    return true;
+}
