@@ -46,7 +46,7 @@ export function BuddyPageView() {
     `;
 }
 
-export function initBuddyPage(onBack) {
+export function initBuddyPage(onBack, onOpenFriend) {
     document.getElementById('buddy-back-btn').addEventListener('click', onBack);
 
     let userId = null;
@@ -174,10 +174,17 @@ export function initBuddyPage(onBack) {
         }
 
         friendListEl.innerHTML = data.map(row => `
-            <div class="buddy-friend-row">
+            <button type="button" class="buddy-friend-row" data-id="${row.student_id}" data-name="${row.profiles?.display_name || '이름 없음'}">
                 <span class="buddy-friend-name">${row.profiles?.display_name || '이름 없음'}</span>
-            </div>
+                <span class="buddy-friend-arrow" aria-hidden="true">→</span>
+            </button>
         `).join('');
+
+        friendListEl.querySelectorAll('.buddy-friend-row').forEach(btn => {
+            btn.addEventListener('click', () => {
+                onOpenFriend({ id: btn.dataset.id, name: btn.dataset.name });
+            });
+        });
     }
 
     loadFriends();
