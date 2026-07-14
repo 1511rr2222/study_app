@@ -11,6 +11,7 @@ import { GradesView, initGradesPage } from './page/grades.js';
 import { PlanPageView, initPlanPage } from './page/plan.js';
 import { supabase } from './supabaseClient.js';
 import { GritPageView, initGritPage, initGritSummary } from './page/practice/gritPractice.js';
+import { BuddyPageView, initBuddyPage } from './page/buddies.js';
 
 const app = document.getElementById('app');
 
@@ -37,8 +38,10 @@ function navigate(page, param, opts = {}) {
         initGritPage(() => navigate('dashboard'));
     } else if (page === 'plan') {
         app.innerHTML = header + PlanPageView();
-        initPlanPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
-    } else if (page === 'competency') {
+        initPlanPage(() => navigate('dashboard'));
+    } else if (page === 'buddy') {
+        app.innerHTML = header + BuddyPageView();
+        initBuddyPage(() => navigate('dashboard'));} else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
             () => navigate('dashboard'),       // 뒤로가기 시 대시보드로 복귀
@@ -83,11 +86,18 @@ function navigate(page, param, opts = {}) {
         });
     }
 
-    const planBtn = document.getElementById('nav-plan-btn');
+const planBtn = document.getElementById('nav-plan-btn');
     if (planBtn) {
         planBtn.addEventListener('click', (e) => {
             e.preventDefault();
             navigate('plan');
+        });
+    }
+    const buddyBtn = document.getElementById('nav-buddy-btn');
+    if (buddyBtn) {
+        buddyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigate('buddy');
         });
     }
     if (!fromPopState) {
