@@ -1,4 +1,4 @@
-import { HeaderView } from './page/header.js';
+import { HeaderView, initHeaderName, clearHeaderNameCache } from './page/header.js';
 import { LoginView, initLogin } from './page/login.js';
 import { initHomeworkSummary, HomeworkPageView, initHomeworkPage } from './page/homework.js';
 import { CompetencyMainView, initCompetencyMainPage } from './page/competencyMain.js';
@@ -74,6 +74,7 @@ function navigate(page, param, opts = {}) {
         initGradesPage(() => navigate('dashboard'));
     }
 
+    initHeaderName();
     const homeBtn = document.getElementById('nav-home-btn');
     if (homeBtn) {
         homeBtn.addEventListener('click', (e) => {
@@ -98,6 +99,7 @@ function navigate(page, param, opts = {}) {
         logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             await supabase.auth.signOut();
+            clearHeaderNameCache(); // ✅ 다음 로그인한 사람 이름과 안 섞이게 초기화
             navigate('login');
         });
     }
