@@ -183,6 +183,29 @@ body {
     font-weight: 700;
     color: #444;
 }
+.buddy-friend-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #fafafa;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+}
+
+.buddy-friend-row:hover {
+    border-color: var(--edu-pink, #ff6b9a);
+}
+
+.buddy-friend-arrow {
+    color: #ff6b9a;
+    font-weight: 800;
+}
 .planning-mission-input-row {
     position: relative;
 }
