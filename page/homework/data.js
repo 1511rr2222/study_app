@@ -18,7 +18,8 @@ function mapRow(row) {
         dueDate: row.due_date,
         done: row.done,
         photos: row.photos || [],
-        completedAt: row.completed_at // ✅ 완료 처리한 시점 (기한초과 완료 여부 판단용)
+        completedAt: row.completed_at, // ✅ 완료 처리한 시점 (기한초과 완료 여부 판단용)
+        abandoned: row.abandoned || false // ✅ 미완료 처리 여부
     };
 }
 
@@ -86,6 +87,17 @@ export async function updateItem(id, patch) {
     return true;
 }
 
+// ✅ 미완료 처리 - 되돌릴 수 없음 (기한 넘긴 숙제를 "이건 안 하겠다"고 정리하는 용도)
+export async function abandonItem(id) {
+    const { error } = await supabase.from('homework').update({ abandoned: true }).eq('id', id);
+    if (error) {
+        console.error('미완료 처리 실패:', error);
+        alert('처리 중 문제가 생겼어요. 다시 시도해주세요.');
+        return false;
+    }
+    return true;
+}
+
 export async function deleteItemRow(id) {
     const { error } = await supabase.from('homework').delete().eq('id', id);
     if (error) {
@@ -128,7 +140,7 @@ export async function approveItem(id) {
     const { error } = await supabase.rpc('approve_homework', { item_id: id });
     if (error) {
         console.error('인증 실패:', error);
-        alert('인증 실패: ' + error.message); // ⚠️ 디버깅용 - 원인 확인되면 다시 원래대로 되돌릴게요
+        alert('인증하는 중 문제가 생겼어요. 다시 시도해주세요.');
         return false;
     }
     return true;

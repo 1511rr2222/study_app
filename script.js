@@ -49,12 +49,14 @@ function navigate(page, param, opts = {}) {
     } else if (page === 'friend-homework') {
         app.innerHTML = header + FriendHomeworkPageView();
         initFriendHomeworkPage(param, () => navigate('buddy'));
+    
     } else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
-            () => navigate('dashboard'),       // 뒤로가기 시 대시보드로 복귀
+            () => navigate('dashboard'),       
             () => navigate('competency-survey'),
-            (traitId) => navigate('competency-practice', traitId)
+            (traitId) => navigate('competency-practice', traitId),
+            () => navigate('competency-result')
         );
     } else if (page === 'competency-survey') {
         app.innerHTML = header + CompetencySurveyView();
@@ -63,13 +65,16 @@ function navigate(page, param, opts = {}) {
             () => navigate('competency')
         );
     } else if (page === 'competency-practice') {
-        app.innerHTML = header + CompetencyPracticeView(param);
-        initCompetencyPracticePage(param, () => navigate('competency'));
+        const traitId = typeof param === 'string' ? param : param?.traitId;
+        const backTarget = (param && param.from === 'result') ? 'competency-result' : 'competency';
+
+        app.innerHTML = header + CompetencyPracticeView(traitId);
+        initCompetencyPracticePage(traitId, () => navigate(backTarget));   
     } else if (page === 'competency-result') {
         app.innerHTML = header + CompetencyResultView();
         initCompetencyResultPage(
             () => navigate('competency'),
-            (traitId) => navigate('competency-practice', traitId) // ✅ 카드 클릭 시 해당 역량 설명 페이지로
+            (traitId) => navigate('competency-practice', { traitId, from: 'result' }) // ✅ 결과 페이지에서 왔다는 표시도 같이 넘김
         );
     } else if (page === 'vocab') {
         app.innerHTML = header + VocabMainView();

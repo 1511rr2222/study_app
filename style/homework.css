@@ -388,6 +388,29 @@
     color: #888;
 }
 
+/* ✅ 미완료 처리 (기한 넘긴 숙제를 "안 하기로" 정리한 상태) - 카드 전체를 회색으로 낮춤 */
+.homework-status-tag.abandoned {
+    background-color: #eee;
+    color: #888;
+}
+
+.homework-item.abandoned {
+    opacity: 0.6;
+    background-color: #f5f5f5;
+    border-color: #e5e5e5;
+}
+
+.homework-item.abandoned .homework-item-content,
+.homework-item.abandoned .homework-content {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.homework-item.abandoned .homework-dday {
+    background: #eee;
+    color: #999;
+}
+
 .homework-item {
     background-color: #fafafa;
     border: 1.5px solid #eee;
@@ -685,15 +708,17 @@
     display: none !important;
 }
 
-/* 수정/삭제 버튼: 펼침 상세(.homework-item-detail) 안에 붙는 컴팩트 버튼 */
+/* 수정/삭제/미완료처리 버튼: 펼침 상세(.homework-item-detail) 안에 붙는 컴팩트 버튼 */
 .homework-item-actions {
     display: flex;
     gap: 6px;
     flex-shrink: 0;
+    flex-wrap: wrap; /* ✅ 버튼 3개(수정/미완료 처리/삭제)가 좁은 화면에서도 안 넘치도록 */
 }
 
 .homework-edit-btn,
-.homework-delete-btn {
+.homework-delete-btn,
+.homework-abandon-btn {
     background: none;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -713,6 +738,11 @@
 .homework-delete-btn:hover {
     border-color: #e04b6a;
     color: #e04b6a;
+}
+
+.homework-abandon-btn:hover {
+    border-color: #ff9a3d;
+    color: #ff9a3d;
 }
 
 /* 수정 모드 */
@@ -818,6 +848,14 @@
         flex-direction: row;
         align-self: flex-start;
         gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .homework-edit-btn,
+    .homework-delete-btn,
+    .homework-abandon-btn {
+        padding: 4px 8px;
+        font-size: 10.5px;
     }
 
     .homework-dates {

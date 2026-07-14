@@ -1,4 +1,4 @@
-import { loadData, updateItem, deleteItemRow, getUser } from './data.js';
+import { loadData, updateItem, deleteItemRow, getUser, abandonItem } from './data.js';
 import { uploadPhoto, removePhotoFromStorage } from './storage.js';
 import { setEditingId } from './editState.js';
 import { toggleExpanded } from './expandState.js';
@@ -106,6 +106,17 @@ export function attachItemActionEvents(container, onChange) {
         });
     });
 
+    // ✅ 미완료 처리 - 되돌릴 수 없음을 확인 문구에 명시
+    container.querySelectorAll('.homework-abandon-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            if (!confirm('이 숙제를 미완료로 처리할까요? 되돌릴 수 없어요.')) return;
+
+            const ok = await abandonItem(id);
+            if (ok) onChange();
+        });
+    });
+
     container.querySelectorAll('.homework-delete-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const id = e.target.dataset.id;
@@ -126,18 +137,11 @@ export function attachItemActionEvents(container, onChange) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = form.dataset.id;
-            const lessonDate = form.lessonDate.value;
             const dueDate = form.dueDate.value;
             const content = form.content.value.trim();
-            if (!content || !lessonDate || !dueDate) return;
+            if (!content || !dueDate) return;
 
-            // 마감일이 수업일보다 빠르면 안내
-            if (dueDate < lessonDate) {
-                alert('마감일은 수업일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
-                return;
-            }
-
-            const ok = await updateItem(id, { lessonDate, dueDate, content });
+            const ok = await updateItem(id, { lessonDate: dueDate, dueDate, content });
             if (ok) setEditingId(null);
             onChange();
         });

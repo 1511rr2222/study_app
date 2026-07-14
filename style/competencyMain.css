@@ -286,7 +286,6 @@
     border: 2px solid #b7f0cd;
 }
 
-/* ===== 역량별 정의 (카테고리 그룹 + 카드) ===== */
 .competency-def-category {
     margin-bottom: 20px;
 }
@@ -357,7 +356,47 @@
     color: #555;
     line-height: 1.5;
 }
+.competency-btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
 
+.competency-btn-row .competency-start-btn {
+    flex: 1;
+    max-width: 220px;
+}
+
+.competency-secondary-btn {
+    flex: 1;
+    max-width: 220px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    border: 1.5px solid #ffd7e4;
+    background: #fff7fa;
+    color: #d6336c;
+    font-weight: 800;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.competency-secondary-btn:hover {
+    background: #ffe3ec;
+    border-color: #ff6b9a;
+}
+
+@media (max-width: 480px) {
+    .competency-btn-row {
+        flex-direction: column;
+    }
+
+    .competency-btn-row .competency-start-btn,
+    .competency-secondary-btn {
+        max-width: 100%;
+    }
+}
 @media (max-width: 600px) {
     .competency-def-grid {
         grid-template-columns: 1fr;

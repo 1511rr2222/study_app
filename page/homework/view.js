@@ -4,7 +4,7 @@ import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attach
 import { setEditingId } from './editState.js';
 import { clearExpanded } from './expandState.js';
 import { clearDateGroups } from './dateGroupState.js';
-import { todayStr, sortForDisplay, getWeeklyAverageRate } from './utils.js';
+import { todayStr, sortForDisplay, getWeeklyAverageRate, isExcludedFromRate } from './utils.js';
 
 /* ---------------- 대시보드 요약 카드 ---------------- */
 
@@ -36,13 +36,14 @@ async function renderSummary(onOpenFull) {
     container.innerHTML = `<p class="homework-empty">불러오는 중...</p>`;
 
     const data = await loadData();
-    const total = data.length;
-    const doneCount = data.filter(item => item.done).length;
+    const countedItems = data.filter(item => !isExcludedFromRate(item));
+    const total = countedItems.length;
+    const doneCount = countedItems.filter(item => item.done).length;
     const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);
     const rateEl = document.getElementById('homework-summary-rate');
     if (rateEl) rateEl.textContent = `${rate}%`;
 
-    const incomplete = sortForDisplay(data.filter(item => !item.done));
+    const incomplete = sortForDisplay(data.filter(item => !item.done && !item.abandoned));
     const listHtml = incomplete.length === 0
         ? `<p class="homework-empty">미완료된 숙제가 없어요! 🎉</p>`
         : incomplete.map(item => renderItem(item, { showPhotos: false, dateFormat: 'dday' })).join('');
@@ -126,18 +127,10 @@ async function renderPage(onBack) {
     container.innerHTML = `
         <form id="homework-add-form" class="homework-add-form">
             <input type="text" id="homework-input" placeholder="숙제 내용을 입력하세요" required>
-            <label class="homework-single-day-toggle">
-                <input type="checkbox" id="homework-single-day-toggle">
-                당일 계획
-            </label>
             <div class="homework-form-row">
                 <label class="homework-form-label">
-                    <span id="homework-lesson-date-label">시작일</span>
-                    <input type="date" id="homework-lesson-date" value="${todayStr()}" required>
-                </label>
-                <label class="homework-form-label" id="homework-due-date-field">
-                    <span>마감일</span>
-                    <input type="date" id="homework-due-date" required>
+                    <span>기한</span>
+                    <input type="date" id="homework-due-date" value="${todayStr()}" min="${todayStr()}" required>
                 </label>
                 <button type="submit" class="pink-button homework-add-btn">추가</button>
             </div>
@@ -149,39 +142,18 @@ async function renderPage(onBack) {
     `;
 
     const form = document.getElementById('homework-add-form');
-    const singleDayToggle = document.getElementById('homework-single-day-toggle');
-    const lessonDateInput = document.getElementById('homework-lesson-date');
     const dueDateInput = document.getElementById('homework-due-date');
-    const dueDateField = document.getElementById('homework-due-date-field');
-    const lessonDateLabel = document.getElementById('homework-lesson-date-label');
-
-    function applySingleDayMode() {
-        const isSingle = singleDayToggle.checked;
-        dueDateField.style.display = isSingle ? 'none' : '';
-        dueDateInput.required = !isSingle;
-        lessonDateLabel.textContent = isSingle ? '날짜' : '시작일';
-        if (isSingle) dueDateInput.value = lessonDateInput.value;
-    }
-
-    singleDayToggle.addEventListener('change', applySingleDayMode);
-    lessonDateInput.addEventListener('change', () => {
-        if (singleDayToggle.checked) dueDateInput.value = lessonDateInput.value;
-    });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const contentInput = document.getElementById('homework-input');
 
         const content = contentInput.value.trim();
-        const dueDateValue = singleDayToggle.checked ? lessonDateInput.value : dueDateInput.value;
-        if (!content || !lessonDateInput.value || !dueDateValue) return;
+        const dueDateValue = dueDateInput.value;
+        if (!content || !dueDateValue) return;
 
-        if (dueDateValue < lessonDateInput.value) {
-            alert('마감일은 시작일보다 빠를 수 없어요. 날짜를 다시 확인해주세요!');
-            return;
-        }
-
-        await insertItem({ lessonDate: lessonDateInput.value, dueDate: dueDateValue, content });
+        // ✅ 시작일 개념을 없애서, DB 스키마는 안 건드리고 lessonDate/dueDate를 같은 값으로 저장
+        await insertItem({ lessonDate: dueDateValue, dueDate: dueDateValue, content });
         renderPage(onBack); // 등록 후 새로고침
     });
 

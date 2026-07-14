@@ -1,4 +1,4 @@
-import { escapeHtml, getStatus, statusLabel, getDDayLabel, formatDateLabel, sortForDisplay, todayStr } from './utils.js';
+import { escapeHtml, getStatus, statusLabel, getDDayLabel, formatDateLabel, sortForDisplay, todayStr, isExcludedFromRate } from './utils.js';
 import { getEditingId } from './editState.js';
 import { isExpanded } from './expandState.js';
 import { isDateGroupExpanded } from './dateGroupState.js';
@@ -35,16 +35,15 @@ function renderDatesHtml(item, dateFormat) {
         return `<span class="homework-date homework-dday">${getDDayLabel(item.dueDate)}</span>`;
     }
     return item.lessonDate === item.dueDate
-        ? `<span class="homework-date">날짜 ${item.lessonDate || '-'}</span>`
+        ? `<span class="homework-date">기한 ${item.lessonDate || '-'}</span>`
         : `<span class="homework-date">수업일 ${item.lessonDate || '-'}</span>
            <span class="homework-date">마감일 ${item.dueDate || '-'}</span>`;
 }
 
-// ✅ 전체 페이지(editable) 펼침 영역 전용: "수업일" 대신 "시작일" 표현을 씀
-// (숙제 등록 폼에서 이미 "시작일/마감일"이라는 용어를 쓰고 있어서 통일)
+// ✅ 전체 페이지(editable) 펼침 영역 전용
 function renderExpandedDatesHtml(item) {
     return item.lessonDate === item.dueDate
-        ? `<span class="homework-date">날짜 ${item.lessonDate || '-'}</span>`
+        ? `<span class="homework-date">기한 ${item.lessonDate || '-'}</span>`
         : `<span class="homework-date">시작일 ${item.lessonDate || '-'}</span>
            <span class="homework-date">마감일 ${item.dueDate || '-'}</span>`;
 }
@@ -61,11 +60,7 @@ export function renderItem(item, options = {}) {
                 <form class="homework-edit-form" data-id="${item.id}">
                     <div class="homework-form-row">
                         <label class="homework-form-label">
-                            수업일
-                            <input type="date" name="lessonDate" value="${item.lessonDate || ''}" required>
-                        </label>
-                        <label class="homework-form-label">
-                            마감일(숙제 기간)
+                            기한
                             <input type="date" name="dueDate" value="${item.dueDate || ''}" required>
                         </label>
                     </div>
@@ -79,10 +74,12 @@ export function renderItem(item, options = {}) {
         `;
     }
 
+
     const datesHtml = renderDatesHtml(item, dateFormat);
+    const isAbandoned = status === 'abandoned';
     // ✅ selfLocked: 연결된 친구가 있으면 본인이 직접 체크 못하게 막고, 친구의 인증만 받도록 함
-    const isAwaitingFriend = selfLocked && !item.done && canComplete;
-    const checkboxHtml = `<input type="checkbox" data-id="${item.id}" ${item.done ? 'checked' : ''} ${(!item.done && !canComplete) || isAwaitingFriend ? 'disabled' : ''}>`;
+    const isAwaitingFriend = !isAbandoned && selfLocked && !item.done && canComplete;
+    const checkboxHtml = `<input type="checkbox" data-id="${item.id}" ${item.done ? 'checked' : ''} ${(!item.done && !canComplete) || isAwaitingFriend || isAbandoned ? 'disabled' : ''}>`;
 
     // ✅ 대시보드 요약 카드 (editable:false): 한 줄 컴팩트 레이아웃 그대로 유지
     // (체크박스 + D-day + 내용 + 상태태그가 한 줄에 붙는 기존 디자인)
@@ -124,6 +121,7 @@ export function renderItem(item, options = {}) {
                 <div class="homework-dates">${renderExpandedDatesHtml(item)}</div>
                 <div class="homework-item-actions">
                     <button type="button" class="homework-edit-btn" data-id="${item.id}">수정</button>
+                    ${status === 'overdue' ? `<button type="button" class="homework-abandon-btn" data-id="${item.id}">미완료 처리</button>` : ''}
                     <button type="button" class="homework-delete-btn" data-id="${item.id}">삭제</button>
                 </div>
                 ${showPhotos ? renderPhotoSection(item) : ''}
@@ -158,8 +156,9 @@ export function renderDateGroupsHtml(items, options = {}) {
 
     return dateKeys.map(dateKey => {
         const groupItems = sortForDisplay(groups[dateKey]);
-        const total = groupItems.length;
-        const doneCount = groupItems.filter(i => i.done).length;
+        const countedItems = groupItems.filter(i => !isExcludedFromRate(i));
+        const total = countedItems.length;
+        const doneCount = countedItems.filter(i => i.done).length;
         const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);
         const isOpen = isDateGroupExpanded(dateKey);
         const isPast = dateKey !== '' && dateKey < today;

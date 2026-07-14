@@ -20,9 +20,16 @@ function isDoneLate(item) {
 }
 
 export function getStatus(item) {
+    if (item.abandoned) return 'abandoned';
     if (item.done) return isDoneLate(item) ? 'done-late' : 'done';
     if (isOverdue(item)) return 'overdue';
     return 'pending';
+}
+
+// ✅ 달성률 계산에서 제외할 상태 (미완료 처리된 것 + 기한 넘겨서 완료한 것)
+export function isExcludedFromRate(item) {
+    const s = getStatus(item);
+    return s === 'abandoned' || s === 'done-late';
 }
 
 // 대략적인 ISO 주차 계산 (연도-주차 형태의 키를 만들기 위한 용도)
@@ -37,7 +44,7 @@ export function getWeekKey(dateStr) {
 }
 
 export function getWeeklyAverageRate(data) {
-    const withDueDate = data.filter(item => item.dueDate);
+    const withDueDate = data.filter(item => item.dueDate && !isExcludedFromRate(item));
     if (withDueDate.length === 0) return 0;
 
     const weeks = {};
@@ -60,6 +67,7 @@ export function statusLabel(status) {
     if (status === 'done') return '완료';
     if (status === 'done-late') return '기한초과 완료';
     if (status === 'overdue') return '기한 초과';
+    if (status === 'abandoned') return '미완료 처리';
     return '미완료';
 }
 
@@ -84,7 +92,7 @@ export function formatDateLabel(dateStr) {
 
 // 기한초과 → 미완료(마감 임박순) → 완료/기한초과 완료 순으로 정렬
 export function sortForDisplay(data) {
-    const statusOrder = { overdue: 0, pending: 1, done: 2, 'done-late': 2 };
+    const statusOrder = { overdue: 0, pending: 1, done: 2, 'done-late': 2, abandoned: 3 };
     return data.slice().sort((a, b) => {
         const statusDiff = statusOrder[getStatus(a)] - statusOrder[getStatus(b)];
         if (statusDiff !== 0) return statusDiff;

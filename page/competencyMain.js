@@ -20,8 +20,6 @@ const TRAIT_EMOJI = {
     envcontrol: '🛡️'
 };
 
-/* -------------------- 페이지 뼈대 -------------------- */
-
 export function CompetencyMainView() {
     return `
         <div class="dashboard-container">
@@ -31,14 +29,12 @@ export function CompetencyMainView() {
     `;
 }
 
-// onBack: 대시보드로 돌아가기, onStartSurvey: 진단 페이지로 이동
-export function initCompetencyMainPage(onBack, onStartSurvey, onOpenPractice) {
-    renderOverview(onBack, onStartSurvey, onOpenPractice);
+export function initCompetencyMainPage(onBack, onStartSurvey, onOpenPractice, onOpenResult) {
+    renderOverview(onBack, onStartSurvey, onOpenPractice, onOpenResult);
     document.getElementById('competency-back-btn').addEventListener('click', onBack);
 }
 
-function renderOverview(onBack, onStartSurvey, onOpenPractice) {
-    const root = document.getElementById('competency-root');
+function renderOverview(onBack, onStartSurvey, onOpenPractice, onOpenResult) {    const root = document.getElementById('competency-root');
     if (!root) return;
 
     const history = loadHistory();
@@ -69,6 +65,9 @@ root.innerHTML = `
         <button type="button" id="start-diagnosis-btn" class="pink-button competency-start-btn">
             ${history.length === 0 ? '역량 진단하기' : '새로 진단하기'}
         </button>
+         ${history.length > 0 ? `
+                <button type="button" id="view-result-btn" class="competency-secondary-btn">이전 결과보기</button>
+            ` : ''}
     </div>
 
     <div id="fairy-toast" class="fairy-toast">
@@ -76,9 +75,16 @@ root.innerHTML = `
     </div>
 `;
 
-    document.getElementById('start-diagnosis-btn').addEventListener('click', () => {
+     document.getElementById('start-diagnosis-btn').addEventListener('click', () => {
         onStartSurvey();
     });
+
+    const viewResultBtn = document.getElementById('view-result-btn');
+    if (viewResultBtn) {
+        viewResultBtn.addEventListener('click', () => {
+            onOpenResult();
+        });
+    }
 
     root.querySelector('.competency-trait-grid').addEventListener('click', (e) => {
         const block = e.target.closest('.competency-trait-block');
@@ -125,13 +131,9 @@ function renderTraitDefTable() {
 function showFairyToast() {
     const toast = document.getElementById('fairy-toast');
     if (!toast) return;
-
-    // 뾰로롱 나타나기
     requestAnimationFrame(() => {
         toast.classList.add('show');
     });
-
-    // 3.5초 후 사라지기
     setTimeout(() => {
         toast.classList.remove('show');
         toast.classList.add('hide');
