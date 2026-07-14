@@ -18,7 +18,7 @@ const app = document.getElementById('app');
 
 function navigate(page, param, opts = {}) {
     const { fromPopState = false } = opts;
-    const header = HeaderView(); 
+    const header = HeaderView();
 
     if (page === 'login') {
         app.innerHTML = header + LoginView();
@@ -44,21 +44,23 @@ function navigate(page, param, opts = {}) {
         app.innerHTML = header + BuddyPageView();
         initBuddyPage(
             () => navigate('dashboard'),
-            (friend) => navigate('friend-homework', friend));
+            (friend) => navigate('friend-homework', friend)
+        );
     } else if (page === 'friend-homework') {
         app.innerHTML = header + FriendHomeworkPageView();
         initFriendHomeworkPage(param, () => navigate('buddy'));
-        else if (page === 'competency') {
+    } else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
             () => navigate('dashboard'),       // 뒤로가기 시 대시보드로 복귀
             () => navigate('competency-survey'),
-            (traitId) => navigate('competency-practice' , traitId) );
+            (traitId) => navigate('competency-practice', traitId)
+        );
     } else if (page === 'competency-survey') {
         app.innerHTML = header + CompetencySurveyView();
         initCompetencySurveyPage(
-            () => navigate('competency-result'), 
-            () => navigate('competency')  
+            () => navigate('competency-result'),
+            () => navigate('competency')
         );
     } else if (page === 'competency-practice') {
         app.innerHTML = header + CompetencyPracticeView(param);
@@ -84,6 +86,7 @@ function navigate(page, param, opts = {}) {
     }
 
     initHeaderName();
+
     const homeBtn = document.getElementById('nav-home-btn');
     if (homeBtn) {
         homeBtn.addEventListener('click', (e) => {
@@ -92,13 +95,14 @@ function navigate(page, param, opts = {}) {
         });
     }
 
-const planBtn = document.getElementById('nav-plan-btn');
+    const planBtn = document.getElementById('nav-plan-btn');
     if (planBtn) {
         planBtn.addEventListener('click', (e) => {
             e.preventDefault();
             navigate('plan');
         });
     }
+
     const buddyBtn = document.getElementById('nav-buddy-btn');
     if (buddyBtn) {
         buddyBtn.addEventListener('click', (e) => {
@@ -106,6 +110,7 @@ const planBtn = document.getElementById('nav-plan-btn');
             navigate('buddy');
         });
     }
+
     if (!fromPopState) {
         history.pushState({ page, param }, '', `#${page}`);
     }
@@ -133,6 +138,7 @@ supabase.auth.onAuthStateChange((event) => {
         navigate('login');
     }
 });
+
 // ✅ 안드로이드 뒤로가기(또는 브라우저 뒤로가기)를 눌렀을 때 앱 안에서 이전 화면으로 이동
 window.addEventListener('popstate', (e) => {
     const state = e.state;
