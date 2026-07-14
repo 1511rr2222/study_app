@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
 
-/* 페이지 전체 배경 (살짝 누리끼리한 크림톤) */
 body {
     background-color: #FFF8EC;
 }
@@ -254,7 +253,25 @@ body {
     color: #a06b00;
     line-height: 1.5;
 }
+.planning-mission-check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
 
+.planning-mission-check-row input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--edu-pink, #ff6b9a);
+    flex-shrink: 0;
+}
+
+.planning-mission-check-row .planning-mission-text {
+    display: inline;
+    margin-bottom: 0;
+}
 .fairy-question-content {
     flex: 1;
     min-width: 0;
