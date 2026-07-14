@@ -128,7 +128,7 @@ export async function approveItem(id) {
     const { error } = await supabase.rpc('approve_homework', { item_id: id });
     if (error) {
         console.error('인증 실패:', error);
-        alert('인증하는 중 문제가 생겼어요. 다시 시도해주세요.');
+        alert('인증 실패: ' + error.message); // ⚠️ 디버깅용 - 원인 확인되면 다시 원래대로 되돌릴게요
         return false;
     }
     return true;
