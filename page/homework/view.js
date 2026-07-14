@@ -1,4 +1,4 @@
-import { loadData, insertItem } from './data.js';
+import { loadData, insertItem, getUser, countReviewers } from './data.js';
 import { renderItem, renderDateGroupsHtml } from './render.js';
 import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attachItemExpandEvents, attachDateGroupEvents } from './events.js';
 import { setEditingId } from './editState.js';
@@ -79,7 +79,7 @@ export function HomeworkPageView() {
                         <span class="homework-rate" id="homework-weekly-rate">0%</span>
                     </div>
                 </div>
-                <p class="homework-notice">*인증사진을 1장 이상 올려야 완료 체크가 가능해요</p>
+                <p class="homework-notice" id="homework-notice">*인증사진을 1장 이상 올려야 완료 체크가 가능해요</p>
                 <div id="homework-page"></div>
             </div>
         </div>
@@ -107,8 +107,21 @@ async function renderPage(onBack) {
     if (weeklyRateEl) weeklyRateEl.textContent = `${weeklyRate}%`;
 
     const sorted = sortForDisplay(data);
+
+    // ✅ 나를 검사해주는 친구가 1명이라도 있으면, 본인 셀프체크를 막고 친구 인증만 받도록 함
+    const user = await getUser();
+    const reviewerCount = user ? await countReviewers(user.id) : 0;
+    const selfLocked = reviewerCount > 0;
+
+    const noticeEl = document.getElementById('homework-notice');
+    if (noticeEl) {
+        noticeEl.textContent = selfLocked
+            ? '*인증사진을 올리면, 연결된 친구가 확인 후 완료 처리해줘요'
+            : '*인증사진을 1장 이상 올려야 완료 체크가 가능해요';
+    }
+
     // ✅ 날짜별로 묶어서 접힘/펼침 가능한 그룹 형태로 렌더링 (그룹 헤더에 그 날짜의 달성률도 같이 표시됨)
-    const groupsHtml = renderDateGroupsHtml(sorted);
+    const groupsHtml = renderDateGroupsHtml(sorted, { selfLocked });
 
     container.innerHTML = `
         <form id="homework-add-form" class="homework-add-form">
