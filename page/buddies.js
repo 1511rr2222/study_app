@@ -1,5 +1,5 @@
 import { supabase } from '../supabaseClient.js';
-
+import { isPushSubscribed, enablePushNotifications, disablePushNotifications } from './push.js';
 const CODE_LENGTH = 6;
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 헷갈리는 글자(0/O, 1/I) 제외
 
@@ -20,8 +20,13 @@ export function BuddyPageView() {
                 <p class="homework-notice">친구랑 서로 숙제를 검사해줄 수 있어요!</p>
 
                 <div class="buddy-section">
-                    <p class="grit-field-label">내 초대 코드</p>
-                    <div class="buddy-code-row">
+                    <p class="grit-field-label">🔔 알림</p>
+                    <button type="button" id="buddy-push-toggle-btn" class="pink-button buddy-action-btn" style="width:100%;">불러오는 중...</button>
+                    <p class="buddy-note">친구가 숙제 사진을 올리면 알림을 받아요 (아이폰은 홈 화면에 추가해서 쓰셔야 알림이 와요!)</p>
+                </div>
+
+                <div class="buddy-section">
+                    <p class="grit-field-label">내 초대 코드</p>                    <div class="buddy-code-row">
                         <span class="buddy-code" id="buddy-my-code">------</span>
                         <button type="button" id="buddy-generate-btn" class="pink-button buddy-action-btn">코드 만들기</button>
                     </div>
@@ -48,6 +53,24 @@ export function BuddyPageView() {
 
 export function initBuddyPage(onBack, onOpenFriend) {
     document.getElementById('buddy-back-btn').addEventListener('click', onBack);
+
+    const pushBtn = document.getElementById('buddy-push-toggle-btn');
+    async function refreshPushBtn() {
+        const subscribed = await isPushSubscribed();
+        pushBtn.textContent = subscribed ? '🔕 알림 끄기' : '🔔 알림 켜기';
+    }
+    pushBtn.addEventListener('click', async () => {
+        pushBtn.disabled = true;
+        const subscribed = await isPushSubscribed();
+        if (subscribed) {
+            await disablePushNotifications();
+        } else {
+            await enablePushNotifications();
+        }
+        pushBtn.disabled = false;
+        await refreshPushBtn();
+    });
+    refreshPushBtn();
 
     let userId = null;
     async function getUserId() {
