@@ -15,9 +15,9 @@ export function HeaderView() {
                     <a href="#" id="nav-home-btn">홈</a>
                     <a href="#" id="nav-plan-btn">내 계획</a>
                     <a href="#" id="nav-buddy-btn">친구</a>
+                    <a href="#" id="nav-help-btn">도움말</a>
                     <a href="#" id="nav-logout-btn">로그아웃</a>
-                </nav>
-            </div>
+                </nav>            </div>
         </header>
     `;
 }

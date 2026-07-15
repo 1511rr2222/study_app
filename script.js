@@ -13,6 +13,7 @@ import { supabase } from './supabaseClient.js';
 import { GritPageView, initGritPage, initGritSummary } from './page/practice/gritPractice.js';
 import { BuddyPageView, initBuddyPage } from './page/buddies.js';
 import { FriendHomeworkPageView, initFriendHomeworkPage } from './page/friendHomework.js';
+import { initOnboarding, showOnboarding } from './page/onboarding.js';
 
 const app = document.getElementById('app');
 
@@ -25,7 +26,8 @@ function navigate(page, param, opts = {}) {
         initLogin(() => navigate('dashboard')); // 로그인 성공 시 대시보드로 이동
     } else if (page === 'dashboard') {
         app.innerHTML = header + DashboardView();
-        initDashboardEvents();
+        initOnboarding(); // ✅ "다시 보지 않기" 체크 전까지 홈 화면 열 때마다 안내 뜸
+        initDashboardEvents();        
         initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
         initGritSummary(() => navigate('grit'));
         document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
@@ -113,6 +115,13 @@ function navigate(page, param, opts = {}) {
         buddyBtn.addEventListener('click', (e) => {
             e.preventDefault();
             navigate('buddy');
+        });
+    }
+    const helpBtn = document.getElementById('nav-help-btn');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showOnboarding(); // ✅ 페이지 이동 없이, "다시 보지 않기" 여부와 상관없이 강제로 다시 보여줌
         });
     }
 
