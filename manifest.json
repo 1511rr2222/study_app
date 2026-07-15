@@ -1,7 +1,7 @@
 {
-  "name": "예린's Education App",
-  "short_name": "예린 학습앱",
-  "description": "예린이의 학습 대시보드",
+  "name": "my Education App",
+  "short_name": "나만의 학습앱",
+  "description": "나만의 학습 대시보드",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

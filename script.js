@@ -14,6 +14,8 @@ import { GritPageView, initGritPage, initGritSummary } from './page/practice/gri
 import { BuddyPageView, initBuddyPage } from './page/buddies.js';
 import { FriendHomeworkPageView, initFriendHomeworkPage } from './page/friendHomework.js';
 import { initOnboarding, showOnboarding } from './page/onboarding.js';
+import { HardQuestionSummaryView, initHardQuestionSummary, HardQuestionPageView, initHardQuestionPage } from './page/hardQuestions.js';
+import { FriendHardQuestionsPageView, initFriendHardQuestionsPage } from './page/friendHardQuestions.js';
 
 const app = document.getElementById('app');
 
@@ -23,35 +25,42 @@ function navigate(page, param, opts = {}) {
 
     if (page === 'login') {
         app.innerHTML = header + LoginView();
-        initLogin(() => navigate('dashboard')); // 로그인 성공 시 대시보드로 이동
+        initLogin(() => navigate('dashboard'));
     } else if (page === 'dashboard') {
         app.innerHTML = header + DashboardView();
-        initOnboarding(); // ✅ "다시 보지 않기" 체크 전까지 홈 화면 열 때마다 안내 뜸
+        initOnboarding(); 
         initDashboardEvents();        
-        initHomeworkSummary(() => navigate('homework')); // 요약 카드 클릭 시 체크 페이지로 이동
+        initHomeworkSummary(() => navigate('homework')); 
         initGritSummary(() => navigate('grit'));
+         initHardQuestionSummary(() => navigate('hard-questions'));
         document.getElementById('open-competency-btn').addEventListener('click', () => navigate('competency'));
         document.getElementById('open-vocab-btn').addEventListener('click', () => navigate('vocab'));
         document.getElementById('open-grades-btn').addEventListener('click', () => navigate('grades'));
     } else if (page === 'homework') {
         app.innerHTML = header + HomeworkPageView();
-        initHomeworkPage(() => navigate('dashboard')); // 뒤로가기 시 대시보드로 복귀
+        initHomeworkPage(() => navigate('dashboard')); 
     } else if (page === 'grit') {
         app.innerHTML = header + GritPageView();
         initGritPage(() => navigate('dashboard'));
     } else if (page === 'plan') {
         app.innerHTML = header + PlanPageView();
         initPlanPage(() => navigate('dashboard'));
-    } else if (page === 'buddy') {
-        app.innerHTML = header + BuddyPageView();
+    } else if (page === 'hard-questions') {
+        app.innerHTML = header + HardQuestionPageView();
+        initHardQuestionPage(() => navigate('dashboard'));
+    } else if (page === 'buddy') {        app.innerHTML = header + BuddyPageView();
         initBuddyPage(
             () => navigate('dashboard'),
-            (friend) => navigate('friend-homework', friend)
+            (friend) => navigate('friend-homework', friend),
+            (friend) => navigate('friend-hard-questions', friend) 
         );
     } else if (page === 'friend-homework') {
         app.innerHTML = header + FriendHomeworkPageView();
         initFriendHomeworkPage(param, () => navigate('buddy'));
     
+    } else if (page === 'friend-hard-questions') {
+        app.innerHTML = header + FriendHardQuestionsPageView();
+        initFriendHardQuestionsPage(param, () => navigate('buddy'));
     } else if (page === 'competency') {
         app.innerHTML = header + CompetencyMainView();
         initCompetencyMainPage(
@@ -76,17 +85,17 @@ function navigate(page, param, opts = {}) {
         app.innerHTML = header + CompetencyResultView();
         initCompetencyResultPage(
             () => navigate('competency'),
-            (traitId) => navigate('competency-practice', { traitId, from: 'result' }) // ✅ 결과 페이지에서 왔다는 표시도 같이 넘김
+            (traitId) => navigate('competency-practice', { traitId, from: 'result' }) 
         );
     } else if (page === 'vocab') {
         app.innerHTML = header + VocabMainView();
         initVocabMainPage(
-            () => navigate('dashboard'),                          // 뒤로가기 시 대시보드로 복귀
-            (day) => navigate('vocab-practice', day)               // day 선택 시 퀴즈 화면으로 이동
+            () => navigate('dashboard'),                          
+            (day) => navigate('vocab-practice', day)              
         );
     } else if (page === 'vocab-practice') {
         app.innerHTML = header + VocabPracticeView(param);
-        initVocabPracticePage(param, () => navigate('vocab'));      // 뒤로가기/완료 시 Day 목록으로 복귀
+        initVocabPracticePage(param, () => navigate('vocab'));  
     } else if (page === 'grades') {
         app.innerHTML = header + GradesView();
         initGradesPage(() => navigate('dashboard'));
@@ -121,7 +130,7 @@ function navigate(page, param, opts = {}) {
     if (helpBtn) {
         helpBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            showOnboarding(); // ✅ 페이지 이동 없이, "다시 보지 않기" 여부와 상관없이 강제로 다시 보여줌
+            showOnboarding(); 
         });
     }
 
@@ -134,7 +143,7 @@ function navigate(page, param, opts = {}) {
         logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             await supabase.auth.signOut();
-            clearHeaderNameCache(); // ✅ 다음 로그인한 사람 이름과 안 섞이게 초기화
+            clearHeaderNameCache(); 
             navigate('login');
         });
     }

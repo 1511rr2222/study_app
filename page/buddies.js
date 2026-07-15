@@ -1,5 +1,5 @@
 import { supabase } from '../supabaseClient.js';
-import { isPushSubscribed, enablePushNotifications, disablePushNotifications } from './push.js';
+
 const CODE_LENGTH = 6;
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 헷갈리는 글자(0/O, 1/I) 제외
 
@@ -20,15 +20,13 @@ export function BuddyPageView() {
                 <p class="homework-notice">친구랑 서로 숙제를 검사해줄 수 있어요!</p>
 
                 <div class="buddy-section">
-                    <p class="grit-field-label">🔔 알림</p>
-                    <button type="button" id="buddy-push-toggle-btn" class="pink-button buddy-action-btn" style="width:100%;">불러오는 중...</button>
-                    <p class="buddy-note">친구가 숙제 사진을 올리면 알림을 받아요 (아이폰은 홈 화면에 추가해서 쓰셔야 알림이 와요!)</p>
-                </div>
-
-                <div class="buddy-section">
-                    <p class="grit-field-label">내 초대 코드</p>                    <div class="buddy-code-row">
+                    <p class="grit-field-label">내 초대 코드</p>
+                    <div class="buddy-code-row">
                         <span class="buddy-code" id="buddy-my-code">------</span>
-                        <button type="button" id="buddy-generate-btn" class="pink-button buddy-action-btn">코드 만들기</button>
+                    </div>
+                    <div class="buddy-generate-row">
+                        <button type="button" id="buddy-generate-friend-btn" class="pink-button buddy-action-btn">친구 코드 만들기</button>
+                        <button type="button" id="buddy-generate-admin-btn" class="pink-button buddy-admin-btn">도우미 초대하기</button>
                     </div>
                     <p class="buddy-note" id="buddy-code-note"></p>
                 </div>
@@ -51,26 +49,8 @@ export function BuddyPageView() {
     `;
 }
 
-export function initBuddyPage(onBack, onOpenFriend) {
+export function initBuddyPage(onBack, onOpenFriend, onOpenFriendHardQuestions) {
     document.getElementById('buddy-back-btn').addEventListener('click', onBack);
-
-    const pushBtn = document.getElementById('buddy-push-toggle-btn');
-    async function refreshPushBtn() {
-        const subscribed = await isPushSubscribed();
-        pushBtn.textContent = subscribed ? '🔕 알림 끄기' : '🔔 알림 켜기';
-    }
-    pushBtn.addEventListener('click', async () => {
-        pushBtn.disabled = true;
-        const subscribed = await isPushSubscribed();
-        if (subscribed) {
-            await disablePushNotifications();
-        } else {
-            await enablePushNotifications();
-        }
-        pushBtn.disabled = false;
-        await refreshPushBtn();
-    });
-    refreshPushBtn();
 
     let userId = null;
     async function getUserId() {
@@ -81,26 +61,28 @@ export function initBuddyPage(onBack, onOpenFriend) {
     }
 
     const myCodeEl = document.getElementById('buddy-my-code');
-    const generateBtn = document.getElementById('buddy-generate-btn');
+    const generateFriendBtn = document.getElementById('buddy-generate-friend-btn');
+    const generateAdminBtn = document.getElementById('buddy-generate-admin-btn');
     const codeNoteEl = document.getElementById('buddy-code-note');
     const redeemInput = document.getElementById('buddy-redeem-input');
     const redeemBtn = document.getElementById('buddy-redeem-btn');
     const redeemStatusEl = document.getElementById('buddy-redeem-status');
     const friendListEl = document.getElementById('buddy-friend-list');
 
-    generateBtn.addEventListener('click', async () => {
+    async function generateInviteCode(btn, isMutual) {
         const uid = await getUserId();
         if (!uid) return;
 
-        generateBtn.disabled = true;
+        btn.disabled = true;
         const code = generateCode();
 
         const { error } = await supabase.from('homework_buddy_invites').insert({
             code,
             inviter_id: uid,
+            mutual: isMutual,
         });
 
-        generateBtn.disabled = false;
+        btn.disabled = false;
 
         if (error) {
             console.error('초대 코드 생성 실패:', error);
@@ -109,8 +91,13 @@ export function initBuddyPage(onBack, onOpenFriend) {
         }
 
         myCodeEl.textContent = code;
-        codeNoteEl.textContent = '이 코드를 친구에게 알려주세요! (10분간 유효, 1회용)';
-    });
+        codeNoteEl.textContent = isMutual
+            ? '이 코드를 친구에게 알려주세요! 서로 숙제를 검사할 수 있어요. (10분간 유효, 1회용)'
+            : '이 코드를 알려주면, 도우미가 내가 올린 어려운 문제를 도와줄 수 있어요.(10분간 유효, 1회용)';
+    }
+
+    generateFriendBtn.addEventListener('click', () => generateInviteCode(generateFriendBtn, true));
+    generateAdminBtn.addEventListener('click', () => generateInviteCode(generateAdminBtn, false));
 
     redeemBtn.addEventListener('click', async () => {
         const uid = await getUserId();
@@ -155,11 +142,17 @@ export function initBuddyPage(onBack, onOpenFriend) {
             return;
         }
 
-        // 양방향으로 저장해서 서로 검사할 수 있게 함
-        const { error: linkError } = await supabase.from('homework_reviewers').insert([
-            { student_id: invite.inviter_id, reviewer_id: uid },
-            { student_id: uid, reviewer_id: invite.inviter_id },
-        ]);
+        // ✅ friend(양방향, 숙제만) / helper(일방향, 어려운 문제만)로 관계 종류를 구분해서 저장
+        const linkRows = invite.mutual
+            ? [
+                { student_id: invite.inviter_id, reviewer_id: uid, relation_type: 'friend' },
+                { student_id: uid, reviewer_id: invite.inviter_id, relation_type: 'friend' },
+            ]
+            : [
+                { student_id: invite.inviter_id, reviewer_id: uid, relation_type: 'helper' },
+            ];
+
+        const { error: linkError } = await supabase.from('homework_reviewers').insert(linkRows);
 
         if (linkError) {
             console.error('친구 연결 실패:', linkError);
@@ -182,7 +175,7 @@ export function initBuddyPage(onBack, onOpenFriend) {
 
         const { data, error } = await supabase
             .from('homework_reviewers')
-            .select('student_id, profiles:student_id(display_name)')
+            .select('student_id, relation_type, profiles:student_id(display_name)')
             .eq('reviewer_id', uid);
 
         if (error) {
@@ -196,16 +189,33 @@ export function initBuddyPage(onBack, onOpenFriend) {
             return;
         }
 
-        friendListEl.innerHTML = data.map(row => `
-            <button type="button" class="buddy-friend-row" data-id="${row.student_id}" data-name="${row.profiles?.display_name || '이름 없음'}">
-                <span class="buddy-friend-name">${row.profiles?.display_name || '이름 없음'}</span>
-                <span class="buddy-friend-arrow" aria-hidden="true">→</span>
-            </button>
-        `).join('');
+        friendListEl.innerHTML = data.map(row => {
+            const isFriend = row.relation_type === 'friend';
+            return `
+                <div class="buddy-friend-row" data-id="${row.student_id}" data-name="${row.profiles?.display_name || '이름 없음'}">
+                    <span class="buddy-friend-name">
+                        ${row.profiles?.display_name || '이름 없음'}
+                        <span class="buddy-friend-role">${isFriend ? '친구' : '도우미'}</span>
+                    </span>
+                    <div class="buddy-friend-actions">
+                        ${isFriend ? `<button type="button" class="buddy-friend-action-btn buddy-friend-hw-btn">숙제 확인</button>` : ''}
+                        ${!isFriend ? `<button type="button" class="buddy-friend-action-btn buddy-friend-hq-btn">어려운 문제</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-        friendListEl.querySelectorAll('.buddy-friend-row').forEach(btn => {
+        friendListEl.querySelectorAll('.buddy-friend-hw-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                onOpenFriend({ id: btn.dataset.id, name: btn.dataset.name });
+                const row = btn.closest('.buddy-friend-row');
+                onOpenFriend({ id: row.dataset.id, name: row.dataset.name });
+            });
+        });
+
+        friendListEl.querySelectorAll('.buddy-friend-hq-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const row = btn.closest('.buddy-friend-row');
+                onOpenFriendHardQuestions({ id: row.dataset.id, name: row.dataset.name });
             });
         });
     }

@@ -2,6 +2,7 @@ import { HomeworkSummaryView } from './homework.js';
 import { GritSummaryView } from './practice/gritPractice.js';
 import { supabase } from '../supabaseClient.js';
 import { PlanningTipCardView, initPlanningTipCard } from './planningTips.js';
+import { HardQuestionSummaryView, initHardQuestionSummary } from './hardQuestions.js';
 
 export function DashboardView() {
     return `
@@ -38,8 +39,9 @@ export function DashboardView() {
                     </div>
                     <div class="card-homework">${HomeworkSummaryView()}</div>
                 </div>
-
                 <div class="card-grit">${GritSummaryView()}</div>
+
+                <div class="card-grit">${HardQuestionSummaryView()}</div>
 
                 <div class="bottom-section">
                     <div class="list-box list-competency" id="open-competency-btn">
