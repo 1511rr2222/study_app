@@ -7,8 +7,6 @@ const PERIOD_OPTIONS = [1, 3, 5, 7];
 const justCompletedMap = new Map();
 const expandedChallengeIds = new Set();
 
-/* -------------------- 대시보드 요약 카드 -------------------- */
-
 export function GritSummaryView() {
     return `
         <div class="grit-summary-box">
@@ -50,8 +48,8 @@ export async function initGritSummary(onOpenFull) {
 
     if (active.length === 0) {
         container.innerHTML = `
-            <p class="homework-empty">공부 외적으로 단기적으로 도전해보고 싶은 목표가 있다면 새 챌린지를 시작해보세요!
-            <br>ex) 하루 1끼는 다이어트 식으로 먹기/ 하루 10분 런닝하기 등</p>
+            <p class="homework-empty">공부 외적으로 도전해보고 싶은 목표가 있다면 챌린지를 시작해보세요!
+            <br>ex) 하루 1끼는 다이어트 식/ 하루 10분 런닝하기 등</p>
             <button type="button" id="grit-summary-open-btn" class="homework-open-btn">챌린지 보러가기 →</button>
         `;
     } else {
@@ -83,8 +81,6 @@ export async function initGritSummary(onOpenFull) {
     document.getElementById('grit-summary-open-btn').addEventListener('click', onOpenFull);
 }
 
-/* -------------------- 그릿 전용 전체 페이지 (헤더 없이 챌린지 화면만) -------------------- */
-
 export function GritPageView() {
     return `
         <div class="dashboard-container">
@@ -111,8 +107,6 @@ export async function initGritPractice(contentEl) {
 
     await renderAll(contentEl, user);
 }
-
-/* -------------------- 전체 화면: 새 챌린지 추가 + 챌린지 카드 목록 -------------------- */
 
 async function renderAll(contentEl, user) {
     contentEl.innerHTML = `<p class="grit-loading">불러오는 중...</p>`;
@@ -151,7 +145,6 @@ async function renderAll(contentEl, user) {
         });
     }
 
-    // 진행 중 / 완료된 챌린지를 나눠서 각각 접이식 그룹으로 보여줌
     const active = list.filter(c => calcDayIndex(c.start_date) <= c.period);
     const finished = list.filter(c => calcDayIndex(c.start_date) > c.period);
 
@@ -167,7 +160,7 @@ async function renderAll(contentEl, user) {
                         ${PERIOD_OPTIONS.map(p => `<button type="button" class="grit-period-btn" data-period="${p}">${p}일</button>`).join('')}
                     </div>
 
-<p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
+                    <p class="grit-field-label">챌린지 기간 동안 매일 지킬 단 하나의 목표</p>
                     <input type="text" id="grit-goal-input" class="grit-goal-input" placeholder="예: 수학 문제집 5페이지 풀기">
 
                     <p class="grit-field-label">왜 이 챌린지를 해야 하나요?</p>
@@ -183,8 +176,7 @@ async function renderAll(contentEl, user) {
             </div>
 
             ${GroupSectionHtml('active', '진행중인 챌린지 보기', active, logsByChallenge)}
-            ${GroupSectionHtml('finished', '완료된 챌린지 보기', finished, logsByChallenge)}
-        </div>
+            ${GroupSectionHtml('finished', '종료된 챌린지 보기', finished, logsByChallenge)}        </div>
     `;
 
     initAddSection(contentEl, user);
@@ -207,11 +199,10 @@ async function renderAll(contentEl, user) {
     });
 }
 
-// ✅ 그룹(진행중/완료) 펼침 상태 기억 - 진행중은 기본으로 펼쳐두고, 완료는 접어둠
 const groupOpenState = { active: true, finished: false };
 
 function GroupSectionHtml(key, label, challengeList, logsByChallenge) {
-    if (key === 'finished' && challengeList.length === 0) return ''; // 완료된 챌린지가 없으면 섹션 자체를 숨김
+    if (key === 'finished' && challengeList.length === 0) return ''; 
 
     const isOpen = groupOpenState[key];
     const bodyHtml = challengeList.length === 0
@@ -231,8 +222,6 @@ function GroupSectionHtml(key, label, challengeList, logsByChallenge) {
         </div>
     `;
 }
-
-/* -------------------- 새 챌린지 추가 폼 -------------------- */
 
 function initAddSection(contentEl, user) {
     const toggleBtn = document.getElementById('grit-add-toggle-btn');
@@ -293,12 +282,11 @@ startBtn.addEventListener('click', async () => {
     });
 }
 
-/* -------------------- 챌린지 카드 (마크업) -------------------- */
-
 function ChallengeCardHtml(challenge, logs) {
     const dayIndex = calcDayIndex(challenge.start_date);
     const doneSet = new Set(logs.map(l => l.day_index));
-    const isFinished = dayIndex > challenge.period;
+    const isPeriodOver = dayIndex > challenge.period; // ✅ 기간이 "지났는지"만 (예전 isFinished)
+    const isFullyCompleted = doneSet.size >= challenge.period; // ✅ 실제로 "다 이수했는지"
     const alreadyDoneToday = doneSet.has(dayIndex);
     const isOpen = expandedChallengeIds.has(challenge.id);
     const percent = Math.round((doneSet.size / challenge.period) * 100);
@@ -309,11 +297,11 @@ function ChallengeCardHtml(challenge, logs) {
         const n = i + 1;
         const classes = ['grit-day-dot'];
         if (doneSet.has(n)) classes.push('done');
-        if (n === dayIndex && !isFinished) classes.push('today');
+        if (n === dayIndex && !isPeriodOver) classes.push('today');
         if (n === justPopDay) classes.push('grit-day-pop');
         return `<div class="${classes.join(' ')}">${doneSet.has(n) ? '✓' : n}</div>`;
     }).join('');
-    justCompletedMap.delete(challenge.id); // 한 번 쓰고 초기화 (다음 렌더부터는 재생 안 됨)
+    justCompletedMap.delete(challenge.id);
 
     const historyHtml = logs.length
         ? `<ul class="grit-history-list">${logs
@@ -338,21 +326,29 @@ function ChallengeCardHtml(challenge, logs) {
         : `<p class="grit-history-empty">아직 회고가 없어요. 오늘의 기록을 남겨보세요!</p>`;
 
     let actionHtml = '';
-    if (isFinished) {
-        actionHtml = `
-            <div class="grit-today-box grit-finish-box">
-                <div class="grit-trophy">✨ 🏆 ✨</div>
-                <p class="grit-today-lead">${challenge.period}일 챌린지 완주!</p>
-                <p class="grit-finish-sub">스스로 한 약속을 끝까지 지켰어요. 정말 대단해요!</p>
-            </div>
-        `;
+    if (isPeriodOver) {
+        // ✅ 기간은 끝났지만, 매일 다 인증했을 때만 "완주" 트로피를 보여줌
+        actionHtml = isFullyCompleted
+            ? `
+                <div class="grit-today-box grit-finish-box">
+                    <div class="grit-trophy">✨ 🏆 ✨</div>
+                    <p class="grit-today-lead">${challenge.period}일 챌린지 완주!</p>
+                    <p class="grit-finish-sub">스스로 한 약속을 끝까지 지켰어요. 정말 대단해요!</p>
+                </div>
+            `
+            : `
+                <div class="grit-today-box grit-fail-box">
+                    <p class="grit-today-lead">기간이 끝났어요</p>
+                    <p class="grit-finish-sub">${doneSet.size}일 / ${challenge.period}일만 인증했어요. 다음엔 매일 인증해서 완주해봐요!</p>
+                </div>
+            `;
     } else if (alreadyDoneToday) {
         actionHtml = `
             <div class="grit-today-box">
                 <p class="grit-today-lead">오늘 목표는 이미 완료했어요. 내일 또 만나요 ✨</p>
             </div>
         `;
-} else {
+    } else {
         const quoteHtml = (challenge.motivation_text || challenge.reason_text) ? `
             <div class="grit-quote-box">
                 ${challenge.motivation_text ? `<p class="grit-quote-motivation">"${escapeHtml(challenge.motivation_text)}"</p>` : ''}
@@ -365,7 +361,8 @@ function ChallengeCardHtml(challenge, logs) {
                 <p class="grit-today-lead">오늘 목표, 잘 해내셨나요?</p>
                 ${quoteHtml}
 
-                <div class="grit-photo-section">                    <div class="grit-photo-list"></div>
+                <div class="grit-photo-section">
+                    <div class="grit-photo-list"></div>
                     <label class="grit-photo-upload-btn">
                         📷 인증사진 추가
                         <input type="file" accept="image/*" multiple class="grit-photo-input" hidden>
@@ -380,12 +377,12 @@ function ChallengeCardHtml(challenge, logs) {
     }
 
     return `
-        <div class="grit-challenge-card ${isFinished ? 'grit-challenge-finished' : ''} ${isOpen ? 'grit-challenge-expanded' : ''}" data-challenge-id="${challenge.id}">
+        <div class="grit-challenge-card ${isPeriodOver ? 'grit-challenge-finished' : ''} ${isPeriodOver && !isFullyCompleted ? 'grit-challenge-failed' : ''} ${isOpen ? 'grit-challenge-expanded' : ''}" data-challenge-id="${challenge.id}">
             <div class="grit-challenge-summary-row" data-id="${challenge.id}">
-                <span class="grit-challenge-status-dot ${isFinished ? 'finished' : 'active'}"></span>
+                <span class="grit-challenge-status-dot ${isPeriodOver ? (isFullyCompleted ? 'finished' : 'failed') : 'active'}"></span>
                 <span class="grit-challenge-summary-goal">${escapeHtml(challenge.goal_text)}</span>
                 <span class="grit-challenge-summary-date">${formatDateRange(challenge.start_date, challenge.period)}</span>
-                <span class="grit-challenge-summary-day">${isFinished ? '완료' : `Day ${dayIndex}/${challenge.period}`}</span>
+                <span class="grit-challenge-summary-day">${isPeriodOver ? (isFullyCompleted ? '완료' : '미완주') : `Day ${dayIndex}/${challenge.period}`}</span>
                 <button type="button" class="grit-icon-btn grit-challenge-edit-btn" title="수정">✏️</button>
                 <button type="button" class="grit-icon-btn grit-challenge-delete-btn" title="삭제">🗑️</button>
                 <span class="grit-challenge-caret" aria-hidden="true">▾</span>
@@ -410,7 +407,7 @@ function ChallengeCardHtml(challenge, logs) {
                     <p class="grit-progress-text">${doneSet.size}일 / ${challenge.period}일 (${percent}%)</p>
                     ${streak >= 2 ? `<span class="grit-streak-badge">🔥 ${streak}일 연속</span>` : ''}
                 </div>
-                ${!isFinished ? `<p class="grit-motivation-text">${motivationText(percent)}</p>` : ''}
+                ${!isPeriodOver ? `<p class="grit-motivation-text">${motivationText(percent)}</p>` : ''}
 
                 ${actionHtml}
 
@@ -423,7 +420,6 @@ function ChallengeCardHtml(challenge, logs) {
     `;
 }
 
-// 완료한 날짜(doneSet) 기준 오늘(또는 어제)까지 이어진 연속 성공일수
 function calcStreak(doneSet, dayIndex, alreadyDoneToday) {
     let streak = 0;
     let day = alreadyDoneToday ? dayIndex : dayIndex - 1;
@@ -434,7 +430,6 @@ function calcStreak(doneSet, dayIndex, alreadyDoneToday) {
     return streak;
 }
 
-// 진행률 구간별 동기부여 문구
 function motivationText(percent) {
     if (percent === 0) return '첫 도장을 찍어볼까요? 시작이 반이에요 💪';
     if (percent < 50) return '좋은 흐름이에요, 이대로 계속 가봐요! 🌱';
@@ -443,12 +438,8 @@ function motivationText(percent) {
     return '마지막 하루예요! 완주가 코앞이에요 🏁';
 }
 
-/* -------------------- 챌린지 카드 (이벤트) -------------------- */
-
 function initChallengeCard(card, user, challenge, logs, onChanged) {
     const dayIndex = calcDayIndex(challenge.start_date);
-
-    // 요약 행 클릭 → 펼침/접힘 토글 (화면 다시 그리지 않고 즉시 반응 + 상태도 기억)
     const summaryRow = card.querySelector('.grit-challenge-summary-row');
     summaryRow.addEventListener('click', () => {
         const id = summaryRow.dataset.id;
@@ -460,7 +451,6 @@ function initChallengeCard(card, user, challenge, logs, onChanged) {
         card.classList.toggle('grit-challenge-expanded');
     });
 
-    /* ---------- 수정 / 삭제 (요약 행 안의 작은 아이콘 버튼) ---------- */
     const editRow = card.querySelector('.grit-challenge-edit-row');
     const editBtn = card.querySelector('.grit-challenge-edit-btn');
     const deleteBtn = card.querySelector('.grit-challenge-delete-btn');
@@ -527,18 +517,16 @@ function initChallengeCard(card, user, challenge, logs, onChanged) {
         await onChanged();
     });
 
-    // 히스토리 사진 - 클릭하면 크게 보기
     card.querySelectorAll('.grit-history-photo').forEach(img => {
         img.addEventListener('click', () => openLightbox(img.dataset.src));
     });
 
     const completeBtn = card.querySelector('.grit-complete-btn');
-    if (!completeBtn) return; // 이미 완료했거나 챌린지가 끝난 카드는 사진/완료 로직 불필요
+    if (!completeBtn) return; 
 
-    /* ---------- 오늘의 인증사진 업로드 (완료 도장 찍기 전, 이 카드 안에서만 임시로 들고 있음) ---------- */
     const photoList = card.querySelector('.grit-photo-list');
     const photoInput = card.querySelector('.grit-photo-input');
-    let todayPhotos = []; // 완료 도장 찍을 때 grit_logs에 같이 저장됨
+    let todayPhotos = []; 
 
     function renderPhotoThumbs() {
         photoList.innerHTML = todayPhotos.map((src, idx) => `
@@ -588,7 +576,6 @@ function initChallengeCard(card, user, challenge, logs, onChanged) {
         }
     });
 
-    /* ---------- 완료 도장 찍기 ---------- */
     completeBtn.addEventListener('click', async () => {
         if (todayPhotos.length === 0) {
             alert('완료 도장을 찍기 전에 인증사진을 1장 이상 올려주세요!');
@@ -622,8 +609,6 @@ function initChallengeCard(card, user, challenge, logs, onChanged) {
     });
 }
 
-/* -------------------- 유틸 -------------------- */
-
 function todayString() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -633,7 +618,6 @@ function toDateOnly(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-// start_date('YYYY-MM-DD') 기준 오늘이 챌린지 몇 번째 날인지 (1부터 시작)
 function calcDayIndex(startDateStr) {
     const [y, m, d] = startDateStr.split('-').map(Number);
     const start = new Date(y, m - 1, d);
@@ -642,7 +626,6 @@ function calcDayIndex(startDateStr) {
     return diffDays + 1;
 }
 
-// 요약 행에 보여줄 'MM.DD~MM.DD' 날짜 범위 (시작일 ~ 시작일+기간-1일)
 function formatDateRange(startDateStr, period) {
     const [y, m, d] = startDateStr.split('-').map(Number);
     const start = new Date(y, m - 1, d);
