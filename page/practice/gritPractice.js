@@ -48,7 +48,7 @@ export async function initGritSummary(onOpenFull) {
 
     if (active.length === 0) {
         container.innerHTML = `
-            <p class="homework-empty">공부 외적으로 도전해보고 싶은 목표가 있다면 챌린지를 시작해보세요!
+            <p class="homework-empty">공부 외로 도전하고 싶은 목표가 있다면 챌린지를 시작해보세요!
             <br>ex) 하루 1끼는 다이어트 식/ 하루 10분 런닝하기 등</p>
             <button type="button" id="grit-summary-open-btn" class="homework-open-btn">챌린지 보러가기 →</button>
         `;

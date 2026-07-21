@@ -149,7 +149,21 @@ function navigate(page, param, opts = {}) {
     }
 }
 
+const DEMO_EMAIL = 'demo@gmail.com';
+const DEMO_PASSWORD = 'a12345';
+
 async function init() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('demo') === '1') {
+        await supabase.auth.signOut(); // 혹시 다른 세션이 남아있을 경우 대비
+        const { error } = await supabase.auth.signInWithPassword({
+            email: DEMO_EMAIL,
+            password: DEMO_PASSWORD,
+        });
+        if (error) console.error('데모 로그인 실패:', error);
+        history.replaceState({}, '', window.location.pathname); // 주소창에서 ?demo=1 흔적 지우기
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     const initialPage = session ? 'dashboard' : 'login';
     history.replaceState({ page: initialPage }, '', `#${initialPage}`);

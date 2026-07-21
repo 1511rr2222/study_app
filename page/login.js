@@ -82,7 +82,13 @@ export function initLogin(onLoginSuccess) {
         loginBtn.innerText = '로그인';
 
         if (error) {
-            showError('이메일 또는 비밀번호가 올바르지 않아요.');
+            console.error('로그인 실패 상세:', error.message); // 🔍 콘솔에서 진짜 원인 확인용
+
+            if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
+                showError('이메일 인증이 필요해요! 가입 시 받은 메일함에서 인증 링크를 눌러주세요.');
+            } else {
+                showError(`로그인 실패: ${error.message}`); // 🔍 임시로 실제 메시지 그대로 표시
+            }
             return;
         }
 
