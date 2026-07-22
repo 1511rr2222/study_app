@@ -7,7 +7,14 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', (event) => {
     if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
+    // ✅ 사진 업로드 같은 POST/PUT 요청은 서비스워커가 손대지 않고 브라우저가 그대로 처리하게 둠
+    //    (서비스워커를 거치면서 파일 업로드가 깨지는 경우가 있어서, GET 요청에만 이 로직을 적용)
+    if (event.request.method !== 'GET') {
         return;
     }
 
