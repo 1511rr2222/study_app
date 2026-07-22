@@ -59,7 +59,7 @@ export function attachPhotoEvents(container, onChange) {
                 onChange();
             } catch (err) {
                 console.error('사진 업로드 실패:', err);
-                alert('사진을 업로드하는 중 문제가 생겼어요. 다시 시도해주세요.');
+                alert('사진 업로드 실패' + err.message );
                 onChange();
             }
         });
