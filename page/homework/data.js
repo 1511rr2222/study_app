@@ -9,7 +9,6 @@ export async function getUser() {
     return user;
 }
 
-// DB row(snake_case) → 기존 렌더링 코드가 쓰던 형태(camelCase)로 변환
 function mapRow(row) {
     return {
         id: row.id,
@@ -18,8 +17,8 @@ function mapRow(row) {
         dueDate: row.due_date,
         done: row.done,
         photos: row.photos || [],
-        completedAt: row.completed_at, // ✅ 완료 처리한 시점 (기한초과 완료 여부 판단용)
-        abandoned: row.abandoned || false // ✅ 미완료 처리 여부
+        completedAt: row.completed_at,
+        abandoned: row.abandoned || false 
     };
 }
 
@@ -69,8 +68,6 @@ export async function updateItem(id, patch) {
     const dbPatch = {};
     if ('done' in patch) {
         dbPatch.done = patch.done;
-        // ✅ 완료 처리하는 순간의 시각을 기록해두고, 완료 취소하면 다시 비움
-        //    (마감일과 비교해서 "기한 넘긴 뒤에 완료했는지" 판단하는 데 씀)
         dbPatch.completed_at = patch.done ? new Date().toISOString() : null;
     }
     if ('photos' in patch) dbPatch.photos = patch.photos;
@@ -87,7 +84,6 @@ export async function updateItem(id, patch) {
     return true;
 }
 
-// ✅ 미완료 처리 - 되돌릴 수 없음 (기한 넘긴 숙제를 "이건 안 하겠다"고 정리하는 용도)
 export async function abandonItem(id) {
     const { error } = await supabase.from('homework').update({ abandoned: true }).eq('id', id);
     if (error) {
@@ -106,7 +102,6 @@ export async function deleteItemRow(id) {
     }
 }
 
-// ✅ 나를 검사해주는(reviewer) 친구가 몇 명 연결되어 있는지 - 1명 이상이면 본인 셀프체크를 막음
 export async function countReviewers(userId) {
     const { count, error } = await supabase
         .from('homework_reviewers')
@@ -135,7 +130,6 @@ export async function loadFriendHomework(friendUserId) {
     return (data || []).map(mapRow);
 }
 
-// ✅ 친구의 숙제를 인증(승인) - 실제 처리는 Supabase 함수(RPC)가 권한 확인까지 다 함
 export async function approveItem(id) {
     const { error } = await supabase.rpc('approve_homework', { item_id: id });
     if (error) {

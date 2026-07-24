@@ -3,14 +3,26 @@ import { supabase } from '../../supabaseClient.js';
 export const PHOTO_BUCKET = 'homework-photos';
 
 export async function uploadPhoto(file, userId, itemId) {
-    if (!file || file.size === 0) {
-        throw new Error('사진을 제대로 불러오지 못했어요. (iCloud에서 사진이 아직 다운로드 중일 수 있어요) 와이파이 연결 상태에서 다시 시도해주세요.');
+     if (!file || file.size === 0) {
+        throw new Error('사진을 제대로 불러오지 못했어요. 와이파이 연결 상태에서 다시 시도해주세요.');
     }
 
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();    const path = `${userId}/${itemId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${userId}/${itemId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const arrayBuffer = await file.arrayBuffer();
 
-    const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file);
-    if (error) throw error;
+    const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, arrayBuffer, {
+        contentType: file.type || 'image/jpeg',
+        upsert: false,
+    });
+
+    if (error) {
+        const msg = (error.message || '').toLowerCase();
+        if (msg.includes('jwt') || msg.includes('row-level security') || msg.includes('unauthorized')) {
+            throw new Error('로그인 세션에 문제가 있어요. 로그아웃 후 다시 로그인해주세요.');
+        }
+        throw error;
+    }
 
     const { data } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path);
     return data.publicUrl;

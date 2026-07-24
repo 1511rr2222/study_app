@@ -8,12 +8,10 @@ export function todayStr() {
     return new Date().toISOString().slice(0, 10);
 }
 
-// 마감일이 지났는데 아직 체크 안 된 경우 = 기한 초과 (미완료로 집계)
 export function isOverdue(item) {
     return !item.done && item.dueDate && item.dueDate < todayStr();
 }
 
-// ✅ 완료는 했지만, 완료 처리한 시점(completedAt)이 마감일을 넘긴 뒤였는지 확인
 function isDoneLate(item) {
     if (!item.done || !item.completedAt || !item.dueDate) return false;
     return item.completedAt.slice(0, 10) > item.dueDate;
@@ -26,13 +24,6 @@ export function getStatus(item) {
     return 'pending';
 }
 
-// ✅ 달성률 계산에서 제외할 상태 (미완료 처리된 것 + 기한 넘겨서 완료한 것)
-export function isExcludedFromRate(item) {
-    const s = getStatus(item);
-    return s === 'abandoned' || s === 'done-late';
-}
-
-// 대략적인 ISO 주차 계산 (연도-주차 형태의 키를 만들기 위한 용도)
 export function getWeekKey(dateStr) {
     const date = new Date(dateStr + 'T00:00:00');
     const day = (date.getDay() + 6) % 7; // 월요일을 0으로
@@ -44,15 +35,15 @@ export function getWeekKey(dateStr) {
 }
 
 export function getWeeklyAverageRate(data) {
-    const withDueDate = data.filter(item => item.dueDate && !isExcludedFromRate(item));
+    const withDueDate = data.filter(item => item.dueDate);
     if (withDueDate.length === 0) return 0;
 
     const weeks = {};
     withDueDate.forEach(item => {
         const key = getWeekKey(item.dueDate);
         if (!weeks[key]) weeks[key] = { total: 0, done: 0 };
-        weeks[key].total += 1;
-        if (item.done) weeks[key].done += 1;
+        weeks[key].total += 1; 
+        if (getStatus(item) === 'done') weeks[key].done += 1; 
     });
 
     const weekKeys = Object.keys(weeks);
@@ -71,7 +62,6 @@ export function statusLabel(status) {
     return '미완료';
 }
 
-// 마감일까지 남은/지난 일수를 D-day 형태로 변환 (예: D-3, D-DAY, D+2)
 export function getDDayLabel(dueDate) {
     if (!dueDate) return '-';
     const due = new Date(dueDate + 'T00:00:00');
@@ -82,7 +72,6 @@ export function getDDayLabel(dueDate) {
     return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`;
 }
 
-// ✅ 날짜별 그룹 헤더에 보여줄 라벨 (예: "2026-07-09 (수)")
 export function formatDateLabel(dateStr) {
     if (!dateStr) return '날짜 미정';
     const d = new Date(dateStr + 'T00:00:00');
@@ -90,7 +79,6 @@ export function formatDateLabel(dateStr) {
     return `${dateStr} (${week})`;
 }
 
-// 기한초과 → 미완료(마감 임박순) → 완료/기한초과 완료 순으로 정렬
 export function sortForDisplay(data) {
     const statusOrder = { overdue: 0, pending: 1, done: 2, 'done-late': 2, abandoned: 3 };
     return data.slice().sort((a, b) => {

@@ -11,12 +11,11 @@ export function attachCheckboxEvents(container, onChange) {
             const id = e.target.dataset.id;
             const wasChecked = e.target.checked;
 
-            e.target.disabled = true; // 저장 중 중복 클릭 방지
+            e.target.disabled = true; 
 
             const data = await loadData();
             const current = data.find(item => item.id === id);
 
-            // 완료로 체크하려는데 인증사진이 없으면 막음 (disabled 속성의 이중 안전장치)
             if (wasChecked && (!current || !current.photos || current.photos.length === 0)) {
                 alert('완료 처리하기 전에 인증사진을 1장 이상 올려주세요!');
                 onChange();
@@ -65,7 +64,6 @@ export function attachPhotoEvents(container, onChange) {
         });
     });
 
-    // ✅ 썸네일 클릭 시 라이트박스로 크게 보기
     container.querySelectorAll('.homework-photo-img').forEach(img => {
         img.addEventListener('click', () => {
             openLightbox(img.dataset.src);

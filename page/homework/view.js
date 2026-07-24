@@ -4,13 +4,11 @@ import { attachCheckboxEvents, attachPhotoEvents, attachItemActionEvents, attach
 import { setEditingId } from './editState.js';
 import { clearExpanded } from './expandState.js';
 import { clearDateGroups } from './dateGroupState.js';
-import { todayStr, sortForDisplay, getWeeklyAverageRate, isExcludedFromRate } from './utils.js';
+import { todayStr, sortForDisplay, getWeeklyAverageRate, getStatus } from './utils.js';
 
 /* ---------------- 대시보드 요약 카드 ---------------- */
 
 export function HomeworkSummaryView() {
-    // 대시보드 안에서는 .card-homework가 이미 카드 테두리 역할을 하므로
-    // 여기서는 테두리 없는 가벼운 래퍼(.homework-summary-box)만 사용해서 이중 테두리를 방지
     return `
         <div class="homework-summary-box">
             <div class="homework-header-row">
@@ -35,12 +33,10 @@ async function renderSummary(onOpenFull) {
 
     container.innerHTML = `<p class="homework-empty">불러오는 중...</p>`;
 
-    const data = await loadData();
-    const countedItems = data.filter(item => !isExcludedFromRate(item));
-    const total = countedItems.length;
-    const doneCount = countedItems.filter(item => item.done).length;
-    const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);
-    const rateEl = document.getElementById('homework-summary-rate');
+const data = await loadData();
+    const total = data.length; 
+    const doneCount = data.filter(item => getStatus(item) === 'done').length; // ✅ 온타임 완료만
+    const rate = total === 0 ? 0 : Math.round((doneCount / total) * 100);    const rateEl = document.getElementById('homework-summary-rate');
     if (rateEl) rateEl.textContent = `${rate}%`;
 
     const incomplete = sortForDisplay(data.filter(item => !item.done && !item.abandoned));
@@ -87,11 +83,10 @@ export function HomeworkPageView() {
     `;
 }
 
-// onBack: 대시보드로 돌아갈 때 실행할 콜백
 export function initHomeworkPage(onBack) {
     setEditingId(null);
-    clearExpanded();    // ✅ 전체 페이지에 새로 들어올 때는 항목 펼침 상태 모두 초기화
-    clearDateGroups();  // ✅ 날짜 그룹 펼침 상태도 모두 초기화 (전부 접힌 채로 시작)
+    clearExpanded();    
+    clearDateGroups();  
     renderPage(onBack);
     document.getElementById('homework-back-btn').addEventListener('click', onBack);
 }
@@ -108,8 +103,6 @@ async function renderPage(onBack) {
     if (weeklyRateEl) weeklyRateEl.textContent = `${weeklyRate}%`;
 
     const sorted = sortForDisplay(data);
-
-    // ✅ 나를 검사해주는 친구가 1명이라도 있으면, 본인 셀프체크를 막고 친구 인증만 받도록 함
     const user = await getUser();
     const reviewerCount = user ? await countReviewers(user.id) : 0;
     const selfLocked = reviewerCount > 0;
@@ -121,7 +114,6 @@ async function renderPage(onBack) {
             : '*인증사진을 1장 이상 올려야 완료 체크가 가능해요';
     }
 
-    // ✅ 날짜별로 묶어서 접힘/펼침 가능한 그룹 형태로 렌더링 (그룹 헤더에 그 날짜의 달성률도 같이 표시됨)
     const groupsHtml = renderDateGroupsHtml(sorted, { selfLocked });
 
     container.innerHTML = `
@@ -152,14 +144,13 @@ async function renderPage(onBack) {
         const dueDateValue = dueDateInput.value;
         if (!content || !dueDateValue) return;
 
-        // ✅ 시작일 개념을 없애서, DB 스키마는 안 건드리고 lessonDate/dueDate를 같은 값으로 저장
         await insertItem({ lessonDate: dueDateValue, dueDate: dueDateValue, content });
-        renderPage(onBack); // 등록 후 새로고침
+        renderPage(onBack); 
     });
 
     attachCheckboxEvents(container, () => renderPage(onBack));
     attachPhotoEvents(container, () => renderPage(onBack));
     attachItemActionEvents(container, () => renderPage(onBack));
-    attachItemExpandEvents(container); // ✅ 항목 행 클릭 시 펼침/접힘 토글
-    attachDateGroupEvents(container);  // ✅ 날짜 그룹 헤더 클릭 시 펼침/접힘 토글
+    attachItemExpandEvents(container); 
+    attachDateGroupEvents(container); 
 }

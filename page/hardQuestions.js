@@ -70,7 +70,7 @@ export function HardQuestionPageView() {
             <button type="button" id="hq-back-btn" class="homework-back-btn">← 대시보드로 돌아가기</button>
             <div class="hero-box">
                 <h2>🙋 어려운 문제</h2>
-                <p class="homework-notice">*풀다가 막힌 문제를 사진이나 글로 남겨두면, 도우미가 풀이를 달아줘요</p>
+                <p class="homework-notice">*풀다가 막힌 문제를 사진이나 글로 남겨두면, 도우미가 풀이를 달아줄게요!</p>
 
                 <form id="hq-add-form" class="homework-add-form">
                     <textarea id="hq-content-input" class="grit-goal-textarea" placeholder="어떤 부분이 어려운지 적어보세요 (선택사항)" rows="3"></textarea>

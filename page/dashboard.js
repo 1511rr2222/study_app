@@ -81,17 +81,14 @@ export async function initDashboardEvents() {
 
     if (title) title.innerText = `📅 ${month + 1}월 출석`;
 
-    // 현재 로그인된 사용자 확인
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-        // 세션이 없으면(만료 등) 더 진행하지 않음 - 라우팅 쪽에서 로그인 화면으로 보내는 걸 권장
         console.warn('로그인된 사용자가 없어 대시보드 데이터를 불러올 수 없습니다.');
         return;
     }
 
     let checkedDays = new Set();
 
-    // ---------- 출석 데이터 불러오기 ----------
     async function loadAttendance() {
         const { data, error } = await supabase
             .from('attendance')
@@ -144,7 +141,7 @@ export async function initDashboardEvents() {
 
     if (attendBtn) {
         attendBtn.addEventListener('click', async () => {
-            if (checkedDays.has(today)) return; // 이미 오늘 출석함
+            if (checkedDays.has(today)) return; 
 
             attendBtn.disabled = true;
             const { error } = await supabase
